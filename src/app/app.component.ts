@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, HostListener, Renderer2} from '@angular/core';
 import {Router} from "@angular/router";
-import {BehaviorSubject, catchError, combineLatest, map, Observable, of, startWith} from "rxjs";
+import {catchError, combineLatest, map, Observable, of, startWith} from "rxjs";
 import {AppService} from "./service/app.service";
 import {HttpErrorResponse} from "@angular/common/http";
 import {CSRF} from "../global-utils/global-utils";
@@ -14,13 +14,11 @@ import {CSRF} from "../global-utils/global-utils";
 export class AppComponent {
   navBg: any;
 
-  private admin$ = new BehaviorSubject<boolean>(true);
-  displayAdminComponent$ = this.admin$.asObservable();
+  csrf$: Observable<{ state: string, error?: string, csrf?: CSRF }>;
 
-  combine$?: Observable<{
+  combine$: Observable<{
     state: string,
     error?: string,
-    csrf?: CSRF,
     // bgImages?: string[],
     // products?: Product[],
     // categories?: string[],
@@ -28,14 +26,18 @@ export class AppComponent {
   }>;
 
   constructor(private appService: AppService, public route: Router, private renderer: Renderer2) {
-    // validates if route is an admin route
-    this.admin$.next(this.route.url.startsWith('/admin'));
-
     const csrf$ = this.appService.csrf();
+
+    this.csrf$ = csrf$.pipe(
+      map((c) => ({ state: 'LOADED' })),
+      startWith({ state: 'LOADING' }),
+      catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error }))
+    );
+
     this.combine$ = combineLatest([csrf$]).pipe(
       map(([csrf]: [csrf: CSRF]) => ({ state: 'LOADED', csrf: csrf })),
       startWith({ state: 'LOADING' }),
-      catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error.message() }))
+      catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error }))
     );
   }
 

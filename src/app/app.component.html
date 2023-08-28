@@ -1,19 +1,19 @@
-<ng-container *ngIf="combine$ | async as combine" [ngSwitch]="combine.state">
+<ng-container *ngIf="csrf$ | async as csrf" [ngSwitch]="csrf.state">
   <ng-container *ngSwitchCase="'LOADING'"> loading... </ng-container>
-  <ng-container *ngSwitchCase="'ERROR'"> Error {{ combine.error }} </ng-container>
+  <ng-container *ngSwitchCase="'ERROR'"> Error {{ csrf.error }} </ng-container>
 
   <ng-container *ngSwitchCase="'LOADED'">
 
     <!-- None Admin Template -->
-    <ng-container *ngIf="isAdmin(route.url)">
+    <ng-container *ngIf="isAdmin(route.url); else homeFront">
       <router-outlet></router-outlet>
     </ng-container>
 
     <!-- None Admin Template -->
-    <ng-container *ngIf="!isAdmin(route.url)">
+    <ng-template #homeFront>
       <div>
         <div class="lg-scr z-10 border-b border-transparent fixed left-0 top-0 right-0" [ngStyle]="navBg">
-          <!--        <app-navigation></app-navigation>-->
+          <app-navigation></app-navigation>
         </div>
         <router-outlet></router-outlet>
       </div>
@@ -21,7 +21,7 @@
       <div class="lg-scr mg-top p-5 w-full bg-red-900">
         TODO Render footer
       </div>
-    </ng-container>
+    </ng-template>
 
   </ng-container>
 </ng-container>

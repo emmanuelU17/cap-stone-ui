@@ -1,0 +1,48 @@
+<div class="min-h-screen w-full" *ngIf="bgImages$ | async as images">
+  <div
+    class="relative flex flex-col min-h-full bg-center bg-no-repeat bg-cover transition-all duration-2000 ease-in
+    delay-1000 delay-250"
+    *ngIf="_image$ | async as image" [style.background-image]="'url(' + image + ')'"
+  >
+    <div class="flex-1 flex justify-center items-center">
+      TODO Render dynamic contents using type effect
+    </div>
+  </div>
+
+  <div class="lg-scr py-4">
+    <div class="p-3.5 text-center">
+      <h1> sarre the brand featured collection </h1>
+    </div>
+
+    <div class="img-slider px-1.5 flex flex-nowrap overflow-y-hidden overflow-x-auto scroll-smooth gap-2.5">
+      <div
+        class="overflow-hidden min-w-[15.75rem] min-h-[15.75rem] max-h-[25rem] max-w-[25rem]"
+        *ngFor="let url of images; let i = index"
+      >
+        <app-card
+          [url]="url"
+          [name]="'product' + i"
+          [currency]="'$'"
+          [price]="(i + 1) * 10"
+        ></app-card>
+      </div>
+    </div>
+    <!--  End of cards  -->
+
+    <div class="flex justify-between p-3">
+      <!--  Left    -->
+      <button type="button" class="bg-transparent outline-none border-none" (click)="previous()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18" />
+        </svg>
+      </button>
+
+      <!--   Right   -->
+      <button type="button" class="bg-transparent outline-none border-none" (click)="next()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3" />
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>

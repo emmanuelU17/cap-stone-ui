@@ -8,11 +8,9 @@ import {LoginDto} from "../util";
 @Component({
   selector: 'app-admin-authentication',
   templateUrl: './admin-authentication.component.html',
-  styleUrls: ['./admin-authentication.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AdminAuthenticationComponent {
-  errorMessage: string = '';
   viewPassword = false;
 
   loginForm = new FormGroup({

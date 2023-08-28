@@ -5,6 +5,7 @@ import {AppComponent} from './app.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {CsrfInterceptor} from "./service/csrf-interceptor.service";
+import {UtilsModule} from "./store-front/utils/utils.module";
 
 @NgModule({
   declarations: [
@@ -14,7 +15,8 @@ import {CsrfInterceptor} from "./service/csrf-interceptor.service";
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    HttpClientModule
+    HttpClientModule,
+    UtilsModule,
   ],
   providers: [
     {
