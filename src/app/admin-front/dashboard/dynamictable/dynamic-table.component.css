@@ -1,0 +1,20 @@
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  text-align: left;
+  text-transform: uppercase;
+}
+
+th, td {
+  padding: 1rem;
+  border-bottom: var(--cards-border);
+}
+
+@media screen and (max-width: 600px) {
+  th, td, mat-icon {
+    font-size: calc(10px + 1vw);
+  }
+}

@@ -1,0 +1,11 @@
+<button
+  type="button"
+  class="h-8 w-8 rounded-full cursor-pointer border-none outline-none m-auto bg-[var(--app-theme)]"
+  [matMenuTriggerFor]="menu">
+  <h2 class="text-center capitalize m-0">{{ principal.substring(0, 1) }}</h2>
+</button>
+
+<mat-menu #menu="matMenu">
+  <button mat-menu-item>Hello <span class="principal">{{ principal }}!</span></button>
+  <button mat-menu-item [asyncButton]="logout()">logout</button>
+</mat-menu>
