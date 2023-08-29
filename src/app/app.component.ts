@@ -23,7 +23,7 @@ export class AppComponent {
   private productService: ProductService = inject(ProductService);
   private categoryService: CategoryService = inject(CategoryService);
   private collectionService: CollectionService = inject(CollectionService);
-  public router: Router = inject(Router);
+  private router: Router = inject(Router);
 
   // Active route
   activeRoute$: Observable<{ bool: boolean }> = this.router.events.pipe(
@@ -38,7 +38,7 @@ export class AppComponent {
   csrf$: Observable<{ state: string, error?: string, csrf?: CSRF }> = this.appService.csrf().pipe(
     map(() => ({state: 'LOADED'})),
     startWith({state: 'LOADING'}),
-    catchError((err: HttpErrorResponse) => of({state: 'ERROR', error: err.error}))
+    catchError((err: HttpErrorResponse) => of({state: 'ERROR', error: err.error.message}))
   );
 
   private bgImages$: Observable<string[]> = this.homeService.fetchHomeBackground();

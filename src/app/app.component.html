@@ -1,41 +1,16 @@
-<!--<ng-container *ngIf="csrf$ | async as csrf" [ngSwitch]="csrf.state">-->
-<!--  <ng-container *ngSwitchCase="'LOADING'"> loading... </ng-container>-->
-<!--  <ng-container *ngSwitchCase="'ERROR'"> Error {{ csrf.error }} </ng-container>-->
-
-<!--  <ng-container *ngSwitchCase="'LOADED'">-->
-
-<!--    &lt;!&ndash; Admin Front &ndash;&gt;-->
-<!--    <ng-container *ngIf="isAdmin(router.url); else storeFront">-->
-<!--      <router-outlet></router-outlet>-->
-<!--    </ng-container>-->
-
-<!--    &lt;!&ndash; Store Front &ndash;&gt;-->
-<!--    <ng-template #storeFront>-->
-<!--      &lt;!&ndash; Get necessary data to improve ui before displaying &ndash;&gt;-->
-<!--      <ng-container *ngIf="combine$ | async as combine" [ngSwitch]="combine.state">-->
-<!--        <ng-container *ngSwitchCase="'LOADING'"> loading... </ng-container>-->
-<!--        <ng-container *ngSwitchCase="'ERROR'"> Error {{ combine.error }} </ng-container>-->
-
-<!--        <ng-container *ngSwitchCase="'LOADED'">-->
-<!--          <div>-->
-<!--            <div class="lg-scr z-10 border-b border-transparent fixed left-0 top-0 right-0" [ngStyle]="navBg">-->
-<!--              <app-navigation></app-navigation>-->
-<!--            </div>-->
-<!--            <router-outlet></router-outlet>-->
-<!--          </div>-->
-
-<!--          <div class="lg-scr mg-top p-5 w-full bg-red-900">-->
-<!--            TODO Render footer-->
-<!--          </div>-->
-<!--        </ng-container>-->
-<!--      </ng-container>-->
-<!--    </ng-template>-->
-<!--  </ng-container>-->
-<!--</ng-container>-->
-
 <ng-container *ngIf="csrf$ | async as csrf" [ngSwitch]="csrf.state">
-  <ng-container *ngSwitchCase="'LOADING'"> loading... </ng-container>
-  <ng-container *ngSwitchCase="'ERROR'"> Error {{ csrf.error }} </ng-container>
+  <ng-container *ngSwitchCase="'LOADING'">
+    <div class="lg-scr h-full p-20 flex justify-center items-center">
+      <h1 class="capitalize text-[var(--app-theme-hover)]">
+        loading...
+      </h1>
+    </div>
+  </ng-container>
+  <ng-container *ngSwitchCase="'ERROR'">
+    <div class="lg-scr p-10 capitalize text-3xl text-red-500">
+      Error {{ csrf.error }}
+    </div>
+  </ng-container>
   <ng-container *ngSwitchCase="'LOADED'">
     <ng-container *ngIf="activeRoute$ | async as active" [ngSwitch]="active.bool">
       <!-- Admin Route -->
@@ -47,7 +22,7 @@
       <ng-container *ngSwitchCase="false">
         <!-- Get necessary data to improve ui before displaying -->
         <ng-container *ngIf="combine$ | async as combine" [ngSwitch]="combine.state">
-          <ng-container *ngSwitchCase="'LOADING'"> loading... </ng-container>
+          <ng-container *ngSwitchCase="'LOADING'"> loading...</ng-container>
           <ng-container *ngSwitchCase="'ERROR'"> Error {{ combine.error }} </ng-container>
 
           <ng-container *ngSwitchCase="'LOADED'">

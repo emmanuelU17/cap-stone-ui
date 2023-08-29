@@ -1,12 +1,12 @@
 <div class="lg-scr mg-top p-20 flex justify-center items-center">
   <form class="w-fit max-[768px]:w-full py-3 px-4 appearance-none shadow-md outline-none border-none block rounded-lg bg-[var(--white)]">
-    <div class="mb-1.5 flex flex-col justify-center items-center">
+    <div class="mb-4 flex flex-col justify-center items-center">
 
       <div class="justify-center items-center min-w-[3.5rem] min-h-[3.5rem] max-h-[6.25rem] max-w-[6.25rem] aspect-h-1 aspect-w-1 overflow-hidden">
         <img src="./assets/image/sara-the-brand.png" class="h-full w-full object-cover object-center lg:h-full lg:w-full" alt="logo">
       </div>
 
-      <p class="text-center" [style]="{ 'display': diplayMessage ? 'block' : 'none' }">Functionality not implement</p>
+      <p class="text-center" [style]="{ 'display': displayMessage ? 'block' : 'none' }">Functionality not implement</p>
     </div>
 
     <!-- Inputs -->
@@ -35,7 +35,7 @@
     <div class="w-full flex mt-2.5 justify-end">
       <button type="button"
               class="text-white font-bold py-2 px-4 rounded bg-[var(--app-theme)]"
-              (click)="diplayMessage = !diplayMessage"
+              (click)="displayMessage = !displayMessage"
       >login</button>
     </div>
 
