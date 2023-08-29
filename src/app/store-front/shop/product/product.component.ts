@@ -5,10 +5,13 @@ import {BehaviorSubject, catchError, map, Observable, of, startWith} from "rxjs"
 import {ActivatedRoute} from "@angular/router";
 import {ProductService} from "../service/product.service";
 import {HttpErrorResponse} from "@angular/common/http";
-import {FormControl, FormGroup, Validators} from "@angular/forms";
+import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
+import {CommonModule} from "@angular/common";
 
 @Component({
   selector: 'app-product',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './product.component.html',
   styleUrls: ['./product.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush

@@ -1,18 +1,12 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {DashboardComponent} from "./dashboard/dashboard.component";
-import {AuthComponent} from "./auth/auth.component";
+import {StoreFrontAuthComponent} from "./auth/store-front-auth.component";
+import {userDashBoardGuard} from "./userguard";
 
 const routes: Routes = [
-  {
-    path: '',
-    component: DashboardComponent,
-    // canActivate: [userDashBoardGuard]
-  },
-  {
-    path: 'authentication',
-    component: AuthComponent
-  }
+  { path: '',  component: DashboardComponent,  canActivate: [userDashBoardGuard] },
+  { path: 'authentication',  component: StoreFrontAuthComponent }
 ];
 
 @NgModule({

@@ -3,8 +3,7 @@ import {catchError, combineLatest, map, Observable, of, startWith, tap} from "rx
 import {DashboardService} from "../dashboard.service";
 import {CategoryService} from "../category/category.service";
 import {CategoryResponse, CollectionResponse, Components, ProductResponse} from "../../shared-util";
-import {Page} from "../../../../global-utils/global-utils";
-import {AuthResponse} from "../../auth/util";
+import {AuthResponse, Page} from "../../../../global-utils/global-utils";
 import {HttpErrorResponse} from "@angular/common/http";
 import {CollectionService} from "../collection/collection.service";
 import {ProductService} from "../product/product.service";

@@ -1,17 +1,19 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ProfileRoutingModule} from './profile-routing.module';
-import {AuthComponent} from './auth/auth.component';
+import {StoreFrontAuthComponent} from './auth/store-front-auth.component';
 import {DashboardComponent} from './dashboard/dashboard.component';
+import {ReactiveFormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
-    AuthComponent,
+    StoreFrontAuthComponent,
     DashboardComponent
   ],
   imports: [
     CommonModule,
-    ProfileRoutingModule
+    ProfileRoutingModule,
+    ReactiveFormsModule
   ]
 })
 export class ProfileModule { }

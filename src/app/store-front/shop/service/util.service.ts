@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {catchError, combineLatest, map, Observable, of, startWith} from "rxjs";
 import {Filter} from "../shop.helper";
 import {HttpErrorResponse} from "@angular/common/http";
-import {Product} from "../../../../global-utils/global-utils";
+import {Product} from "../../store-front-utils";
 
 @Injectable({
   providedIn: 'root'
@@ -54,6 +54,5 @@ export class UtilService<T> {
       catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error.message }))
     );
   }
-
 
 }

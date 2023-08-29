@@ -11,7 +11,3 @@ export interface LoginDto {
   principal: string;
   password: string;
 }
-
-export interface AuthResponse {
-  principal: string;
-}

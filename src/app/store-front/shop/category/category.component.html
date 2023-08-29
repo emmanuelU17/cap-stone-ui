@@ -11,7 +11,7 @@
                 (click)="activeGridIcon = true"
                 [style.background-color]="activeGridIcon ? 'var(--app-theme)' : 'var(--in-active)'"
         >
-          <h1 *ngFor="let i of utilService.getRange(4)" class="h-1.5 w-1.5 p-1.5 m-0 border bg-transparent"></h1>
+          <span *ngFor="let i of utilService.getRange(4)" class="h-1.5 w-1.5 p-1.5 m-0 border bg-transparent"></span>
         </button>
 
         <!--      <button type="button"-->
@@ -31,20 +31,20 @@
                   id="menu-button"
                   aria-expanded="false"
                   aria-haspopup="true"
-
           >
             Sort
             <svg class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
               <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
             </svg>
-            <div
+
+            <ul
               class="hidden group-hover:block absolute right-0 top-3 z-2 mt-2 w-40 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
               role="menu"
               aria-orientation="vertical"
               aria-labelledby="menu-button"
               tabindex="-1"
             >
-              <div class="py-1" role="none">
+              <li class="py-1">
                 <a
                   (click)="onclickFilterByPrice(true)"
                   [style]="{ 'background-color': filterByPrice ? 'var(--app-theme)' : 'transparent'}"
@@ -53,6 +53,8 @@
                   tabindex="-1"
                   id="menu-item-3"
                 >Price: Low to High</a>
+              </li>
+              <li class="py-1">
                 <a
                   (click)="onclickFilterByPrice(false)"
                   [style]="{ 'background-color': !filterByPrice ? 'var(--app-theme)' : 'transparent'}"
@@ -61,8 +63,8 @@
                   tabindex="-1"
                   id="menu-item-4"
                 >Price: High to Low</a>
-              </div>
-            </div>
+              </li>
+            </ul>
           </button>
         </div>
       </div>

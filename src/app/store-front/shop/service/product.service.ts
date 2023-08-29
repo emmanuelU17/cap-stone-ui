@@ -3,7 +3,8 @@ import {HttpClient} from "@angular/common/http";
 import {BehaviorSubject, map, Observable} from "rxjs";
 import {ProductDetail} from "../shop.helper";
 import {environment} from "../../../../environments/environment";
-import {Page, Product} from "../../../../global-utils/global-utils";
+import {Page} from "../../../../global-utils/global-utils";
+import {Product} from "../../store-front-utils";
 
 @Injectable({
   providedIn: 'root'

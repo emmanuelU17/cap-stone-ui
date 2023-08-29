@@ -1,4 +1,7 @@
+import {ProfileService} from "./profile.service";
+import {inject} from "@angular/core";
+
 export const userDashBoardGuard = () => {
-  // const dashboardService: DashboardService = inject(DashboardService);
-  // return dashboardService.getUser();
+  const profileService: ProfileService = inject(ProfileService);
+  return profileService.getActiveUser();
 }

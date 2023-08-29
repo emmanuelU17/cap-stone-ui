@@ -1,4 +1,5 @@
 <nav class="w-full p-2.5 flex bg-transparent">
+
   <div class="ctn hidden max-[990px]:block">
     <button class="bg-transparent outline-none border-none cursor-pointer relative" type="button" (click)="_displayNavBar()">
       <!-- menu -->
@@ -7,6 +8,7 @@
       </svg>
     </button>
 
+    <!--  Mobile-view -->
     <div class="mob-vw max-[990px]:w-full max-[990px]:left-0 hidden absolute w-2/4 p-2.5">
       <div class="ctn flex flex-col gap-6">
         <div class="rounded-md">
@@ -39,25 +41,25 @@
       <!--  End of container -->
     </div>
     <!--  End of mobile-view -->
-
   </div>
-  <!--  End of burger-container  -->
 
   <div class="flex-1 flex justify-between p-0">
     <div class="ctn max-[990px]:hidden">
-      <ul class="list-none flex gap-8">
-        <li *ngFor="let link of links">
-          <a class="group flex cursor-pointer relative uppercase" *ngIf="link.bool; else regular">
-            shop
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 txt">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-            </svg>
+      <ul class="h-full flex items-center list-none gap-8">
+        <li class="h-full flex items-center" *ngFor="let link of links">
+          <ng-container  *ngIf="link.bool; else regular">
+            <a class="group h-full relative flex items-center cursor-pointer uppercase">
+              shop
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+              </svg>
 
-            <div class="absolute top-6 w-fit bg-white border-2 hidden group-hover:block">
-              <a class="p-3 flex whitespace-nowrap hover:bg-red-900 capitalize" routerLink="/shop/category">shop category</a>
-              <a class="p-3 flex whitespace-nowrap hover:bg-red-900 capitalize" routerLink="/shop/collection">shop collection</a>
-            </div>
-          </a>
+              <div class="absolute top-10 w-40 bg-white border hidden rounded-md group-hover:block">
+                <a class="p-3 flex rounded-md whitespace-nowrap hover:bg-[var(--app-theme)] capitalize" routerLink="/shop/category">shop category</a>
+                <a class="p-3 flex rounded-md whitespace-nowrap hover:bg-[var(--app-theme)] capitalize" routerLink="/shop/collection">shop collection</a>
+              </div>
+            </a>
+          </ng-container>
 
           <ng-template #regular>
             <a class="uppercase flex" [routerLink]="link.value" routerLinkActive="active" >{{ link.name }}</a>
@@ -93,7 +95,7 @@
         </li>
         <!--    Person icon    -->
         <li>
-          <a class="uppercase flex" routerLink="/auth">
+          <a class="uppercase flex" routerLink="/profile">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 cursor-pointer" style="color: var(--app-theme)">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
             </svg>

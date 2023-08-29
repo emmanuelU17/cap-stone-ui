@@ -1,48 +1,47 @@
-import {ChangeDetectionStrategy, Component, Renderer2} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, Renderer2} from '@angular/core';
 import {map, Observable, switchMap, take} from "rxjs";
-import {Product} from "../../../../global-utils/global-utils";
 import {Filter} from "../shop.helper";
 import {CategoryService} from "../service/category.service";
 import {ProductService} from "../service/product.service";
 import {UtilService} from "../service/util.service";
+import {Product} from "../../store-front-utils";
+import {CommonModule} from "@angular/common";
+import {CardComponent} from "../../utils/card/card.component";
+import {FilterComponent} from "../../utils/filter/filter.component";
+import {RouterLink} from "@angular/router";
 
 @Component({
   selector: 'app-category',
+  standalone: true,
+  imports: [CommonModule, CardComponent, FilterComponent, RouterLink],
   templateUrl: './category.component.html',
   styleUrls: ['./category.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CategoryComponent {
+  private categoryService: CategoryService = inject(CategoryService);
+  private productService: ProductService = inject(ProductService);
+  public utilService: UtilService<string> = inject(UtilService<string>);
+  private render: Renderer2 = inject(Renderer2);
+
   activeGridIcon: boolean = true; // Approves if products should be displayed x3 or x4 in the x-axis
   filterByPrice: boolean = true; // A variable need to keep the state of price filter for future filtering
 
-  products$: Observable<Product[]>;
-  combine$: Observable<{ state: string, error?: string, products?: Product[], filter?: Filter<string>[] }>;
+  // Categories
+  private categories$: Observable<string[]> = this.categoryService._categories$;
+  private firstCategory$: Observable<string> = this.categories$
+    .pipe(map((collections: string[]) => collections[0]), take(1));
 
-  constructor(
-    private categoryService: CategoryService,
-    private productService: ProductService,
-    public utilService: UtilService<string>,
-    private render: Renderer2
-  ) {
-    // Categories
-    const categories$: Observable<string[]> = this.categoryService._categories$;
-    const firstCategory$: Observable<string> = categories$
-      .pipe(map((categories: string[]) => categories[0]), take(1));
+  // Filter based on the firstCategory and Sort array based on filterByPrice status
+  products$: Observable<Product[]> = this.firstCategory$.pipe(
+    switchMap((firstCategory: string) => this.productService._products$.pipe(
+      map((arr: Product[]) => arr.filter((prod: Product): boolean => prod.category === firstCategory)))
+    ),
+    map((arr: Product[]): Product[] => this.utilService.sortArray(this.filterByPrice, arr))
+  );
 
-    // Products
-    this.products$ = firstCategory$.pipe(
-      // Filter based on the firstCategory
-      switchMap((firstCategory: string) => this.productService._products$.pipe(
-        map((arr: Product[]) => arr.filter((prod: Product): boolean => prod.category === firstCategory)))
-      ),
-      // Sort array based on filterByPrice status
-      map((arr: Product[]): Product[] => this.utilService.sortArray(this.filterByPrice, arr))
-    );
-
-    // ForkJoin
-    this.combine$ = this.utilService.getCombine$(this.products$, categories$, 'categories');
-  }
+  combine$: Observable<{ state: string, error?: string, products?: Product[], filter?: Filter<string>[] }> =
+    this.utilService.getCombine$(this.products$, this.categories$, 'categories');
 
   /** Display category filter on click of button */
   displayCategoryFilter(): void {
@@ -62,7 +61,8 @@ export class CategoryComponent {
    * @return void
    * */
   setEmitter(str: string): void {
-    this.products$ = this.categoryService.fetchProductsBasedOnCategoryName(str)
+    this.products$ = this.categoryService
+      .fetchProductsBasedOnCategoryName(str)
       .pipe(map((arr: Product[]): Product[] => this.utilService.sortArray(this.filterByPrice, arr)));
   }
 

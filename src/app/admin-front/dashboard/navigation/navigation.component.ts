@@ -2,8 +2,8 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {AuthMenuComponent} from "../authmenu/auth-menu.component";
 import {DashboardService} from "../dashboard.service";
-import {AuthResponse} from "../../auth/util";
 import {Observable} from "rxjs";
+import {AuthResponse} from "../../../../global-utils/global-utils";
 
 @Component({
   selector: 'app-navigation',
@@ -18,4 +18,5 @@ export class NavigationComponent {
   constructor(private dashboardService: DashboardService) {
     this.principal$ = this.dashboardService._principal$.pipe();
   }
+
 }

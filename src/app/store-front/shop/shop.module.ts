@@ -6,22 +6,11 @@ import {CategoryComponent} from './category/category.component';
 import {ProductComponent} from './product/product.component';
 import {ReactiveFormsModule} from "@angular/forms";
 import {RouterLink} from "@angular/router";
-import {UtilsModule} from "../utils/utils.module";
+import {CardComponent} from "../utils/card/card.component";
+import {FilterComponent} from "../utils/filter/filter.component";
 
 @NgModule({
-  declarations: [
-    CollectionComponent,
-    CategoryComponent,
-    ProductComponent
-  ],
-  imports: [
-    CommonModule,
-    ShopRoutingModule,
-    ReactiveFormsModule,
-    RouterLink,
-    // UtilsModule,
-    RouterLink,
-    UtilsModule,
-  ]
+  declarations: [],
+  imports: [ShopRoutingModule]
 })
 export class ShopModule { }

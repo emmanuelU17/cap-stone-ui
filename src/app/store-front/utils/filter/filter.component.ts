@@ -1,19 +1,22 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output, Renderer2} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output, Renderer2} from '@angular/core';
 import {Filter} from "../../shop/shop.helper";
+import {CommonModule} from "@angular/common";
 
 @Component({
   selector: 'app-filter',
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './filter.component.html',
   styleUrls: ['./filter.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FilterComponent<T> {
+  private render: Renderer2 = inject(Renderer2);
+
   indexToOpen: number = -1;
   @Input() title: string = '';
   @Input() filters: Filter<T>[] = [];
   @Output() emitter = new EventEmitter<T>();
-
-  constructor(private render: Renderer2) { }
 
   /** Close filter component */
   closeModal(): void {

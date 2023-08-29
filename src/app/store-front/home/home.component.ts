@@ -1,57 +1,41 @@
-import {ChangeDetectionStrategy, Component, OnDestroy, OnInit, Renderer2} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, Renderer2} from '@angular/core';
 import {CommonModule} from "@angular/common";
-import {BehaviorSubject, Observable, tap} from "rxjs";
+import {concatMap, delay, from, Observable, of, repeat, startWith} from "rxjs";
 import {HomeService} from "./home.service";
-import {UtilsModule} from "../utils/utils.module";
+import {CardComponent} from "../utils/card/card.component";
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, UtilsModule],
+  imports: [CommonModule, CardComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class HomeComponent implements OnInit, OnDestroy {
-  bgImages$: Observable<string[]>;
-  private image$ = new BehaviorSubject<string>('');
-  _image$ = this.image$.asObservable();
-  interval: number = 0;
+export class HomeComponent {
+  private homeService: HomeService = inject(HomeService);
+  private render: Renderer2 = inject(Renderer2);
 
-  constructor(private homeService: HomeService, private render: Renderer2) {
-    // Get bg images from HomeService on load of home page
-    this.bgImages$ = this.homeService._bgImage$.pipe(
-      tap((photos: string[]): void => this.image$.next(photos[0]))
-    );
-  }
+  // Get bg images from HomeService on load of home page
+  bgImages$: Observable<string[]> = this.homeService._bgImage$;
 
   /**
-   * On render of the page, a load a background image
-   * For future reference, the reactive solution using rxjs.
-   * https://www.youtube.com/watch?v=tWy8zaWvkvk
-   * this.bgImage$ = this.bgImages$.pipe(
-   *  switchMap((photos: string[], outerIndex: number) => from(photos).pipe(
-   *   concatMap((photo: string, innerIndex: number) =>
-   *    of(photo).pipe(delay(outerIndex === 0 && innerIndex === 0 ? 0 : 5000))
-   *   ),
-   *   repeat()
-   *  ))
-   * );
+   * Function achieves typing effect for home background image only difference is this is done with images.
+   * Because I want to infinitely loop the items in array, Concat map because I want to way for the
+   * iteration of inner array before emitting the next array
    * */
-  ngOnInit(): void {
-    const arr: string[] = this.homeService.getImageArray();
-    let currentIndex: number = 0;
-
-    this.interval = setInterval(() => {
-      currentIndex = (currentIndex + 1) % arr.length;
-      this.image$.next(arr[currentIndex]);
-    }, 5000);
-  }
-
-  /** Clear the time interval */
-  ngOnDestroy(): void {
-    clearInterval(this.interval);
-  }
+  private imageArr: string[] = this.homeService.getImageArray();
+  image$: Observable<string> = of(this.imageArr).pipe(
+    concatMap((photos: string[]) => {
+      return from(photos).pipe(
+        concatMap((photo: string) => {
+          return of(photo).pipe(delay(5000));
+        }),
+        repeat()
+      )
+    }),
+    startWith(this.imageArr[0])
+  );
 
   /** Displays the next item in products. */
   next(): void {

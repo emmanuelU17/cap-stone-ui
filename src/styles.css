@@ -9,10 +9,6 @@
   --border-outline: #ccc;
   --app-theme: #A3C1AD;
   --app-theme-hover: #75a284;
-  --btn-border: 1px solid black;
-  --modal-border: 3px solid #dddddd;
-  --cards-border: 1px solid #dddddd;
-  --input-border: 1px solid #ccc;
   --form-input-background: #F3F3F3;
   --header-shadow: 0 0 5px grey;
   --black: #050505;
@@ -25,9 +21,8 @@
   box-sizing: border-box;
 }
 
-h1, h2, h3, h4, h5, h6 {
+body, h1, h2, h3, h4, h5, h6, p {
   margin: 0 !important;
-  text-transform: capitalize !important;
 }
 
 html, body, .mat-typography { height: 100%; }
