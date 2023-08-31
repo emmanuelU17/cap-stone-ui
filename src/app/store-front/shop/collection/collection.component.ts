@@ -40,8 +40,12 @@ export class CollectionComponent {
     map((arr: Product[]): Product[] => this.utilService.sortArray(this.filterByPrice, arr))
   );
 
-  combine$: Observable<{ state: string, error?: string, products?: Product[], filter?: Filter<string>[] }> =
-    this.utilService.getCombine$(this.products$, this.collections$, 'collections');
+  combine$: Observable<{
+    state: string,
+    error?: string,
+    products?: Product[],
+    filter?: Filter<string>[]
+  }> = this.utilService.getCombine$(this.products$, this.collections$, 'collections');
 
   /** Display collection filter on click of button */
   displayCollectionFilter(): void {

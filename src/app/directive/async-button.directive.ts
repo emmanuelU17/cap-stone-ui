@@ -1,6 +1,6 @@
 import {Directive, ElementRef, HostListener, Input} from '@angular/core';
 import {Observable, takeUntil, tap} from "rxjs";
-import {UnsubscribeService} from "./service/unsubscribe.service";
+import {UnsubscribeService} from "../service/unsubscribe.service";
 
 @Directive({
   selector: '[asyncButton]'

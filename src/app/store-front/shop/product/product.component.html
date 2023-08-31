@@ -1,20 +1,29 @@
 <ng-container *ngIf="productDetails$ | async as detail" [ngSwitch]="detail.state">
-
-  <ng-container *ngSwitchCase="'LOADING'">Loading</ng-container>
-  <ng-container *ngSwitchCase="'ERROR'">Error {{ detail.error }}</ng-container>
+  <ng-container *ngSwitchCase="'LOADING'">
+    <div class="lg-scr h-full p-20 flex justify-center items-center">
+      <h1 class="capitalize text-[var(--app-theme-hover)]">
+        loading...
+      </h1>
+    </div>
+  </ng-container>
+  <ng-container *ngSwitchCase="'ERROR'">
+    <div class="lg-scr p-10 capitalize text-3xl text-red-500">
+      Error {{ detail.error }}
+    </div>
+  </ng-container>
   <ng-container *ngSwitchCase="'LOADED'">
 
     <div class="lg-scr mg-top w-full h-full flex flex-col" *ngIf="detail.data as details">
 
-      <div class="w-full max-w-full flex flex-1 max-[768px]:flex-col" *ngIf="currentItem$ | async as currentItem">
+      <div class="w-full grid sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2" *ngIf="currentItem$ | async as currentItem">
 
         <!-- Images -->
-        <div class="p-2.5 flex flex-1 gap-1.5 justify-center max-[768px]:flex-col-reverse">
+        <div class="p-2.5 flex max-[1028px]:flex-col-reverse lg:flex xl:flex gap-1.5 justify-center">
 
           <!-- image carousel -->
-          <div class="flex md:max-h-[600px] gap-1.5 md:flex-col overflow-y-auto">
+          <div class="flex gap-1.5 overflow-y-auto sm:flex-row md:flex-row lg:flex-col xl:flex-col">
             <button
-              class="border-none outline-none bg-transparent min-h-[64px] max-h-[70px] min-w-[64px] max-w-[70px]"
+              class="border-none outline-none bg-transparent min-h-[64px] min-w-[64px] max-h-[75px] max-w-[75px]"
               *ngFor="let img of currentItem.detail.url"
               (click)="currentItem.currImage = img"
             >
@@ -27,15 +36,17 @@
           </div>
 
           <!-- Main display for image -->
-          <div class="overflow-hidden rounded-md min-w-[15.75rem] min-h-[15.75rem] lg:max-w-[40rem] lg:max-h-[40rem]">
+          <div class="overflow-hidden rounded-sm flex-1">
             <img [src]="currentItem.currImage" alt="image" class="h-full w-full object-cover object-center">
           </div>
+
         </div>
 
         <!-- product detail -->
-        <div class="p-2.5 flex flex-col gap-2 flex-1">
+        <div class="p-2.5 flex flex-col gap-2">
           <h1 class="capitalize text-3xl font-bold">{{ currentItem.detail.name }}</h1>
           <h2 class="text-xl font-bold">{{ currentItem.detail.currency }}{{ currentItem.detail.price }}</h2>
+          <h4 class="text-xl font-bold">Sku <span class="text-xs opacity-50">{{ currentItem.detail.sku }}</span></h4>
 
           <!-- Form -->
           <form class="flex flex-col gap-2" [formGroup]="reactiveForm" (ngSubmit)="addToCart()" >
@@ -43,19 +54,19 @@
             <!-- Form Contents -->
             <div class="flex gap-1.5">
               <!-- SKU -->
-              <div class="flex flex-1 px-1 text-black opacity-60">
-                <label for="sku" class="uppercase">sku:</label>
-                <input name="sku"
-                       type="text"
-                       id="sku"
-                       class="w-full"
-                       formControlName="sku"
-                >
+              <div class="hidden">
+                <input name="sku" type="text" id="sku" formControlName="sku">
               </div>
 
               <!-- Colour -->
               <div class="">
-                <select name="colour" formControlName="colour" (change)="onclickColour($event)">
+                <select
+                  name="colour"
+                  formControlName="colour"
+                  class="w-full p-1 rounded-md cursor-pointer capitalize border border-solid border-[var(--app-theme)]"
+                  (change)="onclickColour($event)"
+                >
+                  <option value="" disabled [selected]="true">select a colour</option>
                   <option *ngFor="let d of details" [value]="d.sku">
                     {{ d.colour }}
                   </option>
@@ -64,7 +75,12 @@
 
               <!-- Size -->
               <div class="">
-                <select name="size" formControlName="size">
+                <select
+                  name="size"
+                  class="w-full p-1 rounded-md cursor-pointer capitalize border border-solid border-[var(--app-theme)]"
+                  formControlName="size"
+                >
+                  <option value="" disabled selected>select a size</option>
                   <option>
                     Size: {{ currentItem.detail.size }}
                   </option>
@@ -73,12 +89,18 @@
 
               <!-- Qty -->
               <div class="" >
-                <select name="qty" formControlName="qty">
+                <select
+                  name="qty"
+                  class="w-full p-1 rounded-md cursor-pointer capitalize border border-solid border-[var(--app-theme)]"
+                  formControlName="qty"
+                >
+                  <option value="" disabled selected>select a quantity</option>
                   <option>
                     Qty: 10
                   </option>
                 </select>
               </div>
+
             </div>
 
             <div class="">
@@ -90,9 +112,17 @@
           </form>
 
           <!-- Description -->
-          <div>
-            <h3 class="w-fit mb-4 capitalize border-b border-[var(--app-theme)]">description</h3>
-            <p class="text-sm break-words" [innerHTML]="currentItem.detail.desc"></p>
+          <div class="">
+            <h2 class="w-fit capitalize border-b border-[var(--app-theme)]">description</h2>
+            <p
+              class="text-sm h-20 pt-3.5 break-words overflow-hidden"
+              [innerHTML]="currentItem.detail.desc" [class.show]="showMore"
+            ></p>
+            <button *ngIf="currentItem.detail.desc.length > 0" class="outline-none border-none bg-transparent" (click)="showMore = !showMore">
+              <span class="lowercase text-[var(--app-theme-hover)]">
+                {{ showMore ? 'Show less': 'Show More' }}
+              </span>
+            </button>
           </div>
         </div>
         <!-- end of product detail -->

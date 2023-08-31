@@ -96,8 +96,8 @@ export class AppComponent {
       this.navBg = {
         'background-color': 'var(--white)',
         'box-shadow': '4px 6px 12px rgba(0, 0, 0, 0.2)',
-        'border-bottom-right-radius':'6px',
-        'border-bottom-left-radius':'6px',
+        'border-bottom-right-radius':'3px',
+        'border-bottom-left-radius':'3px',
       }
     } else {
       this.navBg = { }

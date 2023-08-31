@@ -20,11 +20,9 @@
 
       <!-- Store Front Route -->
       <ng-container *ngSwitchCase="false">
-        <!-- Get necessary data to improve ui before displaying -->
         <ng-container *ngIf="combine$ | async as combine" [ngSwitch]="combine.state">
           <ng-container *ngSwitchCase="'LOADING'"> loading...</ng-container>
           <ng-container *ngSwitchCase="'ERROR'"> Error {{ combine.error }} </ng-container>
-
           <ng-container *ngSwitchCase="'LOADED'">
             <div>
               <div class="lg-scr z-10 border-b border-transparent fixed left-0 top-0 right-0" [ngStyle]="navBg">
