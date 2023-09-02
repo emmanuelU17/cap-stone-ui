@@ -1,7 +1,17 @@
 <ng-container *ngIf="combine$ | async as combine" [ngSwitch]="combine.state">
 
-  <ng-container *ngSwitchCase="'LOADING'">Loading...</ng-container>
-  <ng-container *ngSwitchCase="'ERROR'">Error {{ combine.error }}</ng-container>
+  <ng-container *ngSwitchCase="'LOADING'">
+    <div class="lg-scr h-full p-20 flex justify-center items-center">
+      <h1 class="capitalize text-[var(--app-theme-hover)]">
+        loading...
+      </h1>
+    </div>
+  </ng-container>
+  <ng-container *ngSwitchCase="'ERROR'">
+    <div class="lg-scr p-10 capitalize text-3xl text-red-500">
+      Error {{ combine.error }}
+    </div>
+  </ng-container>
   <ng-container *ngSwitchCase="'LOADED'">
     <div class="lg-scr h-full flex flex-col overflow-x-hidden lg:m-auto">
       <!-- Navigation -->

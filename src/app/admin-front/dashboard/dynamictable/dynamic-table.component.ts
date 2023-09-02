@@ -13,15 +13,13 @@ import {Page} from "../../../../global-utils/global-utils";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DynamicTableComponent<T> {
-  @Input() productTemplate: boolean = false; // Validates what table to show
+  @Input() paginationTable: boolean = false; // validates if pagination table should be rendered
   @Input() tHead: (keyof T)[] = [];
   @Input() detail: boolean = false; // verifies if details button should be displayed
+  @Input() data: T[] = [];
+  @Input() pageData!: Page<T>;
   @Output() eventEmitter = new EventEmitter<TableContent<T>>();
   @Output() pageEmitter: EventEmitter<PageChange> = new EventEmitter<PageChange>();
-
-  @Input() data: T[] = [];
-
-  @Input() pageData!: Page<T>;
 
   date(d: any): string {
     return d === 0 ? '' : new Date(d).toDateString();

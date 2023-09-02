@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {CategoryResponse, CollectionResponse, ImageFilter, SizeInventory} from "../../shared-util";
 import {Observable, tap} from "rxjs";
@@ -12,6 +12,7 @@ import {MatButtonModule} from "@angular/material/button";
 import {MatIconModule} from "@angular/material/icon";
 import {MatRadioModule} from "@angular/material/radio";
 import {DirectiveModule} from "../../../directive/directive.module";
+import {ProductService} from "../product/product.service";
 
 @Component({
   selector: 'app-new-product',
@@ -34,6 +35,14 @@ import {DirectiveModule} from "../../../directive/directive.module";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NewProductComponent implements OnInit {
+  private service: NewProductService = inject(NewProductService);
+  private categoryService: CategoryService = inject(CategoryService);
+  private collectionService: CollectionService = inject(CollectionService);
+  private productService: ProductService = inject(ProductService);
+
+  categories$: Observable<CategoryResponse[]> = this.categoryService._categories$;
+  collections$: Observable<CollectionResponse[]> = this.collectionService._collections$;
+
   config = {};
   content: string = '';
   imageUrls: ImageFilter[] = [];
@@ -52,18 +61,6 @@ export class NewProductComponent implements OnInit {
     colour: new FormControl('', Validators.required),
     sizeInventory: new FormControl(null, Validators.required)
   });
-
-  categories$: Observable<CategoryResponse[]>;
-  collections$: Observable<CollectionResponse[]>;
-
-  constructor(
-    private service: NewProductService,
-    private categoryService: CategoryService,
-    private collectionService: CollectionService,
-  ) {
-    this.categories$ = this.categoryService._categories$;
-    this.collections$ = this.collectionService._collections$;
-  }
 
   /** Load CKEditor toolbar config */
   ngOnInit(): void {
@@ -136,6 +133,9 @@ export class NewProductComponent implements OnInit {
         if (status >= 200 && status < 300) {
           this.clear();
           this.reactiveForm.controls['collection'].setValue('');
+          this.reactiveForm.controls['category'].setValue('');
+          // Refresh products$ on successful upload
+          this.productService._products$ = this.productService.fetchAllProducts();
           // TODO clear sizeInventory
         }
       }),

@@ -1,7 +1,15 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, inject, Input, OnInit, Output} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {catchError, map, Observable, of, startWith, tap} from "rxjs";
-import {CategoryResponse, CollectionResponse, ProductDetail, TableContent, UpdateProduct} from "../../shared-util";
+import {BehaviorSubject, catchError, map, Observable, of, ReplaySubject, startWith, Subject, tap} from "rxjs";
+import {
+  CategoryResponse,
+  CollectionResponse,
+  CustomRowMapper,
+  ProductDetailResponse,
+  TableContent,
+  UpdateProduct,
+  Variant
+} from "../../shared-util";
 import {HttpErrorResponse} from "@angular/common/http";
 import {ProductService} from "../product/product.service";
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
@@ -22,6 +30,10 @@ import {DynamicTableComponent} from "../dynamictable/dynamic-table.component";
 export class UpdateProductComponent implements OnInit {
 // TODO make number input box more stylish
 
+  private productService: ProductService = inject(ProductService);
+  private categoryService: CategoryService = inject(CategoryService);
+  private collectionService: CollectionService = inject(CollectionService);
+
   @Input() id: string = '';
   @Input() name: string = '';
   @Input() desc: string = '';
@@ -31,24 +43,62 @@ export class UpdateProductComponent implements OnInit {
   @Output() parentEmitter = new EventEmitter<boolean>();
   @Output() refreshEmitter = new EventEmitter<boolean>();
 
-  // Active
-  currDetail: ProductDetail = {
-    url: [],
-    sku: '',
-    is_visible: false,
-    qty: 0,
-    size: '',
-    action: '',
-  };
+  categories$: Observable<CategoryResponse[]> = this.categoryService._categories$;
+  collections$: Observable<CollectionResponse[]> = this.collectionService._collections$;
 
-  thead: Array<keyof ProductDetail> = ['url', 'sku', 'is_visible', 'qty', 'size', 'action'];
+  private prodId: string = this.productService.getProductID();
+
+  productVariants$: Observable<{
+    state: string,
+    error?: string,
+    data?: CustomRowMapper[]
+  }> = this.productService.fetchProductDetails(this.prodId).pipe(
+    map((arr: ProductDetailResponse[]) => {
+      // Set SKU to the first Item on load of page
+
+      // this.currDetail = arr[0];
+      // this.form.controls['sku'].setValue(arr[0].sku);
+
+      // Flatmap to convert from CustomRowMapper[][] to CustomRowMapper[]
+      const mappers: CustomRowMapper[] = arr.flatMap((res: ProductDetailResponse) => {
+        const data: CustomRowMapper[] = [];
+
+        // Based on the amount of Variants, append to CustomMapper
+        res.variants.forEach((variant: Variant, index: number): void => {
+          const obj: CustomRowMapper = {
+            url: res.url[0],
+            urls: res.url,
+            colour: res.colour,
+            is_visible: res.is_visible,
+            sku: variant.sku,
+            inventory: Number(variant.inventory),
+            size: variant.size,
+            action: ''
+          }
+          data.push(obj);
+          if (index === 0) {
+            this.subjectMapper$.next(obj);
+            this.form.controls['sku'].setValue(variant.sku);
+          }
+        });
+
+        return data;
+      })
+
+      return {state: 'LOADED', data: mappers};
+    }),
+    startWith({state: 'LOADING'}),
+    catchError((err: HttpErrorResponse) => of({state: 'ERROR', error: err.error}))
+  );
+
+  // Initially the product variant displayed and when user clicks on variant table
+  private subjectMapper$ = new ReplaySubject<CustomRowMapper>();
+  firstRowMapper$ = this.subjectMapper$.asObservable();
+
+  thead: Array<keyof CustomRowMapper> = ['url', 'colour', 'is_visible', 'sku', 'inventory', 'size', 'action'];
 
   // CKEditor
   config = {};
-
-  productVariants$: Observable<{ state: string, error?: string, data?: ProductDetail[] }>;
-  categories$: Observable<CategoryResponse[]>;
-  collections$: Observable<CollectionResponse[]>;
 
   // FormGroup
   form = new FormGroup({
@@ -61,30 +111,6 @@ export class UpdateProductComponent implements OnInit {
     collection: new FormControl(''),
   });
 
-  constructor(
-    private productService: ProductService,
-    private categoryService: CategoryService,
-    private collectionService: CollectionService
-  ) {
-    this.categories$ = this.categoryService._categories$;
-    this.collections$ = this.collectionService._collections$;
-
-    const id: string = this.productService.getProductID();
-
-    this.form.controls['id'].setValue(id);
-
-    this.productVariants$ = this.productService.fetchProductDetails(id).pipe(
-      map((arr: ProductDetail[]) => {
-        // Set SKU to the first Item on load of page
-        this.currDetail = arr[0];
-        this.form.controls['sku'].setValue(arr[0].sku);
-        return {state: 'LOADED', data: arr};
-      }),
-      startWith({state: 'LOADING'}),
-      catchError((err: HttpErrorResponse) => of({state: 'ERROR', error: err.error}))
-    );
-  }
-
   ngOnInit(): void {
     this.config = {
       toolbar: [
@@ -96,6 +122,7 @@ export class UpdateProductComponent implements OnInit {
       height: '80px'
     };
 
+    this.form.controls['id'].setValue(this.prodId);
     this.form.controls['name'].setValue(this.name);
     this.form.controls['price'].setValue(this.price);
     this.form.controls['desc'].setValue(this.desc);
@@ -125,7 +152,7 @@ export class UpdateProductComponent implements OnInit {
     }
 
     const json: UpdateProduct = {
-      id: this.productService.getProductID(),
+      id: this.prodId,
       name: name,
       price: price,
       desc: desc,
@@ -148,8 +175,9 @@ export class UpdateProductComponent implements OnInit {
   }
 
   /** Updates or deletes a product detail based on info received from UpdateProductComponent */
-  onDeleteOrUpdateClick(detail: TableContent<ProductDetail>): void {
-    console.log('Data and key ', detail);
+  onDeleteOrUpdateClick(tableContent: TableContent<CustomRowMapper>): void {
+    this.form.controls['sku'].setValue(tableContent.data.sku);
+    this.subjectMapper$.next(tableContent.data);
   }
 
 }

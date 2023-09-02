@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import {BehaviorSubject, map, Observable} from "rxjs";
+import {BehaviorSubject, map, Observable, ReplaySubject} from "rxjs";
 import {Page} from "../../../../global-utils/global-utils";
-import {ProductDetail, ProductResponse, UpdateProduct} from "../../shared-util";
+import {ProductDetailResponse, ProductResponse, UpdateProduct} from "../../shared-util";
 import {HttpClient, HttpResponse} from "@angular/common/http";
 import {environment} from "../../../../environments/environment";
 
@@ -12,7 +12,7 @@ export class ProductService {
   HOST: string | undefined;
 
   private productIDSubject$ = new BehaviorSubject<string>('');
-  private products$ = new BehaviorSubject<Page<ProductResponse> | undefined>(undefined);
+  private products$ = new ReplaySubject<Page<ProductResponse>>();
   _products$ = this.products$.asObservable();
 
   constructor(private http: HttpClient) {
@@ -59,9 +59,9 @@ export class ProductService {
   }
 
   /** Fetch ProductDetail based on id */
-  fetchProductDetails(id: string): Observable<ProductDetail[]> {
+  fetchProductDetails(id: string): Observable<ProductDetailResponse[]> {
     const url: string = `${this.HOST}api/v1/worker/product/detail`;
-    return this.http.get<ProductDetail[]>(url, {
+    return this.http.get<ProductDetailResponse[]>(url, {
       params: {id: id},
       responseType: 'json',
       withCredentials: true

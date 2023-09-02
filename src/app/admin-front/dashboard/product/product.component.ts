@@ -1,21 +1,34 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ProductResponse, TableContent, UpdateProduct} from "../../shared-util";
 import {Page} from "../../../../global-utils/global-utils";
-import {Observable, tap} from "rxjs";
+import {catchError, map, Observable, of, startWith, tap} from "rxjs";
 import {ProductService} from "./product.service";
 import {UpdateProductComponent} from "../updateproduct/update-product.component";
 import {DynamicTableComponent} from "../dynamictable/dynamic-table.component";
+import {HttpErrorResponse} from "@angular/common/http";
 
 @Component({
   selector: 'app-product',
   standalone: true,
   imports: [CommonModule, DynamicTableComponent, UpdateProductComponent],
   templateUrl: './product.component.html',
-  styleUrls: ['./product.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductComponent {
+
+  private productService: ProductService = inject(ProductService);
+
+  data$: Observable<{
+    state: string,
+    error?: string,
+    data?: Page<ProductResponse>
+  }> = this.productService._products$.pipe(
+    map((res: Page<ProductResponse>) => ({ state: 'LOADED', data: res })),
+    startWith({ state: 'LOADING' }),
+    catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error.message }))
+  );
+
   currComponent: boolean = true;
   id: string = '';
   name: string = '';
@@ -25,12 +38,6 @@ export class ProductComponent {
   collection: string = '';
 
   columns: Array<keyof ProductResponse> = ['image', 'id', 'name', 'desc', 'currency', 'price'];
-
-  data$: Observable<Page<ProductResponse> | undefined>;
-
-  constructor(private productService: ProductService) {
-    this.data$ = this.productService._products$;
-  }
 
   /**
    * Displays UpdateProduct component based on the product clicked from DynamicTable
@@ -62,7 +69,14 @@ export class ProductComponent {
       return;
     }
     this.data$ = this.productService.fetchAllProducts()
-      .pipe(tap((value: Page<ProductResponse>): void => this.productService.setProducts(value)));
+      .pipe(
+        map((res: Page<ProductResponse>) => {
+          this.productService.setProducts(res)
+          return { state: 'LOADED', data: res };
+        }),
+        startWith({ state: 'LOADING' }),
+        catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error.message }))
+      );
   }
 
   /** Makes a call to our server. param name is the products id */
@@ -76,4 +90,5 @@ export class ProductComponent {
       })
     );
   }
+
 }

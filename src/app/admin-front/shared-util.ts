@@ -19,13 +19,28 @@ export interface ProductResponse {
   action: string;
 }
 
-export interface ProductDetail {
-  url: string[];
-  sku: string;
+export interface ProductDetailResponse {
+  colour: string;
   is_visible: boolean;
-  qty: number;
+  url: string[];
+  variants: Variant[],
+}
+
+export interface Variant {
+  sku: string;
+  inventory: string;
   size: string;
-  action: string;
+}
+
+export interface CustomRowMapper {
+  colour: string;
+  is_visible: boolean;
+  url: string;
+  urls?: string[];
+  sku: string;
+  inventory: number;
+  size: string;
+  action: string
 }
 
 export interface UpdateDetail {
@@ -75,15 +90,15 @@ export interface PageChange {
 
 export enum Components {
   dashboard = 'dashboard',
-  new_product= 'new_product',
-  new_category= 'new_category',
-  new_collection= 'new_collection',
-  product= 'product',
-  category= 'category',
-  collection= 'collection',
-  customer= 'customer',
-  detail='detail',
-  register='register'
+  new_product = 'new_product',
+  new_category = 'new_category',
+  new_collection = 'new_collection',
+  product = 'product',
+  category = 'category',
+  collection = 'collection',
+  customer = 'customer',
+  detail = 'detail',
+  register = 'register'
 }
 
 export interface CSRF {

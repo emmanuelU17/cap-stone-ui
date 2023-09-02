@@ -1,5 +1,5 @@
 <!-- Product Template -->
-<ng-container *ngIf="productTemplate">
+<ng-container *ngIf="paginationTable">
   <div class="w-full rounded-md overflow-x-auto bg-[var(--white)]">
     <table>
       <thead>
@@ -26,7 +26,7 @@
             <div *ngSwitchCase="'name'">
               <button
                 (click)="onclickProduct(data,'product')"
-                class="font-bold border-black hover:border-b"
+                class="outline-none bg-transparent text-blue-400 hover:border-b hover:border-blue-500"
                 type="button"
               >{{ data[head] }}</button>
             </div>
@@ -38,9 +38,8 @@
             <!-- Visible -->
             <div *ngSwitchCase="'visible'"> {{ data[head] }} </div>
 
-            <div *ngSwitchDefault>{{ data[head] }}</div>
             <!-- Default -->
-
+            <div *ngSwitchDefault>{{ data[head] }}</div>
           </ng-container>
         </td>
 
@@ -60,7 +59,7 @@
 </ng-container>
 
 <!-- None Product Template (no need for pagination) -->
-<ng-container *ngIf="!productTemplate">
+<ng-container *ngIf="!paginationTable">
   <table class="table-auto">
     <thead>
     <tr>
@@ -80,7 +79,7 @@
         <ng-container [ngSwitch]="head">
 
           <!-- Image -->
-          <img *ngSwitchCase="'image'" [src]="d[head]" alt="logo">
+          <img *ngSwitchCase="'url'" [src]="d[head]" alt="logo">
 
           <!-- Buttons -->
           <div class="flex" *ngSwitchCase="'action'">
@@ -109,8 +108,15 @@
           <!-- Visible -->
           <div *ngSwitchCase="'visible'"> {{ d[head] }} </div>
 
-          <div *ngSwitchDefault>{{ d[head] }}</div>
+          <!-- SKU -->
+          <button
+            *ngSwitchCase="'sku'"
+            (click)="onClick(d,'view')"
+            class="outline-none bg-transparent text-blue-400 hover:border-b hover:border-blue-500"
+          >{{ d[head] }}</button>
+
           <!-- Default -->
+          <div *ngSwitchDefault>{{ d[head] }}</div>
 
         </ng-container>
       </td>

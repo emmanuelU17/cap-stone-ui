@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Renderer2} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {catchError, combineLatest, map, Observable, of, startWith, tap} from "rxjs";
 import {DashboardService} from "../dashboard.service";
 import {CategoryService} from "../category/category.service";
@@ -14,52 +14,40 @@ import {ProductService} from "../product/product.service";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardComponent {
-  leftColumn: boolean = false;
+  private dashboardService: DashboardService = inject(DashboardService);
+  private categoryService: CategoryService = inject(CategoryService);
+  private collectionService: CollectionService = inject(CollectionService);
+  private productService: ProductService = inject(ProductService);
 
-  // Loading of components
-  protected readonly Components = Components;
-  dashBoardLinks: Display[] = dashBoardLinks;
-  componentToRender: Components = Components.dashboard;
+  private principal$: Observable<AuthResponse> = this.dashboardService._principal$.pipe();
+  private products$: Observable<Page<ProductResponse>> = this.productService.fetchAllProducts();
+  private category$: Observable<CategoryResponse[]> = this.categoryService.fetchCategories()
+    .pipe(
+      tap((arr: CategoryResponse[]) => arr
+        .sort((a: CategoryResponse, b: CategoryResponse) => a.category.localeCompare(b.category))
+      )
+    );
+  private collection$: Observable<CollectionResponse[]> = this.collectionService.fetchCollections()
+    .pipe(
+      tap((arr: CollectionResponse[]) => arr
+        .sort((a: CollectionResponse, b: CollectionResponse) => a.collection.localeCompare(b.collection))
+      )
+    );
 
   combine$: Observable<{
     state: string,
     error?: string,
     principal?: string,
-  }>
-
-  constructor(
-    private categoryService: CategoryService,
-    private collectionService: CollectionService,
-    private productService: ProductService,
-    private dashboardService: DashboardService,
-    private render: Renderer2
-  ) {
-    // User principal
-    const principal$ = this.dashboardService._principal$.pipe();
-
-    // Fetch Products
-    const products$ = this.productService.fetchAllProducts();
-
-    // Fetch and Sort by Category
-    const _category$ = this.categoryService.fetchCategories().pipe(
-      tap((arr: CategoryResponse[]) =>
-        arr.sort((a: CategoryResponse, b: CategoryResponse) => a.category.localeCompare(b.category)))
-    );
-
-    // Fetch Collection
-    const _collection$ = this.collectionService.fetchCollections().pipe(
-      tap((arr: CollectionResponse[]) =>
-        arr.sort((a: CollectionResponse, b: CollectionResponse) => a.collection.localeCompare(b.collection)))
-    );
-
-    this.combine$ = combineLatest([principal$, products$, _category$, _collection$]).pipe(
-      map(([
-             principal,
-             products,
-             categories,
-             collections
-           ]: [AuthResponse, Page<ProductResponse>, CategoryResponse[], CollectionResponse[]]
-      ) => {
+  }> = combineLatest([this.principal$, this.products$, this.category$, this.collection$])
+    .pipe(
+      map((
+        [
+          principal,
+          products,
+          categories,
+          collections
+        ]: [AuthResponse, Page<ProductResponse>, CategoryResponse[], CollectionResponse[]]
+      ): { state: string, error?: string, principal?: string } => {
         this.productService.setProducts(products);
         this.categoryService.setCategories(categories);
         this.collectionService.setCollections(collections);
@@ -68,8 +56,12 @@ export class DashboardComponent {
       startWith({state: 'LOADING'}),
       catchError((err: HttpErrorResponse) => of({state: 'ERROR', error: err.error}))
     );
-  }
 
+  leftColumn: boolean = false;
+  // Loading of components
+  protected readonly Components = Components;
+  dashBoardLinks: Display[] = dashBoardLinks;
+  componentToRender: Components = Components.dashboard;
 
   /**
    * Method dynamically loads components based on <li> clicked.
