@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ProductResponse, TableContent, UpdateProduct} from "../../shared-util";
-import {Page} from "../../../../global-utils/global-utils";
+import {Page} from "../../../global-utils";
 import {catchError, map, Observable, of, startWith, tap} from "rxjs";
 import {ProductService} from "./product.service";
 import {UpdateProductComponent} from "../updateproduct/update-product.component";

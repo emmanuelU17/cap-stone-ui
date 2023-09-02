@@ -1,4 +1,6 @@
 // Used to display the options needed to filter a product
+import {Variant} from "../../global-utils";
+
 export interface Filter<T> {
   isOpen: boolean;
   parent: string;
@@ -18,8 +20,9 @@ export interface ProductDetail {
   currency: string;
   price: number;
   desc: string;
-  sku: string;
-  size: string;
   colour: string;
   url: string[];
+  variants: Variant[];
 }
+
+

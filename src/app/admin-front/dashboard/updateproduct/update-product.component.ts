@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, inject, Input, OnInit, Output} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {BehaviorSubject, catchError, map, Observable, of, ReplaySubject, startWith, Subject, tap} from "rxjs";
+import {catchError, map, Observable, of, ReplaySubject, startWith, tap} from "rxjs";
 import {
   CategoryResponse,
   CollectionResponse,
@@ -8,7 +8,6 @@ import {
   ProductDetailResponse,
   TableContent,
   UpdateProduct,
-  Variant
 } from "../../shared-util";
 import {HttpErrorResponse} from "@angular/common/http";
 import {ProductService} from "../product/product.service";
@@ -18,6 +17,7 @@ import {DirectiveModule} from "../../../directive/directive.module";
 import {CategoryService} from "../category/category.service";
 import {CollectionService} from "../collection/collection.service";
 import {DynamicTableComponent} from "../dynamictable/dynamic-table.component";
+import {Variant} from "../../../global-utils";
 
 @Component({
   selector: 'app-update-product',

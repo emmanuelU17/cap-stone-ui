@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@
 import {CommonModule} from '@angular/common';
 import {MatPaginatorModule, PageEvent} from "@angular/material/paginator";
 import {PageChange, TableContent} from "../../shared-util";
-import {Page} from "../../../../global-utils/global-utils";
+import {Page} from "../../../global-utils";
 
 @Component({
   selector: 'app-dynamic-table',

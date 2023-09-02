@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {ProductDetail} from "../shop.helper";
-import {State} from "../../../../global-utils/global-utils";
-import {BehaviorSubject, catchError, map, Observable, of, startWith} from "rxjs";
+import {State, Variant} from "../../../global-utils";
+import {BehaviorSubject, catchError, map, Observable, of, startWith, switchMap} from "rxjs";
 import {ActivatedRoute} from "@angular/router";
 import {ProductService} from "../service/product.service";
 import {HttpErrorResponse} from "@angular/common/http";
@@ -20,7 +20,7 @@ export class ProductComponent {
   private productService: ProductService = inject(ProductService);
   private route: ActivatedRoute = inject(ActivatedRoute);
 
-  showMore: boolean = false; // Show more paragrap
+  showMore: boolean = false; // Show more paragraph
 
   private id: string | null = this.route.snapshot.paramMap.get('id');
   private uuid: string = this.id === null ? '' : this.id;
@@ -30,44 +30,35 @@ export class ProductComponent {
     .fetchProductDetails(this.uuid)
     .pipe(
       map((arr: ProductDetail[]): State<ProductDetail[]> => {
+        // Add all colours to colourSubject
+        const colours: string[] = [];
+        arr.forEach((detail: ProductDetail) => colours.push(detail.colour));
+        this.coloursSubject$.next(colours);
+
+        // First item in array
         const curr: ProductDetail = arr[0];
-        curr.url = [
-          './assets/image/sarre1.jpg',
-          './assets/image/sarre2.jpg',
-          './assets/image/sarre3.jpg',
-          './assets/image/sara-the-brand.png',
-        ];
+        // For testing, append images
+        // curr.url = [
+        //   './assets/image/sarre1.jpg',
+        //   './assets/image/sarre2.jpg',
+        //   './assets/image/sarre3.jpg',
+        //   './assets/image/sara-the-brand.png',
+        // ];
 
-        // Update global variable
-        this.detail = curr;
+        // Current ProductDetail with the first item in arr
+        this.currItemSubject$.next({ currImage: curr.url[0], detail: curr });
 
-        // Onload of application, pre-populate the necessary fields
-        this.reactiveForm.controls['sku'].setValue(curr.sku);
-
-        curr.desc = this.lorem
-
-        this.currItemSubject$.next({currImage: curr.url[0], detail: curr});
         return {state: 'LOADED', data: arr};
       }),
       startWith({state: 'LOADING'}),
       catchError((err: HttpErrorResponse) => of({state: 'ERROR', error: err.error.message}))
     );
 
-  // Instead of defining undefined, in currItemSubject$, chose dummy values
-  // Note this is updated in the constructor also
-  private detail: ProductDetail = {
-    name: '',
-    currency: '',
-    price: 0,
-    desc: '',
-    sku: '',
-    size: '',
-    colour: '',
-    url: [],
-  }
+  private coloursSubject$ = new BehaviorSubject<string[]>([]);
+  colours$ = this.coloursSubject$.asObservable();
 
   private currItemSubject$ =
-    new BehaviorSubject<{ currImage: string, detail: ProductDetail }>({currImage: '', detail: this.detail});
+    new BehaviorSubject<{ currImage: string, detail: ProductDetail } | undefined>(undefined);
   currentItem$ = this.currItemSubject$.asObservable();
 
   reactiveForm = new FormGroup({
@@ -77,50 +68,60 @@ export class ProductComponent {
     qty: new FormControl('', [Validators.required]),
   });
 
-  lorem = 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci aspernatur consequatur dolore, error fuga\n' +
-    '          inventore, iste maxime molestias nostrum, numquam tempora totam voluptatem voluptatibus? At blanditiis\n' +
-    '          consequatur delectus et laudantium obcaecati quos recusandae saepe sint ut? Ab adipisci consequuntur est fuga,\n' +
-    '          incidunt molestias nihil omnis perspiciatis sunt! Amet eveniet excepturi fugiat iure omnis, sequi. Ad delectus\n' +
-    '          eius excepturi magnam officia possimus. Deleniti quod, vero. Culpa cumque, esse exercitationem fugiat iure non\n' +
-    '          porro? Animi assumenda consequatur cumque cupiditate distinctio, eligendi explicabo magni modi necessitatibus,\n' +
-    '          nisi porro, quisquam sit tenetur? Consequatur deserunt dolore dolorem dolores facere illo labore odit optio,\n' +
-    '          perspiciatis, quae quasi quia quidem, repellendus reprehenderit sit totam ullam voluptatibus. Animi architecto\n' +
-    '          autem consequatur dolores, eaque ex ipsam minus nostrum provident, quod reiciendis sapiente sed vitae.\n' +
-    '          Adipisci, amet aut, consectetur, corporis enim esse maiores maxime nulla reiciendis repellat similique\n' +
-    '          tempore. Accusantium ad alias atque blanditiis, consectetur cum distinctio dolore ea exercitationem facilis\n' +
-    '          iusto laboriosam laudantium modi nam nesciunt officia omnis pariatur placeat quidem quod reprehenderit sed\n' +
-    '          tempora veritatis voluptatem voluptatum! Accusamus asperiores at corporis earum eius eligendi excepturi,\n' +
-    '          fugiat in libero magni minus, molestiae nam neque non nostrum nulla pariatur porro provident quaerat qui\n' +
-    '          quis reprehenderit sequi suscipit ullam veritatis voluptatibus.'
-
-  /***/
+  /**
+   * Since a Product always has a unique colour, when a cx wants a different Product variant,
+   * we use the colour to find it.
+   *
+   * @param event is of type Event but contains a value colour
+   * @return void
+   * */
   onclickColour(event: Event): void {
-    const sku: string = (event.target as HTMLInputElement).value;
-
+    const colour: string = (event.target as HTMLInputElement).value;
     this.currentItem$ = this.productDetails$.pipe(
-      map((arr: State<ProductDetail[]>) => {
-        const obj = {state: 'LOADED', data: arr};
-        const dummyRes = {currImage: this.detail.url[0], detail: this.detail};
-
-        if (!obj.data.data) {
-          return dummyRes;
-        }
-
-        const detail: ProductDetail | undefined = obj.data.data.find((det: ProductDetail): boolean => det.sku === sku);
-
-        if (!detail) {
-          return dummyRes;
-        }
-
-        this.reactiveForm.controls['sku'].setValue(detail.sku)
-
-        return {currImage: detail.url[0], detail: detail};
+      map((state: State<ProductDetail[]>) => {
+        // PAUSE
+        const detail: ProductDetail | undefined = state.data?.find((d: ProductDetail): boolean => d.colour === colour);
+        return detail ? { currImage: detail.url[0], detail: detail } : undefined;
       })
+    );
+  }
+
+  currentSKU$(): Observable<string> {
+    const size = this.reactiveForm.get('size')?.value;
+    const colour = this.reactiveForm.get('colour')?.value;
+
+    if (!size || !colour) {
+      return of('Filter Product');
+    }
+
+    return this.productDetails$.pipe(
+      // SwitchMap
+      switchMap((state: State<ProductDetail[]>) => {
+        if (!state.data) {
+          return of('Filter Product');
+        }
+        const details: ProductDetail[] = state.data;
+
+        const found: ProductDetail | undefined = details.find((d: ProductDetail) => d.colour === colour);
+
+        if (!found) {
+          return of('Filter Product');
+        }
+
+        const sku: Variant | undefined = found.variants.find((v: Variant) => v.size === size);
+
+        if (!sku) {
+          return of('Filter Product');
+        }
+
+        return of(sku.sku);
+      }),
     );
   }
 
   /** Stores product in users cart */
   addToCart(): void {
+    const s = this.reactiveForm.get('size')?.value;
   }
 
 }

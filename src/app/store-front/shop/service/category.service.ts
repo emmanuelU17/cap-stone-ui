@@ -3,7 +3,7 @@ import {HttpClient} from "@angular/common/http";
 import {BehaviorSubject, map, Observable} from "rxjs";
 import {Category} from "../shop.helper";
 import {environment} from "../../../../environments/environment";
-import {Page} from "../../../../global-utils/global-utils";
+import {Page} from "../../../global-utils";
 import {Product} from "../../store-front-utils";
 
 @Injectable({

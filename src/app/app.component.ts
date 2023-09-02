@@ -3,7 +3,7 @@ import {Event, NavigationEnd, NavigationStart, Router} from "@angular/router";
 import {catchError, combineLatest, filter, map, Observable, of, startWith, tap} from "rxjs";
 import {AppService} from "./service/app.service";
 import {HttpErrorResponse} from "@angular/common/http";
-import {CSRF} from "../global-utils/global-utils";
+import {CSRF} from "./global-utils";
 import {CategoryService} from "./store-front/shop/service/category.service";
 import {ProductService} from "./store-front/shop/service/product.service";
 import {HomeService} from "./store-front/home/home.service";

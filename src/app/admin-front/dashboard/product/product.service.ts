@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {BehaviorSubject, map, Observable, ReplaySubject} from "rxjs";
-import {Page} from "../../../../global-utils/global-utils";
+import {Page} from "../../../global-utils";
 import {ProductDetailResponse, ProductResponse, UpdateProduct} from "../../shared-util";
 import {HttpClient, HttpResponse} from "@angular/common/http";
 import {environment} from "../../../../environments/environment";

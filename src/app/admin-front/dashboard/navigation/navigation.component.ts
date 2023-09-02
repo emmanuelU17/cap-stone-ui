@@ -3,7 +3,7 @@ import {CommonModule} from '@angular/common';
 import {AuthMenuComponent} from "../authmenu/auth-menu.component";
 import {DashboardService} from "../dashboard.service";
 import {Observable} from "rxjs";
-import {AuthResponse} from "../../../../global-utils/global-utils";
+import {AuthResponse} from "../../../global-utils";
 
 @Component({
   selector: 'app-navigation',

@@ -7,7 +7,7 @@
     </div>
   </ng-container>
   <ng-container *ngSwitchCase="'ERROR'">
-    <div class="lg-scr p-10 capitalize text-3xl text-red-500">
+    <div class="lg-scr p-10 text-3xl text-red-500">
       Error {{ detail.error }}
     </div>
   </ng-container>
@@ -15,7 +15,8 @@
 
     <div class="lg-scr mg-top w-full h-full flex flex-col" *ngIf="detail.data as details">
 
-      <div class="w-full grid sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2" *ngIf="currentItem$ | async as currentItem">
+      <div class="w-full grid sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2"
+           *ngIf="currentItem$ | async as currentItem">
 
         <!-- Images -->
         <div class="p-2.5 flex max-[1028px]:flex-col-reverse lg:flex xl:flex gap-1.5 justify-center">
@@ -46,10 +47,14 @@
         <div class="p-2.5 flex flex-col gap-2">
           <h1 class="capitalize text-3xl font-bold">{{ currentItem.detail.name }}</h1>
           <h2 class="text-xl font-bold">{{ currentItem.detail.currency }}{{ currentItem.detail.price }}</h2>
-          <h4 class="text-xl font-bold">Sku <span class="text-xs opacity-50">{{ currentItem.detail.sku }}</span></h4>
+          <h4 class="text-xl font-bold">Sku
+            <span class="text-xs opacity-50">
+              Yet to implement
+            </span>
+          </h4>
 
           <!-- Form -->
-          <form class="flex flex-col gap-2" [formGroup]="reactiveForm" (ngSubmit)="addToCart()" >
+          <form class="flex flex-col gap-2" [formGroup]="reactiveForm" (ngSubmit)="addToCart()">
 
             <!-- Form Contents -->
             <div class="flex gap-1.5">
@@ -67,7 +72,7 @@
                   (change)="onclickColour($event)"
                 >
                   <option value="" disabled [selected]="true">select a colour</option>
-                  <option *ngFor="let d of details" [value]="d.sku">
+                  <option *ngFor="let d of details" [value]="d.colour">
                     {{ d.colour }}
                   </option>
                 </select>
@@ -81,14 +86,14 @@
                   formControlName="size"
                 >
                   <option value="" disabled selected>select a size</option>
-                  <option>
-                    Size: {{ currentItem.detail.size }}
+                  <option *ngFor="let variants of currentItem.detail.variants">
+                    {{ variants.size }}
                   </option>
                 </select>
               </div>
 
               <!-- Qty -->
-              <div class="" >
+              <div class="">
                 <select
                   name="qty"
                   class="w-full p-1 rounded-md cursor-pointer capitalize border border-solid border-[var(--app-theme)]"
@@ -107,20 +112,22 @@
               <button
                 class="w-full p-5 uppercase border border-black hover:bg-black hover:text-white"
                 type="submit"
-              >add to cart</button>
+              >add to cart
+              </button>
             </div>
           </form>
 
           <!-- Description -->
-          <div class="">
+          <div>
             <h2 class="w-fit capitalize border-b border-[var(--app-theme)]">description</h2>
             <p
               class="text-sm h-20 pt-3.5 break-words overflow-hidden"
               [innerHTML]="currentItem.detail.desc" [class.show]="showMore"
             ></p>
-            <button *ngIf="currentItem.detail.desc.length > 0" class="outline-none border-none bg-transparent" (click)="showMore = !showMore">
+            <button *ngIf="currentItem.detail.desc.length > 0" class="outline-none border-none bg-transparent"
+                    (click)="showMore = !showMore">
               <span class="lowercase text-[var(--app-theme-hover)]">
-                {{ showMore ? 'Show less': 'Show More' }}
+                {{ showMore ? 'Show less' : 'Show More' }}
               </span>
             </button>
           </div>
@@ -129,7 +136,7 @@
       </div>
 
       <div class="w-full flex-1 p-2.5 text-center">
-        <h1> <strong>TODO:</strong> You may also like </h1>
+        <h1><strong>TODO:</strong> You may also like </h1>
         <p>
           Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci aspernatur consequatur dolore, error fuga
           inventore, iste maxime molestias nostrum, numquam tempora totam voluptatem voluptatibus? At blanditiis

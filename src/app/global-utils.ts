@@ -14,6 +14,12 @@ export interface State<T> {
   data?: T;
 }
 
+export interface Variant {
+  sku: string;
+  inventory: string;
+  size: string;
+}
+
 export interface Page<T> {
   content: T[],
   pageable: {

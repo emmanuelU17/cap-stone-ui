@@ -1,3 +1,5 @@
+import {Variant} from "../global-utils";
+
 export interface UpdateProduct {
   id: string;
   name: string;
@@ -24,12 +26,6 @@ export interface ProductDetailResponse {
   is_visible: boolean;
   url: string[];
   variants: Variant[],
-}
-
-export interface Variant {
-  sku: string;
-  inventory: string;
-  size: string;
 }
 
 export interface CustomRowMapper {
@@ -99,12 +95,6 @@ export enum Components {
   customer = 'customer',
   detail = 'detail',
   register = 'register'
-}
-
-export interface CSRF {
-  token: string;
-  parameterName: string;
-  headerName: string;
 }
 
 /** Needed in new product */

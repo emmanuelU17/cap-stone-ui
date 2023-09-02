@@ -1,21 +1,18 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
-import {ProductComponent} from "./product/product.component";
-import {CollectionComponent} from "./collection/collection.component";
-import {CategoryComponent} from "./category/category.component";
 
 const routes: Routes = [
   {
     path: 'category',
-    component: CategoryComponent
+    loadComponent: () => import('./category/category.component').then(m => m.CategoryComponent)
   },
   {
     path: 'collection',
-    component: CollectionComponent
+    loadComponent: () => import('./collection/collection.component').then(m => m.CollectionComponent)
   },
   {
     path: ':path/product/:id',
-    component: ProductComponent
+    loadComponent: () => import('./product/product.component').then(m => m.ProductComponent)
   },
 ];
 
