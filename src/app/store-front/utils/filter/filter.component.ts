@@ -33,11 +33,7 @@ export class FilterComponent<T> {
     this.filters[index].isOpen = !this.filters[index].isOpen;
 
     // Close content if it is visible
-    if (index === this.indexToOpen) {
-      this.indexToOpen = -1;
-      return;
-    }
-    this.indexToOpen = index;
+    this.indexToOpen = (index === this.indexToOpen ? -1 : index);
   }
 
   /**
@@ -48,4 +44,5 @@ export class FilterComponent<T> {
   childClicked(generic: T): void {
     this.emitter.emit(generic);
   }
+
 }

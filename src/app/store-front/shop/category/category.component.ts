@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject, Renderer2} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {map, Observable, switchMap, take} from "rxjs";
 import {Filter} from "../shop.helper";
 import {CategoryService} from "../service/category.service";
@@ -15,17 +15,16 @@ import {RouterLink} from "@angular/router";
   standalone: true,
   imports: [CommonModule, CardComponent, FilterComponent, RouterLink],
   templateUrl: './category.component.html',
-  styleUrls: ['./category.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CategoryComponent {
   private categoryService: CategoryService = inject(CategoryService);
   private productService: ProductService = inject(ProductService);
   public utilService: UtilService<string> = inject(UtilService<string>);
-  private render: Renderer2 = inject(Renderer2);
 
   activeGridIcon: boolean = true; // Approves if products should be displayed x3 or x4 in the x-axis
   filterByPrice: boolean = true; // A variable need to keep the state of price filter for future filtering
+  displayFilter: boolean = false; // Displays filter button
 
   // Categories
   private categories$: Observable<string[]> = this.categoryService._categories$;
@@ -40,13 +39,13 @@ export class CategoryComponent {
     map((arr: Product[]): Product[] => this.utilService.sortArray(this.filterByPrice, arr))
   );
 
-  combine$: Observable<{ state: string, error?: string, products?: Product[], filter?: Filter<string>[] }> =
-    this.utilService.getCombine$(this.products$, this.categories$, 'categories');
+  combine$: Observable<{
+    state: string,
+    error?: string,
+    products?: Product[],
+    filter?: Filter<string>[]
+  }> = this.utilService.getCombine$(this.products$, this.categories$, 'categories');
 
-  /** Display category filter on click of button */
-  displayCategoryFilter(): void {
-    this.render.selectRootElement('.filter-btn', true).style.display = 'block';
-  }
 
   /** Re-renders product array to filter products by price */
   onclickFilterByPrice(bool: boolean): void {

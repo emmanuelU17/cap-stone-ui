@@ -1,12 +1,13 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {MatButtonModule} from "@angular/material/button";
 import {MatRadioModule} from "@angular/material/radio";
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {NewCollectionService} from "./new-collection.service";
-import {Observable, tap} from "rxjs";
-import {CollectionRequest} from "../../shared-util";
+import {map, Observable, of, switchMap} from "rxjs";
+import {CollectionRequest, CollectionResponse} from "../../shared-util";
 import {DirectiveModule} from "../../../directive/directive.module";
+import {CollectionService} from "../collection/collection.service";
 
 @Component({
   selector: 'app-new-collection',
@@ -17,18 +18,25 @@ import {DirectiveModule} from "../../../directive/directive.module";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NewCollectionComponent {
+
+  private service: NewCollectionService = inject(NewCollectionService);
+  private collectionService: CollectionService = inject(CollectionService);
+
   reactiveForm: FormGroup = new FormGroup({
     name: new FormControl('', [Validators.required, Validators.max(50)]),
     visible: new FormControl(false, Validators.required)
   });
-
-  constructor(private service: NewCollectionService) { }
 
   /** Clears reactiveForm */
   clear(): void {
     this.reactiveForm.reset();
   }
 
+  /**
+   * Submit reactive form to our server.
+   * The gotcha is on successful creation, we switch map to update collection array
+   * @return Observable of type number
+   * */
   submit(): Observable<number> {
     const obj: CollectionRequest = {
       name: this.reactiveForm.get('name')?.value,
@@ -36,10 +44,17 @@ export class NewCollectionComponent {
     };
 
     return this.service.create(obj).pipe(
-      tap((res: number): void => {
+      switchMap((res: number): Observable<number> => {
         if (res >= 200 && res < 300) {
           this.clear();
+          return this.collectionService.fetchCollections().pipe(
+            map((arr: CollectionResponse[]) => {
+              this.collectionService.setCollections(arr);
+              return res;
+            })
+          );
         }
+        return of(res);
       })
     );
   }

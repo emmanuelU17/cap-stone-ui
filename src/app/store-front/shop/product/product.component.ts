@@ -2,16 +2,17 @@ import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {ProductDetail} from "../shop.helper";
 import {State, Variant} from "../../../global-utils";
 import {BehaviorSubject, catchError, map, Observable, of, startWith, switchMap} from "rxjs";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, RouterLink} from "@angular/router";
 import {ProductService} from "../service/product.service";
 import {HttpErrorResponse} from "@angular/common/http";
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {CommonModule} from "@angular/common";
+import {CartComponent} from "../cart/cart.component";
 
 @Component({
   selector: 'app-product',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, CartComponent],
   templateUrl: './product.component.html',
   styleUrls: ['./product.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -21,6 +22,7 @@ export class ProductComponent {
   private route: ActivatedRoute = inject(ActivatedRoute);
 
   showMore: boolean = false; // Show more paragraph
+  showCartComponent: boolean = false;
 
   private id: string | null = this.route.snapshot.paramMap.get('id');
   private uuid: string = this.id === null ? '' : this.id;
@@ -30,32 +32,17 @@ export class ProductComponent {
     .fetchProductDetails(this.uuid)
     .pipe(
       map((arr: ProductDetail[]): State<ProductDetail[]> => {
-        // Add all colours to colourSubject
-        const colours: string[] = [];
-        arr.forEach((detail: ProductDetail) => colours.push(detail.colour));
-        this.coloursSubject$.next(colours);
-
         // First item in array
         const curr: ProductDetail = arr[0];
-        // For testing, append images
-        // curr.url = [
-        //   './assets/image/sarre1.jpg',
-        //   './assets/image/sarre2.jpg',
-        //   './assets/image/sarre3.jpg',
-        //   './assets/image/sara-the-brand.png',
-        // ];
 
         // Current ProductDetail with the first item in arr
         this.currItemSubject$.next({ currImage: curr.url[0], detail: curr });
 
-        return {state: 'LOADED', data: arr};
+        return { state: 'LOADED', data: arr };
       }),
-      startWith({state: 'LOADING'}),
-      catchError((err: HttpErrorResponse) => of({state: 'ERROR', error: err.error.message}))
+      startWith({ state: 'LOADING' }),
+      catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.message }))
     );
-
-  private coloursSubject$ = new BehaviorSubject<string[]>([]);
-  colours$ = this.coloursSubject$.asObservable();
 
   private currItemSubject$ =
     new BehaviorSubject<{ currImage: string, detail: ProductDetail } | undefined>(undefined);
@@ -121,6 +108,7 @@ export class ProductComponent {
 
   /** Stores product in users cart */
   addToCart(): void {
+    this.showCartComponent = !this.showCartComponent
     const s = this.reactiveForm.get('size')?.value;
   }
 

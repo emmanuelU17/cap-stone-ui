@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {CategoryResponse} from "../../shared-util";
 import {BehaviorSubject, Observable} from "rxjs";
 import {HttpClient} from "@angular/common/http";
@@ -18,10 +18,10 @@ export class CategoryService {
     this.HOST = environment.domain;
   }
 
+  // Called on initial load of application
   setCategories(arr: CategoryResponse[]): void {
     this.categories$.next(arr);
   }
-
 
   // Fetch Categories
   fetchCategories(): Observable<CategoryResponse[]> {

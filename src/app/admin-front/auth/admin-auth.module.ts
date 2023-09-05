@@ -16,8 +16,6 @@ import {DirectiveModule} from "../../directive/directive.module";
 })
 export class AdminAuthModule {
 
-  constructor() {
-    console.log('AdminAuthModule')
-  }
+  constructor() { }
 
 }

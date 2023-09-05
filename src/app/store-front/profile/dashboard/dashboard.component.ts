@@ -6,7 +6,6 @@ import {CommonModule} from "@angular/common";
   standalone: true,
   imports: [CommonModule],
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardComponent {

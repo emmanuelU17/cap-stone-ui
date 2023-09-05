@@ -6,20 +6,23 @@
       </h1>
     </div>
   </ng-container>
+
   <ng-container *ngSwitchCase="'ERROR'">
-    <div class="lg-scr p-10 text-3xl text-red-500">
+    <div class="lg-scr mg-top p-10 text-3xl text-red-500">
       Error {{ detail.error }}
     </div>
   </ng-container>
+
   <ng-container *ngSwitchCase="'LOADED'">
 
+    <!-- Product Details  -->
     <div class="lg-scr mg-top w-full h-full flex flex-col" *ngIf="detail.data as details">
 
-      <div class="w-full grid sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2"
-           *ngIf="currentItem$ | async as currentItem">
+      <div class="w-full grid sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2">
 
         <!-- Images -->
-        <div class="p-2.5 flex max-[1028px]:flex-col-reverse lg:flex xl:flex gap-1.5 justify-center">
+        <div class="p-2.5 flex max-[1028px]:flex-col-reverse lg:flex xl:flex gap-1.5 justify-center"
+             *ngIf="currentItem$ | async as currentItem">
 
           <!-- image carousel -->
           <div class="flex gap-1.5 overflow-y-auto sm:flex-row md:flex-row lg:flex-col xl:flex-col">
@@ -45,8 +48,8 @@
 
         <!-- product detail -->
         <div class="p-2.5 flex flex-col gap-2">
-          <h1 class="capitalize text-3xl font-bold">{{ currentItem.detail.name }}</h1>
-          <h2 class="text-xl font-bold">{{ currentItem.detail.currency }}{{ currentItem.detail.price }}</h2>
+          <h1 class="capitalize text-3xl font-bold">{{ details[0].name }}</h1>
+          <h2 class="text-xl font-bold">{{ details[0].currency }}{{ details[0].price }}</h2>
           <h4 class="text-xl font-bold">Sku
             <span class="text-xs opacity-50">
               Yet to implement
@@ -54,7 +57,7 @@
           </h4>
 
           <!-- Form -->
-          <form class="flex flex-col gap-2" [formGroup]="reactiveForm" (ngSubmit)="addToCart()">
+          <form class="flex flex-col gap-2" [formGroup]="reactiveForm">
 
             <!-- Form Contents -->
             <div class="flex gap-1.5">
@@ -68,21 +71,21 @@
                 <select
                   name="colour"
                   formControlName="colour"
-                  class="w-full p-1 rounded-md cursor-pointer capitalize border border-solid border-[var(--app-theme)]"
+                  class="w-full p-1 rounded-md cursor-pointer border border-solid border-[var(--app-theme)]"
                   (change)="onclickColour($event)"
                 >
                   <option value="" disabled [selected]="true">select a colour</option>
-                  <option *ngFor="let d of details" [value]="d.colour">
+                  <option *ngFor="let d of detail.data" [value]="d.colour">
                     {{ d.colour }}
                   </option>
                 </select>
               </div>
 
               <!-- Size -->
-              <div class="">
+              <div *ngIf="currentItem$ | async as currentItem">
                 <select
                   name="size"
-                  class="w-full p-1 rounded-md cursor-pointer capitalize border border-solid border-[var(--app-theme)]"
+                  class="w-full p-1 rounded-md cursor-pointer border border-solid border-[var(--app-theme)]"
                   formControlName="size"
                 >
                   <option value="" disabled selected>select a size</option>
@@ -96,7 +99,7 @@
               <div class="">
                 <select
                   name="qty"
-                  class="w-full p-1 rounded-md cursor-pointer capitalize border border-solid border-[var(--app-theme)]"
+                  class="w-full p-1 rounded-md cursor-pointer border border-solid border-[var(--app-theme)]"
                   formControlName="qty"
                 >
                   <option value="" disabled selected>select a quantity</option>
@@ -108,11 +111,13 @@
 
             </div>
 
-            <div class="">
+            <div>
               <button
                 class="w-full p-5 uppercase border border-black hover:bg-black hover:text-white"
                 type="submit"
-              >add to cart
+                (click)="addToCart()"
+              >
+                add to cart
               </button>
             </div>
           </form>
@@ -122,15 +127,16 @@
             <h2 class="w-fit capitalize border-b border-[var(--app-theme)]">description</h2>
             <p
               class="text-sm h-20 pt-3.5 break-words overflow-hidden"
-              [innerHTML]="currentItem.detail.desc" [class.show]="showMore"
+              [innerHTML]="details[0].desc" [class.show]="showMore"
             ></p>
-            <button *ngIf="currentItem.detail.desc.length > 0" class="outline-none border-none bg-transparent"
+            <button *ngIf="details[0].desc.length > 0" class="outline-none border-none bg-transparent"
                     (click)="showMore = !showMore">
               <span class="lowercase text-[var(--app-theme-hover)]">
                 {{ showMore ? 'Show less' : 'Show More' }}
               </span>
             </button>
           </div>
+
         </div>
         <!-- end of product detail -->
       </div>
@@ -155,6 +161,11 @@
           quis reprehenderit sequi suscipit ullam veritatis voluptatibus.
         </p>
       </div>
+    </div>
+
+    <!-- Cart component  -->
+    <div class="z-15 fixed top-0 right-0 bottom-0 left-0" [style]="{ 'display': showCartComponent ? 'block' : 'none' }">
+      <app-cart></app-cart>
     </div>
 
   </ng-container>

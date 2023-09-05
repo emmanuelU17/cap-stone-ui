@@ -1,12 +1,13 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {NewCategoryService} from "./new-category.service";
-import {Observable, tap} from "rxjs";
-import {CategoryRequest} from "../../shared-util";
+import {map, Observable, of, switchMap} from "rxjs";
+import {CategoryRequest, CategoryResponse} from "../../shared-util";
 import {MatButtonModule} from "@angular/material/button";
 import {MatRadioModule} from "@angular/material/radio";
 import {DirectiveModule} from "../../../directive/directive.module";
+import {CategoryService} from "../category/category.service";
 
 @Component({
   selector: 'app-new-category',
@@ -17,20 +18,26 @@ import {DirectiveModule} from "../../../directive/directive.module";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NewCategoryComponent {
+
+  private newCategoryService: NewCategoryService = inject(NewCategoryService);
+  private categoryService: CategoryService = inject(CategoryService);
+
   reactiveForm: FormGroup = new FormGroup({
     name: new FormControl('', [Validators.required, Validators.max(80)]),
     parent: new FormControl(''),
     visible: new FormControl(false, Validators.required)
   });
 
-  constructor(private service: NewCategoryService) { }
-
   /** Clears reactiveForm */
   clear(): void {
     this.reactiveForm.reset();
   }
 
-  /** Submit reactive form to our server */
+  /**
+   * Submit reactive form to our server.
+   * The gotcha is on successful creation, we switch map to update categories array
+   * @return Observable of type number
+   * */
   submit(): Observable<number> {
     const obj: CategoryRequest = {
       name: this.reactiveForm.get('name')?.value,
@@ -38,12 +45,21 @@ export class NewCategoryComponent {
       visible: this.reactiveForm.get('visible')?.value
     };
 
-    return this.service.create(obj).pipe(
-      tap((res: number): void => {
-        if (res >= 200 && res < 300) {
+    return this.newCategoryService.create(obj).pipe(
+      switchMap((num: number): Observable<number> => {
+        if (num >= 200 && num < 300) {
           this.clear();
+          // Make call to server to update CategoryResponse[]
+          return this.categoryService.fetchCategories().pipe(
+            map((arr: CategoryResponse[]) => {
+              this.categoryService.setCategories(arr);
+              return num;
+            }),
+          );
         }
+        return of(num);
       })
     );
   }
+
 }

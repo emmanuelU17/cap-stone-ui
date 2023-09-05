@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable} from "rxjs";
 import {CollectionResponse} from "../../shared-util";
 import {HttpClient} from "@angular/common/http";

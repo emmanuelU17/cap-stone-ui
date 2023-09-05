@@ -24,11 +24,10 @@ import {Variant} from "../../../global-utils";
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, CKEditorModule, DirectiveModule, DynamicTableComponent],
   templateUrl: './update-product.component.html',
-  styleUrls: ['./update-product.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UpdateProductComponent implements OnInit {
-// TODO make number input box more stylish
+  // TODO make number input box more stylish
 
   private productService: ProductService = inject(ProductService);
   private categoryService: CategoryService = inject(CategoryService);

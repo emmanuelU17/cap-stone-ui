@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject, Renderer2} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {map, Observable, switchMap, take} from "rxjs";
 import {Filter} from "../shop.helper";
 import {CollectionService} from "../service/collection.service";
@@ -15,17 +15,16 @@ import {RouterLink} from "@angular/router";
   standalone: true,
   imports: [CommonModule, CardComponent, FilterComponent, RouterLink],
   templateUrl: './collection.component.html',
-  styleUrls: ['./collection.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CollectionComponent {
   private collectionService: CollectionService = inject(CollectionService);
   private productService: ProductService = inject(ProductService);
   public utilService: UtilService<string> = inject(UtilService<string>);
-  private render: Renderer2 = inject(Renderer2);
 
   activeGridIcon: boolean = true; // Approves if products should be displayed x3 or x4 in the x-axis
   filterByPrice: boolean = true; // A variable need to keep the state of price filter for future filtering
+  displayFilter: boolean = false; // Displays filter button
 
   // Fetch Collections
   private collections$: Observable<string[]> = this.collectionService._collections$;
@@ -46,11 +45,6 @@ export class CollectionComponent {
     products?: Product[],
     filter?: Filter<string>[]
   }> = this.utilService.getCombine$(this.products$, this.collections$, 'collections');
-
-  /** Display collection filter on click of button */
-  displayCollectionFilter(): void {
-    this.render.selectRootElement('.filter-btn', true).style.display = 'block';
-  }
 
   /** Re-renders product array to filter products by price */
   onclickFilterByPrice(bool: boolean): void {

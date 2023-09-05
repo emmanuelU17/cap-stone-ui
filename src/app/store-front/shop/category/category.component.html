@@ -7,7 +7,7 @@
     </div>
   </ng-container>
   <ng-container *ngSwitchCase="'ERROR'">
-    <div class="lg-scr p-10 capitalize text-3xl text-red-500">
+    <div class="lg-scr mg-top p-10 capitalize text-3xl text-red-500">
       Error {{ combine.error }}
     </div>
   </ng-container>
@@ -98,16 +98,18 @@
 
     <!-- Button to Filter container -->
     <div class="sticky w-fit bottom-2/4 bg-transparent">
-      <button class="p-3 rounded-full bg-[var(--in-active)]" (click)="displayCategoryFilter()">
+      <button class="p-3 rounded-full bg-[var(--app-theme)]" (click)="displayFilter = !displayFilter">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
         </svg>
       </button>
     </div>
+
     <!-- Filter container -->
-    <div class="filter-btn bg-transparent hidden fixed top-0 right-0 bottom-0 left-0 z-15" *ngIf="combine.filter">
+    <div class="filter-btn bg-transparent hidden fixed top-0 right-0 bottom-0 left-0 z-15"
+         *ngIf="combine.filter" [style]="{ 'display': displayFilter ? 'block' : 'none' }">
       <app-filter
-        [title]="'category'"
+        [title]="'shop by category'"
         [filters]="combine.filter"
         (emitter)="setEmitter($event)"
       ></app-filter>

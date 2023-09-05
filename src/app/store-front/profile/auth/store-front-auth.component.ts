@@ -6,7 +6,6 @@ import {CommonModule} from "@angular/common";
   standalone: true,
   imports: [CommonModule],
   templateUrl: './store-front-auth.component.html',
-  styleUrls: ['./store-front-auth.component.css']
 })
 export class StoreFrontAuthComponent {
   viewPassword = false;
