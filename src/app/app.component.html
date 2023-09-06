@@ -12,47 +12,46 @@
     </div>
   </ng-container>
   <ng-container *ngSwitchCase="'LOADED'">
-<!--    <ng-container *ngIf="activeRoute$ | async as active" [ngSwitch]="active.bool">-->
-<!--      &lt;!&ndash; Admin Route &ndash;&gt;-->
-<!--      <ng-container *ngSwitchCase="true">-->
-<!--        <router-outlet></router-outlet>-->
-<!--      </ng-container>-->
+    <ng-container *ngIf="activeRoute$ | async as active" [ngSwitch]="active.bool">
+      <!-- Admin Route -->
+      <ng-container *ngSwitchCase="true">
+        <router-outlet></router-outlet>
+      </ng-container>
 
-<!--      &lt;!&ndash; Store Front Route &ndash;&gt;-->
-<!--      <ng-container *ngSwitchCase="false">-->
-<!--        <ng-container *ngIf="combine$ | async as combine" [ngSwitch]="combine.state">-->
-<!--          <ng-container *ngSwitchCase="'LOADING'">-->
-<!--            <div class="lg-scr h-full p-20 flex justify-center items-center">-->
-<!--              <h1 class="capitalize text-[var(&#45;&#45;app-theme-hover)]">-->
-<!--                loading...-->
-<!--              </h1>-->
-<!--            </div>-->
-<!--          </ng-container>-->
-<!--          <ng-container *ngSwitchCase="'ERROR'">-->
-<!--            <div class="lg-scr p-10 capitalize text-3xl text-red-500">-->
-<!--              Error {{ combine.error }}-->
-<!--            </div>-->
-<!--          </ng-container>-->
-<!--          <ng-container *ngSwitchCase="'LOADED'">-->
-<!--            <div>-->
-<!--              <div class="lg-scr z-10 border-b border-transparent fixed left-0 top-0 right-0" [ngStyle]="navBg">-->
-<!--                <app-store-front-navigation-navigation></app-store-front-navigation-navigation>-->
-<!--              </div>-->
-<!--              <router-outlet></router-outlet>-->
-<!--            </div>-->
+      <!-- Store Front Route -->
+      <ng-container *ngSwitchCase="false">
+        <ng-container *ngIf="combine$ | async as combine" [ngSwitch]="combine.state">
+          <ng-container *ngSwitchCase="'LOADING'">
+            <div class="lg-scr h-full p-20 flex justify-center items-center">
+              <h1 class="capitalize text-[var(--app-theme-hover)]">
+                loading...
+              </h1>
+            </div>
+          </ng-container>
+          <ng-container *ngSwitchCase="'ERROR'">
+            <div class="lg-scr p-10 capitalize text-3xl text-red-500">
+              Error {{ combine.error }}
+            </div>
+          </ng-container>
+          <ng-container *ngSwitchCase="'LOADED'">
+            <div>
+              <div class="lg-scr z-10 border-b border-transparent fixed left-0 top-0 right-0" [ngStyle]="navBg">
+                <app-store-front-navigation-navigation></app-store-front-navigation-navigation>
+              </div>
+              <router-outlet></router-outlet>
+            </div>
 
-<!--            <div class="lg-scr mg-top p-5 w-full bg-blue-300">-->
-<!--              TODO Render footer-->
-<!--            </div>-->
-<!--          </ng-container>-->
-<!--          &lt;!&ndash; End of Front Route &ndash;&gt;-->
-<!--        </ng-container>-->
-<!--        &lt;!&ndash; End of necessary data &ndash;&gt;-->
-<!--      </ng-container>-->
-<!--      &lt;!&ndash; End of Front Route &ndash;&gt;-->
-<!--    </ng-container>-->
+            <div class="lg-scr mg-top p-5 w-full bg-blue-300">
+              TODO Render footer
+            </div>
+          </ng-container>
+          <!-- End of Front Route -->
+        </ng-container>
+        <!-- End of necessary data -->
+      </ng-container>
+      <!-- End of Front Route -->
+    </ng-container>
     <!-- End of activeRoute$ -->
-    <router-outlet></router-outlet>
   </ng-container>
   <!-- End of LOADED -->
 </ng-container>
