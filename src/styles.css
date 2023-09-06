@@ -11,6 +11,7 @@
   --app-theme-hover: #75a284;
   --form-input-background: #F3F3F3;
   --header-shadow: 0 0 5px grey;
+  --cards-border: 1px solid #dddddd;
   --black: #050505;
   --all-background: hsl(210, 36%, 96%);
 }

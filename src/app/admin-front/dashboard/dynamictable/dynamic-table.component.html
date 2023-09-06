@@ -20,7 +20,9 @@
           <ng-container [ngSwitch]="head">
 
             <!-- Image -->
-            <img *ngSwitchCase="'image'" [src]="data[head]" alt="logo">
+            <div class="min-w-[2.75rem] min-h-[2.75rem] max-w-[7rem] max-h-[4rem] rounded" *ngSwitchCase="'image'">
+              <img [src]="data[head]" alt="image" class="w-full h-full object-cover object-center">
+            </div>
 
             <!-- Product Name -->
             <div *ngSwitchCase="'name'">
@@ -79,7 +81,9 @@
         <ng-container [ngSwitch]="head">
 
           <!-- Image -->
-          <img *ngSwitchCase="'url'" [src]="d[head]" alt="logo">
+          <div class="min-w-[2.75rem] min-h-[2.75rem] max-w-[7rem] max-h-[4rem] rounded" *ngSwitchCase="'url'">
+            <img [src]="d[head]" alt="image" class="w-full h-full object-cover object-center">
+          </div>
 
           <!-- Buttons -->
           <div class="flex" *ngSwitchCase="'action'">
