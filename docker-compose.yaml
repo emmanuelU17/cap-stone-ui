@@ -1,0 +1,10 @@
+version: "3.9"
+services:
+
+  ui:
+    container_name: ui
+    image: "emmanuelu17/sarrebrand"
+    ports:
+      - "4200:4200"
+    environment:
+      - PORT=4200
