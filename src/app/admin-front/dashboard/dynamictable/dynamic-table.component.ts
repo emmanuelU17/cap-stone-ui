@@ -19,7 +19,7 @@ export class DynamicTableComponent<T> {
   @Input() data: T[] = [];
   @Input() pageData!: Page<T>;
   @Output() eventEmitter = new EventEmitter<TableContent<T>>();
-  @Output() pageEmitter: EventEmitter<PageChange> = new EventEmitter<PageChange>();
+  @Output() pageEmitter = new EventEmitter<PageChange>();
 
   date(d: any): string {
     return d === 0 ? '' : new Date(d).toDateString();
