@@ -84,19 +84,6 @@ export interface PageChange {
   size: number;
 }
 
-export enum Components {
-  dashboard = 'dashboard',
-  new_product = 'new_product',
-  new_category = 'new_category',
-  new_collection = 'new_collection',
-  product = 'product',
-  category = 'category',
-  collection = 'collection',
-  customer = 'customer',
-  detail = 'detail',
-  register = 'register'
-}
-
 /** Needed in new product */
 export interface ImageFilter {
   url: string;

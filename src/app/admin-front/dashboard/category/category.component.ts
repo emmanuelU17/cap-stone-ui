@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {CategoryResponse, TableContent} from "../../shared-util";
 import {CategoryService} from "./category.service";
@@ -13,13 +13,10 @@ import {DynamicTableComponent} from "../dynamictable/dynamic-table.component";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CategoryComponent {
+  private categoryService: CategoryService = inject(CategoryService);
+
+  data$: Observable<CategoryResponse[]> = this.categoryService._categories$;
   tHead: Array<keyof CategoryResponse> = ['id', 'category', 'created_at', 'modified_at', 'visible', 'action'];
-
-  data$: Observable<CategoryResponse[]>;
-
-  constructor(public categoryService: CategoryService) {
-    this.data$ = this.categoryService._categories$;
-  }
 
   infoFromTableComponent(content: TableContent<CategoryResponse>): void {
     console.log('Content ', content);

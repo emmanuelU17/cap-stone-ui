@@ -1,12 +1,15 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
-import {FormControl, FormGroup, Validators} from "@angular/forms";
-import {AdminAuthService} from "../admin-auth.service";
+import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
+import {AdminAuthService} from "./admin-auth.service";
 import {Router} from "@angular/router";
 import {Observable, of, tap} from "rxjs";
-import {LoginDto} from "../util";
+import {CommonModule} from "@angular/common";
+import {DirectiveModule} from "../../directive/directive.module";
 
 @Component({
   selector: 'app-admin-authentication',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, DirectiveModule],
   templateUrl: './admin-authentication.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -34,10 +37,6 @@ export class AdminAuthenticationComponent {
       // TODO throw error
       return of();
     }
-    const obj: LoginDto = {
-      principal: principal,
-      password: password
-    };
 
     return this.authService
       .login({ principal: principal, password: password })
@@ -45,7 +44,7 @@ export class AdminAuthenticationComponent {
         tap((status: number): void => {
           if (status >= 200 && status < 300) {
             this.loginForm.reset();
-            this.router.navigate(['/admin/dashboard']);
+            this.router.navigate(['/admin/dashboard/statistics']);
           }
         })
       );

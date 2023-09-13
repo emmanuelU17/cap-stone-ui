@@ -5,11 +5,11 @@ import {authGuard} from "./authguard";
 const routes: Routes = [
   {
     path: '',
-    loadChildren: () => import('./auth/admin-auth.module').then(m => m.AdminAuthModule),
+    loadComponent: () => import('./auth/admin-authentication.component').then(m => m.AdminAuthenticationComponent),
   },
   {
     path: 'dashboard',
-    loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule),
+    loadChildren: () => import('./dashboard/admin-dashboard.module').then(m => m.AdminDashboardModule),
     canActivateChild: [authGuard]
   }
 ];
@@ -18,4 +18,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class AdminFrontRoutingModule {}
+export class AdminFrontRoutingModule { }

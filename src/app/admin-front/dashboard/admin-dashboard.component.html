@@ -33,13 +33,15 @@
             <!--    End of title    -->
             <div class="py-2.5 px-0">
               <ul class="list-none" *ngFor="let a of link.array; let i = index">
-                <li
-                  class="flex p-2.5 capitalize cursor-pointer rounded-md"
-                  [style]="{'background-color': componentToRender === a.name ? 'var(--app-theme)' : 'transparent' }"
-                  (click)="loadComponent(a.name)"
-                >
-                  <span><mat-icon>{{ a.icon }}</mat-icon></span>
-                  <span class="flex h-full items-center">{{ a.name }}</span>
+                <li class="my-1.5" (click)="activeLink(a.route)">
+                  <a
+                    [routerLink]="a.route"
+                    class="w-full h-full flex p-2.5 gap-1.5 capitalize cursor-pointer rounded-md"
+                    [style]="{'background-color': currentRoute === a.route ? 'var(--app-theme)' : 'transparent' }"
+                  >
+                    <span><mat-icon>{{ a.icon }}</mat-icon></span>
+                    <span class="flex h-full items-center">{{ a.name }}</span>
+                  </a>
                 </li>
               </ul>
             </div>
@@ -60,17 +62,7 @@
         <!--  Right Column  -->
         <div class="p-2.5 flex flex-col flex-1 overflow-x-auto">
           <div class="flex-1">
-            <ng-container [ngSwitch]="componentToRender">
-              <app-new-product *ngSwitchCase="Components.new_product"></app-new-product>
-              <app-new-category *ngSwitchCase="Components.new_category" ></app-new-category>
-              <app-new-collection *ngSwitchCase="Components.new_collection"></app-new-collection>
-              <app-product *ngSwitchCase="Components.product"></app-product>
-              <app-category *ngSwitchCase="Components.category"></app-category>
-              <app-collection *ngSwitchCase="Components.collection"></app-collection>
-              <app-customer *ngSwitchCase="Components.customer"></app-customer>
-              <app-register *ngSwitchCase="Components.register"></app-register>
-              <app-statistics *ngSwitchDefault></app-statistics>
-            </ng-container>
+            <router-outlet></router-outlet>
           </div>
 
           <!-- Button to display Left column -->

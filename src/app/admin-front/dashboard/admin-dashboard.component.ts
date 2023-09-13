@@ -1,32 +1,40 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {catchError, combineLatest, map, Observable, of, startWith, tap} from "rxjs";
-import {DashboardService} from "../dashboard.service";
-import {CategoryService} from "../category/category.service";
-import {CategoryResponse, CollectionResponse, Components, ProductResponse} from "../../shared-util";
-import {AuthResponse, Page} from "../../../global-utils";
+import {DashboardService} from "./dashboard.service";
+import {CategoryService} from "./category/category.service";
+import {CategoryResponse, CollectionResponse, ProductResponse} from "../shared-util";
+import {AuthResponse, Page} from "../../global-utils";
 import {HttpErrorResponse} from "@angular/common/http";
-import {CollectionService} from "../collection/collection.service";
-import {ProductService} from "../product/product.service";
+import {CollectionService} from "./collection/collection.service";
+import {ProductService} from "./product/product.service";
+import {DASHBOARDLINKS, Display} from "./route-util";
 
 @Component({
-  selector: 'app-dashboard',
-  templateUrl: './dashboard.component.html',
+  selector: 'app-admin-dashboard',
+  templateUrl: './admin-dashboard.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DashboardComponent {
+export class AdminDashboardComponent {
   private dashboardService: DashboardService = inject(DashboardService);
   private categoryService: CategoryService = inject(CategoryService);
   private collectionService: CollectionService = inject(CollectionService);
   private productService: ProductService = inject(ProductService);
 
+  // User principal
   private principal$: Observable<AuthResponse> = this.dashboardService._principal$.pipe();
+
+  // Products
   private products$: Observable<Page<ProductResponse>> = this.productService.fetchAllProducts();
+
+  // Categories
   private category$: Observable<CategoryResponse[]> = this.categoryService.fetchCategories()
     .pipe(
       tap((arr: CategoryResponse[]) => arr
         .sort((a: CategoryResponse, b: CategoryResponse) => a.category.localeCompare(b.category))
       )
     );
+
+  // Collections
   private collection$: Observable<CollectionResponse[]> = this.collectionService.fetchCollections()
     .pipe(
       tap((arr: CollectionResponse[]) => arr
@@ -57,98 +65,22 @@ export class DashboardComponent {
       catchError((err: HttpErrorResponse) => of({state: 'ERROR', error: err.error}))
     );
 
-  leftColumn: boolean = false;
+
   // Loading of components
-  protected readonly Components = Components;
-  dashBoardLinks: Display[] = dashBoardLinks;
-  componentToRender: Components = Components.dashboard;
+  dashBoardLinks: Display[] = DASHBOARDLINKS;
+
+  // Current route
+  currentRoute: string = 'statistics'; // statistics as it is the initial route
+  leftColumn: boolean = false;
 
   /**
-   * Method dynamically loads components based on <li> clicked.
+   * Method dynamically loads components based on <li><a>route</a></li> clicked.
+   * @param currentRoute is the current child component rendered
    * @return void
    * */
-  loadComponent(item: Components): void {
-    this.componentToRender = item
+  activeLink(currentRoute: string): void {
+    this.currentRoute = currentRoute;
     this.leftColumn = false;
   }
 
 }
-
-interface Display {
-  title: string;
-  array: List[];
-}
-
-interface List {
-  icon: string,
-  name: Components
-  index: number
-}
-
-const dashBoardLinks: Display[] = [
-  {
-    title: 'quick links',
-    array: [
-      {
-        icon: 'dashboard',
-        name: Components.dashboard,
-        index: 0
-      },
-      {
-        icon: 'shopping_basket-hunt',
-        name: Components.new_product,
-        index: 1
-      },
-      {
-        icon: 'new_releases',
-        name: Components.new_category,
-        index: 2
-      },
-      {
-        icon: 'card_giftcard',
-        name: Components.new_collection,
-        index: 3
-      },
-    ]
-  },
-  {
-    title: 'catalog',
-    array: [
-      {
-        icon: 'shopping_basket-hunt',
-        name: Components.product,
-        index: 4
-      },
-      {
-        icon: 'flare',
-        name: Components.category,
-        index: 5
-      },
-      {
-        icon: 'filter_center_focus',
-        name: Components.collection,
-        index: 6
-      },
-    ]
-  },
-  {
-    title: 'customer',
-    array: [
-      {
-        icon: 'supervised_user_circle',
-        name: Components.customer,
-        index: 7
-      }
-    ]
-  },
-  {
-    title: 'register',
-    array: [
-      {
-        icon: 'home',
-        name: Components.register,
-        index: 8
-      }
-    ]
-  }
-];
