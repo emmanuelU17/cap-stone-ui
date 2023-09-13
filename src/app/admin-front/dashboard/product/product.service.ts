@@ -62,7 +62,7 @@ export class ProductService {
   fetchProductDetails(id: string): Observable<ProductDetailResponse[]> {
     const url: string = `${this.HOST}api/v1/worker/product/detail`;
     return this.http.get<ProductDetailResponse[]>(url, {
-      params: {id: id},
+      params: { id: id },
       responseType: 'json',
       withCredentials: true
     });
@@ -72,8 +72,8 @@ export class ProductService {
   fetchAllProducts(page: number = 0, size: number = 30): Observable<Page<ProductResponse>> {
     const url = `${this.HOST}api/v1/worker/product`;
     return this.http.get<Page<ProductResponse>>(url, {
-      headers: {'content-type': 'application/json'},
-      params: {page: page, size: size},
+      headers: { 'content-type': 'application/json' },
+      params: { page: page, size: size },
       withCredentials: true
     });
   }

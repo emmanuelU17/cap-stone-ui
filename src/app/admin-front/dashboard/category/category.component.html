@@ -1,16 +1,25 @@
-<div class="h-full py-0 px-2.5">
+<ng-container *ngIf="categoryComponent; else updateCategory">
+  <div class="h-full py-0 px-2.5">
+    <div class="py-2.5 px-0">
+      <h1 class="capitalize">categories</h1>
+    </div>
 
-  <div class="py-2.5 px-0">
-    <h1 class="capitalize">categories</h1>
+    <div class="px-0" *ngIf="data$ | async as data">
+      <app-dynamic-table
+        [detail]="false"
+        [tHead]="tHead"
+        [data]="data"
+        (eventEmitter)="infoFromTableComponent($event)"
+      ></app-dynamic-table>
+    </div>
   </div>
+</ng-container>
 
-  <div class="px-0" *ngIf="data$ | async as data">
-    <app-dynamic-table
-      [detail]="false"
-      [tHead]="tHead"
-      [data]="data"
-      (eventEmitter)="infoFromTableComponent($event)"
-    ></app-dynamic-table>
+<ng-template #updateCategory>
+  <div class="h-full py-0 px-2.5" *ngIf="data">
+    <app-update-category
+    [data]="data"
+    (emitter)="childEmitter($event)"
+    ></app-update-category>
   </div>
-
-</div>
+</ng-template>

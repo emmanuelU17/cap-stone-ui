@@ -37,7 +37,7 @@ export class ProductComponent {
   category: string = '';
   collection: string = '';
 
-  columns: Array<keyof ProductResponse> = ['image', 'id', 'name', 'desc', 'currency', 'price'];
+  thead: Array<keyof ProductResponse> = ['image', 'id', 'name', 'desc', 'currency', 'price'];
 
   /**
    * Displays UpdateProduct component based on the product clicked from DynamicTable

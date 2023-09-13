@@ -53,7 +53,7 @@ export interface CategoryRequest {
 }
 
 export interface CategoryResponse {
-  id: number
+  id: string;
   category: string;
   created_at?: number;
   modified_at?: number;

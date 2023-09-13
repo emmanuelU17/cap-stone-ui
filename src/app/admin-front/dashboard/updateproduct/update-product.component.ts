@@ -27,8 +27,6 @@ import {Variant} from "../../../global-utils";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UpdateProductComponent implements OnInit {
-  // TODO make number input box more stylish
-
   private productService: ProductService = inject(ProductService);
   private categoryService: CategoryService = inject(CategoryService);
   private collectionService: CollectionService = inject(CollectionService);
