@@ -8,7 +8,7 @@ import {AuthResponse} from "../../global-utils";
 @Injectable({
   providedIn: 'root'
 })
-export class AuthService {
+export class AdminAuthService {
   HOST: string | undefined;
 
   constructor(private http: HttpClient) {

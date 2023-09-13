@@ -7,7 +7,7 @@ import {Product} from "../../store-front-utils";
 @Injectable({
   providedIn: 'root'
 })
-export class UtilService<T> {
+export class UtilService {
 
   /**
    * Method allows displays a set of squares. These squares display the amount of products to be displayed on the page.
@@ -39,7 +39,7 @@ export class UtilService<T> {
    * @param str is what filtering we are applying
    * @return Observable object of { state: string, error?: string, products?: Product[], filter?: Filter<string>[] }
    * */
-  getCombine$(products$: Observable<Product[]>, generic$: Observable<T[]>, str: string): Observable<{
+  getCombine$<T>(products$: Observable<Product[]>, generic$: Observable<T[]>, str: string): Observable<{
     state: string,
     error?: string,
     products?: Product[],

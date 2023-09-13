@@ -22,14 +22,14 @@
 
         <!-- Images -->
         <div class="p-2.5 flex max-[1028px]:flex-col-reverse lg:flex xl:flex gap-1.5 justify-center"
-             *ngIf="currentItem$ | async as currentItem">
+             *ngIf="currentProductDetail">
 
           <!-- image carousel -->
           <div class="flex gap-1.5 overflow-y-auto sm:flex-row md:flex-row lg:flex-col xl:flex-col">
             <button
               class="border-none outline-none bg-transparent min-h-[64px] min-w-[64px] max-h-[75px] max-w-[75px]"
-              *ngFor="let img of currentItem.detail.url"
-              (click)="currentItem.currImage = img"
+              *ngFor="let img of currentProductDetail.detail.url"
+              (click)="currentProductDetail.currImage = img"
             >
               <img
                 class="w-full h-full object-cover object-center"
@@ -41,72 +41,94 @@
 
           <!-- Main display for image -->
           <div class="overflow-hidden rounded-sm flex-1">
-            <img [src]="currentItem.currImage" alt="image" class="h-full w-full object-cover object-center">
+            <img [src]="currentProductDetail.currImage" alt="image" class="h-full w-full object-cover object-center">
           </div>
 
         </div>
 
         <!-- product detail -->
         <div class="p-2.5 flex flex-col gap-2">
-          <h1 class="capitalize text-3xl font-bold">{{ details[0].name }}</h1>
+          <h1 class="text-3xl font-bold">{{ details[0].name }}</h1>
           <h2 class="text-xl font-bold">{{ details[0].currency }}{{ details[0].price }}</h2>
-          <h4 class="text-xl font-bold">Sku
-            <span class="text-xs opacity-50">
-              Yet to implement
-            </span>
+          <h4 class="text-xl font-bold">
+            Sku <span class="text-xs opacity-50">{{ sku }}</span>
           </h4>
 
           <!-- Form -->
           <form class="flex flex-col gap-2" [formGroup]="reactiveForm">
 
             <!-- Form Contents -->
-            <div class="flex gap-1.5">
+            <div class="flex gap-1.5 flex-col md:flex-row">
               <!-- SKU -->
               <div class="hidden">
                 <input name="sku" type="text" id="sku" formControlName="sku">
               </div>
 
               <!-- Colour -->
-              <div class="">
+              <div>
                 <select
                   name="colour"
                   formControlName="colour"
                   class="w-full p-1 rounded-md cursor-pointer border border-solid border-[var(--app-theme)]"
                   (change)="onclickColour($event)"
                 >
-                  <option value="" disabled [selected]="true">select a colour</option>
+                  <option value="" disabled [selected]="true">COLOUR</option>
                   <option *ngFor="let d of detail.data" [value]="d.colour">
                     {{ d.colour }}
                   </option>
                 </select>
               </div>
 
-              <!-- Size -->
-              <div *ngIf="currentItem$ | async as currentItem">
-                <select
-                  name="size"
-                  class="w-full p-1 rounded-md cursor-pointer border border-solid border-[var(--app-theme)]"
-                  formControlName="size"
-                >
-                  <option value="" disabled selected>select a size</option>
-                  <option *ngFor="let variants of currentItem.detail.variants">
-                    {{ variants.size }}
-                  </option>
-                </select>
-              </div>
+              <!-- Size and Qty container -->
+              <div class="flex flex-1 gap-1.5" *ngIf="currentProductDetail">
+                <!-- Size -->
+                <div>
+                  <select
+                    name="size"
+                    class="w-full p-1 rounded-md cursor-pointer border border-solid border-[var(--app-theme)]"
+                    formControlName="size"
+                    (change)="onselectSize($event)"
+                  >
+                    <option value="" disabled selected>SIZE</option>
+                    <option *ngFor="let variants of currentProductDetail.detail.variants">
+                      {{ variants.size }}
+                    </option>
+                  </select>
+                </div>
 
-              <!-- Qty -->
-              <div class="">
-                <select
-                  name="qty"
-                  class="w-full p-1 rounded-md cursor-pointer border border-solid border-[var(--app-theme)]"
-                  formControlName="qty"
-                >
-                  <option value="" disabled selected>select a quantity</option>
-                  <option>
-                    Qty: 10
-                  </option>
-                </select>
+                  <!-- Qty -->
+                <div class="flex-1">
+                  <ng-container *ngIf="inventory < 0">
+                    <select
+                      name="qty"
+                      class="w-full p-1 rounded-md cursor-pointer border border-solid border-[var(--app-theme)]"
+                      formControlName="qty"
+                    >
+                      <option value="" disabled selected>QUANTITY</option>
+                    </select>
+                  </ng-container>
+                  <ng-container *ngIf="inventory === 0">
+                    <select
+                      name="qty"
+                      class="w-full p-1 rounded-md cursor-pointer border border-solid border-[var(--app-theme)]"
+                      formControlName="qty"
+                    >
+                      <option value="" disabled selected>sold out</option>
+                    </select>
+                  </ng-container>
+                  <ng-container *ngIf="inventory > 0">
+                    <select
+                      name="qty"
+                      class="w-full p-1 rounded-md cursor-pointer border border-solid border-[var(--app-theme)]"
+                      formControlName="qty"
+                    >
+                      <option value="" disabled selected>QUANTITY</option>
+                      <option *ngFor="let range of utilService.getRange(inventory); let i = index">
+                        {{ i + 1 }}
+                      </option>
+                    </select>
+                  </ng-container>
+                </div>
               </div>
 
             </div>

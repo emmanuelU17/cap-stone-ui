@@ -20,7 +20,7 @@ import {RouterLink} from "@angular/router";
 export class CategoryComponent {
   private categoryService: CategoryService = inject(CategoryService);
   private productService: ProductService = inject(ProductService);
-  public utilService: UtilService<string> = inject(UtilService<string>);
+  public utilService: UtilService = inject(UtilService);
 
   activeGridIcon: boolean = true; // Approves if products should be displayed x3 or x4 in the x-axis
   filterByPrice: boolean = true; // A variable need to keep the state of price filter for future filtering
@@ -45,7 +45,6 @@ export class CategoryComponent {
     products?: Product[],
     filter?: Filter<string>[]
   }> = this.utilService.getCombine$(this.products$, this.categories$, 'categories');
-
 
   /** Re-renders product array to filter products by price */
   onclickFilterByPrice(bool: boolean): void {

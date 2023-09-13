@@ -1,6 +1,6 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
-import {AuthService} from "../auth.service";
+import {AdminAuthService} from "../admin-auth.service";
 import {Router} from "@angular/router";
 import {Observable, of, tap} from "rxjs";
 import {LoginDto} from "../util";
@@ -11,16 +11,15 @@ import {LoginDto} from "../util";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AdminAuthenticationComponent {
+  private authService: AdminAuthService = inject(AdminAuthService);
+  private router: Router = inject(Router);
+
   viewPassword = false;
 
   loginForm = new FormGroup({
     principal: new FormControl("", [Validators.required]),
     password: new FormControl("", [Validators.required]),
   });
-
-  constructor(private authService: AuthService, private router: Router) { }
-
-  sub(): void { }
 
   /**
    * Method responsible for logging in a user. A lot of logic going on here but basically when a user clicks on login,
@@ -40,14 +39,16 @@ export class AdminAuthenticationComponent {
       password: password
     };
 
-    return this.authService.login(obj).pipe(
-      tap((status: number): void => {
-        if (status >= 200 && status < 300) {
-          this.loginForm.reset();
-          this.router.navigate(['/admin/dashboard']);
-        }
-      })
-    );
+    return this.authService
+      .login({ principal: principal, password: password })
+      .pipe(
+        tap((status: number): void => {
+          if (status >= 200 && status < 300) {
+            this.loginForm.reset();
+            this.router.navigate(['/admin/dashboard']);
+          }
+        })
+      );
   }
 
 }

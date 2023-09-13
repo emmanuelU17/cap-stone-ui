@@ -1,13 +1,14 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {ProductDetail} from "../shop.helper";
 import {State, Variant} from "../../../global-utils";
-import {BehaviorSubject, catchError, map, Observable, of, startWith, switchMap} from "rxjs";
+import {catchError, map, Observable, of, startWith} from "rxjs";
 import {ActivatedRoute, RouterLink} from "@angular/router";
 import {ProductService} from "../service/product.service";
 import {HttpErrorResponse} from "@angular/common/http";
-import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
+import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
 import {CommonModule} from "@angular/common";
 import {CartComponent} from "../cart/cart.component";
+import {UtilService} from "../service/util.service";
 
 @Component({
   selector: 'app-product',
@@ -19,91 +20,100 @@ import {CartComponent} from "../cart/cart.component";
 })
 export class ProductComponent {
   private productService: ProductService = inject(ProductService);
+  utilService: UtilService = inject(UtilService);
   private route: ActivatedRoute = inject(ActivatedRoute);
+  private fb: FormBuilder = inject(FormBuilder);
 
-  showMore: boolean = false; // Show more paragraph
-  showCartComponent: boolean = false;
+  // ProductDetail array and Current ProductDetail
+  private productDetailArray: ProductDetail[] = [];
+  private currentColourSize = { colour: '', size: '' };
+  inventory = -1;
+  currentProductDetail?: { currImage: string, detail: ProductDetail };
+  sku = '';
 
+  // Fetch ProductDetail on load of application
   private id: string | null = this.route.snapshot.paramMap.get('id');
   private uuid: string = this.id === null ? '' : this.id;
 
-  // Fetch ProductDetail on load of application
   productDetails$: Observable<State<ProductDetail[]>> = this.productService
     .fetchProductDetails(this.uuid)
     .pipe(
       map((arr: ProductDetail[]): State<ProductDetail[]> => {
+        // Add all product detail to product array
+        this.productDetailArray = arr;
+
         // First item in array
         const curr: ProductDetail = arr[0];
 
         // Current ProductDetail with the first item in arr
-        this.currItemSubject$.next({ currImage: curr.url[0], detail: curr });
+        this.currentProductDetail = { currImage: curr.url[0], detail: curr };
 
-        return { state: 'LOADED', data: arr };
+        return {state: 'LOADED', data: arr};
       }),
-      startWith({ state: 'LOADING' }),
+      startWith({state: 'LOADING'}),
       catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.message }))
     );
 
-  private currItemSubject$ =
-    new BehaviorSubject<{ currImage: string, detail: ProductDetail } | undefined>(undefined);
-  currentItem$ = this.currItemSubject$.asObservable();
+  showMore: boolean = false; // Show more paragraph
+  showCartComponent: boolean = false;
 
-  reactiveForm = new FormGroup({
-    sku: new FormControl({value: '', disabled: true}, [Validators.required]),
-    size: new FormControl('', [Validators.required]),
+  reactiveForm = this.fb.group({
+    sku: new FormControl({ value: '', disabled: true }, [Validators.required]),
     colour: new FormControl('', [Validators.required]),
-    qty: new FormControl('', [Validators.required]),
+    size: new FormControl({ value: '', disabled: true }, [Validators.required]),
+    qty: new FormControl({ value: '', disabled: true }, [Validators.required]),
   });
 
   /**
-   * Since a Product always has a unique colour, when a cx wants a different Product variant,
-   * we use the colour to find it.
+   * Updates currentProductDetail on the colour clicked.
    *
    * @param event is of type Event but contains a value colour
    * @return void
    * */
   onclickColour(event: Event): void {
     const colour: string = (event.target as HTMLInputElement).value;
-    this.currentItem$ = this.productDetails$.pipe(
-      map((state: State<ProductDetail[]>) => {
-        // PAUSE
-        const detail: ProductDetail | undefined = state.data?.find((d: ProductDetail): boolean => d.colour === colour);
-        return detail ? { currImage: detail.url[0], detail: detail } : undefined;
-      })
-    );
-  }
+    const findProductDetail: ProductDetail | undefined = this.productDetailArray
+      .find((d: ProductDetail) => d.colour === colour);
 
-  currentSKU$(): Observable<string> {
-    const size = this.reactiveForm.get('size')?.value;
-    const colour = this.reactiveForm.get('colour')?.value;
-
-    if (!size || !colour) {
-      return of('Filter Product');
+    if (!findProductDetail) {
+      return;
     }
 
-    return this.productDetails$.pipe(
-      // SwitchMap
-      switchMap((state: State<ProductDetail[]>) => {
-        if (!state.data) {
-          return of('Filter Product');
-        }
-        const details: ProductDetail[] = state.data;
+    this.currentColourSize.colour = colour;
 
-        const found: ProductDetail | undefined = details.find((d: ProductDetail) => d.colour === colour);
+    // Reset dependent FormControls
+    this.reactiveForm.controls['size'].reset({ value: '', disabled: false });
+    this.reactiveForm.controls['qty'].reset({ value: '', disabled: true });
 
-        if (!found) {
-          return of('Filter Product');
-        }
+    // Update currentProductDetail
+    this.currentProductDetail = { currImage: findProductDetail.url[0], detail: findProductDetail };
+  }
 
-        const sku: Variant | undefined = found.variants.find((v: Variant) => v.size === size);
+  /**  */
+  onselectSize(event: Event): void {
+    const size: string = (event.target as HTMLInputElement).value;
 
-        if (!sku) {
-          return of('Filter Product');
-        }
+    const findProductDetail: ProductDetail | undefined = this.productDetailArray
+      .find((d: ProductDetail) => d.colour === this.currentColourSize.colour);
 
-        return of(sku.sku);
-      }),
-    );
+    if (!findProductDetail) {
+      return;
+    }
+
+    const findVariant: Variant | undefined = findProductDetail.variants
+      .find((v: Variant) => v.size === size);
+
+    if (!findVariant) {
+      return;
+    }
+
+    // Update necessary details for the UI
+    this.sku = findVariant.sku;
+    this.currentColourSize.size = size;
+    this.inventory = Number(findVariant.inventory);
+
+    // Reset qty element
+    this.reactiveForm.controls['qty'].reset({ value: '', disabled: false });
   }
 
   /** Stores product in users cart */
