@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {NewCategoryService} from "./new-category.service";
-import {map, Observable, of, switchMap} from "rxjs";
+import {Observable, of, switchMap} from "rxjs";
 import {CategoryRequest, CategoryResponse} from "../../shared-util";
 import {MatButtonModule} from "@angular/material/button";
 import {MatRadioModule} from "@angular/material/radio";
@@ -46,18 +46,19 @@ export class NewCategoryComponent {
     };
 
     return this.newCategoryService.create(obj).pipe(
-      switchMap((num: number): Observable<number> => {
-        if (num >= 200 && num < 300) {
-          this.clear();
-          // Make call to server to update CategoryResponse[]
-          return this.categoryService.fetchCategories().pipe(
-            map((arr: CategoryResponse[]) => {
-              this.categoryService.setCategories(arr);
-              return num;
-            }),
-          );
+      switchMap((status: number): Observable<number> => {
+        const res = of(status);
+
+        if (!(status >= 200 && status < 300)) {
+          return res;
         }
-        return of(num);
+
+        // Clear Input field
+        this.clear();
+        this.reactiveForm.controls['parent'].setValue('');
+
+        // Make call to server to update CategoryResponse[]
+        return this.categoryService.fetchCategories().pipe(switchMap(() => res));
       })
     );
   }

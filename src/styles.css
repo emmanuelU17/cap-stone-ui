@@ -33,8 +33,6 @@ body {
   overflow-x: hidden;
 }
 
-/*html { overflow-x: hidden; }*/
-
 .lg-scr {
   width: 100%;
   max-width: 1200px;
@@ -60,3 +58,20 @@ body {
   color: red;
   cursor: pointer;
 }
+
+/*::-webkit-scrollbar-track {*/
+/*  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);*/
+/*  border-radius: 10px;*/
+/*  background-color: #F5F5F5;*/
+/*}*/
+
+/*::-webkit-scrollbar {*/
+/*  width: 5px;*/
+/*  background-color: #F5F5F5;*/
+/*}*/
+
+/*::-webkit-scrollbar-thumb {*/
+/*  border-radius: 5px;*/
+/*  !*-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);*!*/
+/*  background-color: var(--app-theme);*/
+/*}*/

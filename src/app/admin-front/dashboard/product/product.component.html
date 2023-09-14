@@ -1,48 +1,31 @@
-<!-- Product Container -->
-<ng-container *ngIf="currComponent">
-  <div class="flex flex-col h-full py-0">
-    <div class="px-0 py-2.5">
-      <h1>Products</h1>
-    </div>
-
-    <div class="flex-1" *ngIf="data$ | async as data" [ngSwitch]="data.state">
-      <ng-container *ngSwitchCase="'LOADING'">
-        <div class="lg-scr h-full p-20 flex justify-center items-center">
-          <h1 class="capitalize text-[var(--app-theme-hover)]">
-            loading...
-          </h1>
-        </div>
-      </ng-container>
-      <ng-container *ngSwitchCase="'ERROR'">
-        <div class="lg-scr mg-top p-10 capitalize text-3xl text-red-500">
-          Error {{ data.error }}
-        </div>
-      </ng-container >
-      <ng-container *ngSwitchCase="'LOADED'">
-        <ng-container *ngIf="data.data">
-          <app-dynamic-table
-            [paginationTable]="true"
-            [detail]="true"
-            [pageData]="data.data"
-            [tHead]="thead"
-            (eventEmitter)="infoFromTableComponent($event)"
-          ></app-dynamic-table>
-        </ng-container>
-      </ng-container>
-    </div>
+<div class="flex flex-col h-full py-0">
+  <div class="px-0 py-2.5">
+    <h1>Products</h1>
   </div>
-</ng-container>
 
-<!-- Update Product Container -->
-<ng-container *ngIf="!currComponent">
-  <app-update-product
-    [name]="name"
-    [price]="price"
-    [desc]="desc"
-    [category]="category"
-    [collection]="collection"
-    (parentEmitter)="displayProductContainer($event)"
-    (refreshEmitter)="refreshProducts($event)"
-  ></app-update-product>
-</ng-container>
-
+  <div class="flex-1" *ngIf="data$ | async as data" [ngSwitch]="data.state">
+    <ng-container *ngSwitchCase="'LOADING'">
+      <div class="lg-scr h-full p-20 flex justify-center items-center">
+        <h1 class="capitalize text-[var(--app-theme-hover)]">
+          loading...
+        </h1>
+      </div>
+    </ng-container>
+    <ng-container *ngSwitchCase="'ERROR'">
+      <div class="lg-scr mg-top p-10 capitalize text-3xl text-red-500">
+        Error {{ data.error }}
+      </div>
+    </ng-container >
+    <ng-container *ngSwitchCase="'LOADED'">
+      <ng-container *ngIf="data.data">
+        <app-dynamic-table
+          [paginationTable]="true"
+          [detail]="true"
+          [pageData]="data.data"
+          [tHead]="thead"
+          (eventEmitter)="infoFromTableComponent($event)"
+        ></app-dynamic-table>
+      </ng-container>
+    </ng-container>
+  </div>
+</div>

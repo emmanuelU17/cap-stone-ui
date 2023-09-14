@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {CategoryResponse, CollectionResponse, ImageFilter, SizeInventory} from "../../shared-util";
-import {Observable, tap} from "rxjs";
+import {Observable, of, switchMap} from "rxjs";
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {CategoryService} from "../category/category.service";
 import {CollectionService} from "../collection/collection.service";
@@ -27,7 +27,6 @@ import {ProductService} from "../product/product.service";
     MatIconModule,
     MatRadioModule,
     ReactiveFormsModule,
-    SizeInventoryComponent,
     DirectiveModule
   ],
   templateUrl: './new-product.component.html',
@@ -129,15 +128,18 @@ export class NewProductComponent implements OnInit {
    * */
   submit(): Observable<number> {
     return this.service.create(this.toFormData(this.reactiveForm)).pipe(
-      tap((status: number): void => {
-        if (status >= 200 && status < 300) {
-          this.clear();
-          this.reactiveForm.controls['collection'].setValue('');
-          this.reactiveForm.controls['category'].setValue('');
-          // Refresh products$ on successful upload
-          this.productService._products$ = this.productService.fetchAllProducts();
-          // TODO clear sizeInventory
+      switchMap((status: number) => {
+        const res = of(status);
+        if (!(status >= 200 && status < 300)) {
+          return res;
         }
+        // TODO clear sizeInventory
+
+        this.clear();
+        this.reactiveForm.controls['collection'].setValue('');
+        this.reactiveForm.controls['category'].setValue('');
+
+        return this.productService.fetchAllProducts().pipe(switchMap(() => res));
       }),
     );
   }

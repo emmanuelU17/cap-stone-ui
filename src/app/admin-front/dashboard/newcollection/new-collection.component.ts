@@ -4,8 +4,8 @@ import {MatButtonModule} from "@angular/material/button";
 import {MatRadioModule} from "@angular/material/radio";
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {NewCollectionService} from "./new-collection.service";
-import {map, Observable, of, switchMap} from "rxjs";
-import {CollectionRequest, CollectionResponse} from "../../shared-util";
+import {Observable, of, switchMap} from "rxjs";
+import {CollectionRequest} from "../../shared-util";
 import {DirectiveModule} from "../../../directive/directive.module";
 import {CollectionService} from "../collection/collection.service";
 
@@ -44,17 +44,14 @@ export class NewCollectionComponent {
     };
 
     return this.service.create(obj).pipe(
-      switchMap((res: number): Observable<number> => {
-        if (res >= 200 && res < 300) {
-          this.clear();
-          return this.collectionService.fetchCollections().pipe(
-            map((arr: CollectionResponse[]) => {
-              this.collectionService.setCollections(arr);
-              return res;
-            })
-          );
+      switchMap((status: number): Observable<number> => {
+        const res = of(status);
+        if (!(status >= 200 && status < 300)) {
+          return of(status);
         }
-        return of(res);
+
+        this.clear();
+        return this.collectionService.fetchCollections().pipe(switchMap(() => res));
       })
     );
   }

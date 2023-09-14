@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable} from "rxjs";
+import {map, Observable, of} from "rxjs";
 import {CollectionResponse} from "../../shared-util";
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpResponse} from "@angular/common/http";
 import {environment} from "../../../../environments/environment";
 
 @Injectable({
@@ -10,20 +10,30 @@ import {environment} from "../../../../environments/environment";
 export class CollectionService {
   HOST: string | undefined;
 
-  private collections$ = new BehaviorSubject<CollectionResponse[]>([]);
-  _collections$ = this.collections$.asObservable();
+  _collections$: Observable<CollectionResponse[]> = of();
+  collections: CollectionResponse[] = [];
 
   constructor(private http: HttpClient) {
     this.HOST = environment.domain;
   }
 
-  setCollections(arr: CollectionResponse[]): void {
-    this.collections$.next(arr);
-  }
-
   // Fetch Collection
   fetchCollections(): Observable<CollectionResponse[]> {
     const url = `${this.HOST}api/v1/worker/collection`;
-    return this.http.get<CollectionResponse[]>(url, { withCredentials: true });
+    return this.http.get<CollectionResponse[]>(url, {
+      observe: 'response',
+      responseType: 'json',
+      withCredentials: true
+    }).pipe(
+      map((res: HttpResponse<CollectionResponse[]>) => {
+        const body: CollectionResponse[] | null = res.body;
+        if (!body) {
+          return [];
+        }
+        this.collections = body;
+        this._collections$ = of(body);
+        return body;
+      })
+    );
   }
 }

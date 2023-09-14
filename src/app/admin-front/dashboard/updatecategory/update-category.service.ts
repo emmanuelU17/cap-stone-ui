@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpResponse} from "@angular/common/http";
 import {environment} from "../../../../environments/environment";
-import {Observable} from "rxjs";
-import {ProductResponse} from "../../shared-util";
+import {map, Observable} from "rxjs";
+import {ProductResponse, UpdateCategory} from "../../shared-util";
 import {Page} from "../../../global-utils";
 
 @Injectable({
@@ -15,6 +15,7 @@ export class UpdateCategoryService {
     this.HOST = environment.domain;
   }
 
+  /** Returns a Page of Product Response based on CategoryResponse id and pagination params */
   allProductByCategory(id: string, page: number = 0, size: number = 20): Observable<Page<ProductResponse>> {
     const url = `${this.HOST}api/v1/worker/category/products`
     return this.http.get<Page<ProductResponse>>(url, {
@@ -27,6 +28,15 @@ export class UpdateCategoryService {
       responseType: 'json',
       withCredentials: true
     });
+  }
+
+  updateCategory(body: UpdateCategory): Observable<number> {
+    const url = `${this.HOST}api/v1/worker/category`;
+    return this.http.put<UpdateCategory>(url, body, {
+      headers: { 'content-type': 'application/json' },
+      observe: 'response',
+      withCredentials: true
+    }).pipe(map((res: HttpResponse<UpdateCategory>) => res.status));
   }
 
 }

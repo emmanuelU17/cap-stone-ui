@@ -48,19 +48,9 @@ export class AdminDashboardComponent {
     principal?: string,
   }> = combineLatest([this.principal$, this.products$, this.category$, this.collection$])
     .pipe(
-      map((
-        [
-          principal,
-          products,
-          categories,
-          collections
-        ]: [AuthResponse, Page<ProductResponse>, CategoryResponse[], CollectionResponse[]]
-      ): { state: string, error?: string, principal?: string } => {
-        this.productService.setProducts(products);
-        this.categoryService.setCategories(categories);
-        this.collectionService.setCollections(collections);
-        return {state: 'LOADED', principal: principal.principal};
-      }),
+      map(([principal]: [AuthResponse, Page<ProductResponse>, CategoryResponse[], CollectionResponse[]]) =>
+        ({ state: 'LOADED', principal: principal.principal })
+      ),
       startWith({state: 'LOADING'}),
       catchError((err: HttpErrorResponse) => of({state: 'ERROR', error: err.error}))
     );

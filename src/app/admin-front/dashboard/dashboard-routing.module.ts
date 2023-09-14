@@ -20,12 +20,20 @@ const routes: Routes = [
         loadComponent: () => import('./product/product.component').then(m => m.ProductComponent),
       },
       {
+        path: 'product/:id',
+        loadComponent: () => import('./updateproduct/update-product.component').then(m => m.UpdateProductComponent),
+      },
+      {
         path: 'new-category',
         loadComponent: () => import('./newcategory/new-category.component').then(m => m.NewCategoryComponent),
       },
       {
         path: 'category',
         loadComponent: () => import('./category/category.component').then(m => m.CategoryComponent),
+      },
+      {
+        path: 'category/:id',
+        loadComponent: () => import('./updatecategory/update-category.component').then(m => m.UpdateCategoryComponent),
       },
       {
         path: 'new-collection',

@@ -61,6 +61,12 @@ export interface CategoryResponse {
   action: string;
 }
 
+export interface UpdateCategory {
+  id: string;
+  name: string;
+  visible: boolean;
+}
+
 export interface CollectionRequest {
   name: string;
   visible: string;

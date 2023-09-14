@@ -2,23 +2,25 @@ import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ProductResponse, TableContent, UpdateProduct} from "../../shared-util";
 import {Page} from "../../../global-utils";
-import {catchError, map, Observable, of, startWith, tap} from "rxjs";
+import {catchError, map, Observable, of, startWith} from "rxjs";
 import {ProductService} from "./product.service";
-import {UpdateProductComponent} from "../updateproduct/update-product.component";
 import {DynamicTableComponent} from "../dynamictable/dynamic-table.component";
 import {HttpErrorResponse} from "@angular/common/http";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-product',
   standalone: true,
-  imports: [CommonModule, DynamicTableComponent, UpdateProductComponent],
+  imports: [CommonModule, DynamicTableComponent],
   templateUrl: './product.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductComponent {
-
   private productService: ProductService = inject(ProductService);
+  private router: Router = inject(Router);
 
+  // Table details
+  thead: Array<keyof ProductResponse> = ['image', 'id', 'name', 'desc', 'currency', 'price'];
   data$: Observable<{
     state: string,
     error?: string,
@@ -29,66 +31,27 @@ export class ProductComponent {
     catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error.message }))
   );
 
-  currComponent: boolean = true;
-  id: string = '';
-  name: string = '';
-  desc: string = '';
-  price: number = 0;
-  category: string = '';
-  collection: string = '';
-
-  thead: Array<keyof ProductResponse> = ['image', 'id', 'name', 'desc', 'currency', 'price'];
-
   /**
    * Displays UpdateProduct component based on the product clicked from DynamicTable
    * @param content of custom interface TableContent
    * @return void
    * */
   infoFromTableComponent(content: TableContent<UpdateProduct>): void {
-    this.id = content.data.id;
-    this.name = content.data.name;
-    this.desc = content.data.desc;
-    this.price = content.data.price
-    this.collection = content.data.collection;
-    this.category = content.data.category;
-
-    // Needed to fetch Product Detail before OnInit
-    this.productService.setProductId(content.data.id);
-    // Display update component
-    this.currComponent = false;
-  }
-
-  /** Displays product.component.html based on info received from Child component (UpdateProduct Component) */
-  displayProductContainer(bool: boolean): void {
-    this.currComponent = bool;
-  }
-
-  /** Refreshes Product array after Product has been updated */
-  refreshProducts(bool: boolean): void {
-    if (!bool) {
-      return;
+    switch (content.key) {
+      case 'product':
+        this.router.navigate([`/admin/dashboard/product/${content.data.id}`]);
+        break;
+      case 'delete':
+        // TODO
+        break;
+      default :
+        console.error('Invalid key chosen');
     }
-    this.data$ = this.productService.fetchAllProducts()
-      .pipe(
-        map((res: Page<ProductResponse>) => {
-          this.productService.setProducts(res)
-          return { state: 'LOADED', data: res };
-        }),
-        startWith({ state: 'LOADING' }),
-        catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error.message }))
-      );
   }
 
   /** Makes a call to our server. param name is the products id */
   deleteProduct(id: string): Observable<number> {
-    return this.productService.deleteProduct(id).pipe(
-      tap((res: number): void => {
-        if (res >= 200 && res < 300) {
-          // this.toastService.createToast('successfully deleted product');
-          this.refreshProducts(true);
-        }
-      })
-    );
+    return this.productService.deleteProduct(id);
   }
 
 }

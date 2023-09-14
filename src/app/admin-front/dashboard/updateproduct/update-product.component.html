@@ -1,136 +1,103 @@
-<ng-container *ngIf="productVariants$ | async as variant" [ngSwitch]="variant.state">
-  <ng-container *ngSwitchCase="'LOADING'">
-    <div class="lg-scr h-full p-20 flex justify-center items-center">
-      <h1 class="capitalize text-[var(--app-theme-hover)]">
-        loading...
-      </h1>
-    </div>
-  </ng-container>
+<ng-container *ngIf="data; else error">
+  <!-- Title -->
+  <div class="w-full flex py-2.5 px-0 gap-2.5">
+    <button type="button" class="md:px-2.5 border-[var(--border-outline)] border" (click)="returnToProductComponent()">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18" />
+      </svg>
+    </button>
+    <h1 class="txt capitalize">Editing {{ data.name }}</h1>
+  </div>
 
-  <ng-container *ngSwitchCase="'ERROR'">
-    <div class="lg-scr p-10 text-3xl text-red-500">
-      Error {{ variant.error }}
-    </div>
-  </ng-container>
-
-  <ng-container *ngSwitchCase="'LOADED'">
-    <form class="h-full flex flex-col px-0" [formGroup]="form">
-      <!-- Title-container -->
-      <div class="flex py-2.5 px-0 gap-2.5">
-        <button type="button" class="md:px-2.5 border-[var(--border-outline)] border" (click)="returnBack()">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18" />
-          </svg>
-        </button>
-        <h1 class="txt capitalize">Editing {{ name }}</h1>
-      </div>
+  <div class="w-full grid grid-cols-1 lg:grid-cols-2 gap-2.5">
+    <!-- Product column -->
+    <form class="w-full flex flex-col px-0" [formGroup]="form" *ngIf="data">
 
       <!-- Contents -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-2.5">
-        <!-- Left column -->
-        <div class="flex-1 " *ngIf="firstRowMapper$ | async as currentDetails">
-          <div class="bg-[var(--white)] mb-2.5 p-2.5 rounded-md border border-solid border-[var(--active)]">
-            <div class="mb-1.5"><h2 class="capitalize">general</h2></div>
+      <div class="flex-1 " *ngIf="firstRowMapper$ | async as currentDetails">
+        <div class="bg-[var(--white)] mb-2.5 p-2.5 rounded-md border border-solid border-[var(--active)]">
+          <div class="mb-1.5"><h2 class="capitalize">general</h2></div>
 
-            <!-- Form-Group (product name)-->
-            <div class="mb-2">
-              <h4 class="capitalize">name <span class="text-red-500">*</span></h4>
+          <!-- Form-Group (product name)-->
+          <div class="mb-2">
+            <h4 class="capitalize">name <span class="text-red-500">*</span></h4>
+            <input
+              formControlName="name"
+              type="text"
+              class="p-2.5 w-full flex-1 inline rounded-sm border border-solid border-[var(--border-outline)] capitalize"
+            />
+          </div>
+
+          <!-- Form-Group (sku, price)-->
+          <div class="mb-2 grid gap-3 grid-cols-1 lg:grid-cols-2">
+            <!-- SKU -->
+            <div>
+              <h4 class="capitalize">sku <span class="text-red-500">*</span></h4>
               <input
-                formControlName="name"
+                formControlName="sku"
                 type="text"
                 class="p-2.5 w-full flex-1 inline rounded-sm border border-solid border-[var(--border-outline)] capitalize"
               />
             </div>
 
-            <!-- Form-Group (sku, price)-->
-            <div class="flex gap-3 mb-2">
-              <!-- SKU -->
-              <div class="flex-1">
-                <h4 class="capitalize">sku <span class="text-red-500">*</span></h4>
-                <input
-                  formControlName="sku"
-                  type="text"
-                  class="p-2.5 w-full flex-1 inline rounded-sm border border-solid border-[var(--border-outline)] capitalize"
-                />
-              </div>
-              <!-- PRICE -->
-              <div>
-                <h4 class="capitalize">price <span class="text-red-500">*</span></h4>
-                <input
-                  formControlName="price"
-                  type="number"
-                  class="p-2.5 flex-1 w-full rounded-sm border border-solid border-[var(--border-outline)] capitalize"
-                />
-              </div>
+            <!-- PRICE -->
+            <div>
+              <h4 class="capitalize">price <span class="text-red-500">*</span></h4>
+              <input
+                formControlName="price"
+                type="number"
+                class="p-2.5 flex-1 w-full rounded-sm border border-solid border-[var(--border-outline)] capitalize"
+              />
             </div>
-
-            <!-- Form-Group Category -->
-            <div class="mb-2">
-              <h4 class="capitalize pb-3.5">category <span class="text-red-500">*</span></h4>
-              <div class="flex flex-1 gap-1.5">
-                <h3 class="text-xs">{{ category }}</h3>
-                <select
-                  formControlName="category"
-                  class="w-full p-1.5 rounded cursor-pointer border border-solid border-[var(--border-outline)]"
-                >
-                  <option value="" disabled selected>Update category?</option>
-                  <option *ngFor="let cat of categories$ | async">{{ cat.category }}</option>
-                </select>
-              </div>
-            </div>
-
-            <!-- Form-Group Collection -->
-            <div class="mb-2">
-              <h4 class="capitalize pb-3.5">collection <span class="text-red-500">*</span></h4>
-              <div class="flex flex-1 gap-1.5">
-                <h3 class="text-xs">{{ collection }}</h3>
-                <select
-                  formControlName="collection"
-                  class="w-full p-1.5 rounded cursor-pointer border border-solid border-[var(--border-outline)]"
-                >
-                  <option value="" disabled selected>Update or add collection?</option>
-                  <option *ngFor="let coll of collections$ | async">{{ coll.collection }}</option>
-                </select>
-              </div>
-            </div>
-
-            <!-- Form-Group description -->
-            <div class="flex flex-col gap-2">
-              <h4 class="capitalize">description <span class="text-red-500">*</span></h4>
-              <ckeditor [config]="config" formControlName="desc"></ckeditor>
-            </div>
-
           </div>
 
-          <div class="mb-2.5 p-2.5 rounded-md border border-solid border-[var(--active)] bg-[var(--white)]">
-            <div class="mb-1.5"><h2 class="capitalize">media <span class="text-red-500">*</span></h2></div>
-            <div class="flex flex-row flex-wrap items-center gap-2.5">
-              <div
-                class="basis-1/4 aspect-h-1 aspect-w-1 overflow-hidden rounded-md bg-gray-200 lg:aspect-none"
-                *ngFor="let image of currentDetails.urls; let i = index"
-                [style]="{ 'flex-grow': i == 0 ? '1' : '0' }"
+          <!-- Form-Group Category -->
+          <div class="mb-2">
+            <h4 class="capitalize pb-3.5">category <span class="text-red-500">*</span></h4>
+            <div class="flex flex-1 gap-1.5">
+              <h3 class="text-xs">{{ data.category }}</h3>
+              <select
+                formControlName="category"
+                class="w-full p-1.5 rounded cursor-pointer border border-solid border-[var(--border-outline)]"
               >
-                <img [src]="image" class="h-full w-full rounded-md object-cover object-center lg:h-full lg:w-full" alt="image">
-              </div>
+                <option value="" disabled selected>Update category?</option>
+                <option *ngFor="let cat of categories$ | async">{{ cat.category }}</option>
+              </select>
             </div>
           </div>
-          <!-- End of mat-card -->
+
+          <!-- Form-Group Collection -->
+          <div class="mb-2">
+            <h4 class="capitalize pb-3.5">collection <span class="text-red-500">*</span></h4>
+            <div class="flex flex-1 gap-1.5">
+              <h3 class="text-xs">{{ data.collection }}</h3>
+              <select
+                formControlName="collection"
+                class="w-full p-1.5 rounded cursor-pointer border border-solid border-[var(--border-outline)]"
+              >
+                <option value="" disabled selected>Update or add collection?</option>
+                <option *ngFor="let coll of collections$ | async">{{ coll.collection }}</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Form-Group description -->
+          <div class="flex flex-col gap-2">
+            <h4 class="capitalize">description <span class="text-red-500">*</span></h4>
+            <ckeditor [config]="config" formControlName="desc"></ckeditor>
+          </div>
+
         </div>
 
-        <!-- Right column -->
-        <div class="flex-1">
-          <!-- Variants -->
-          <div class="bg-[var(--white)] mb-2.5 p-2.5 rounded-md border border-solid border-[var(--active)]">
-            <div class="mb-1.5"><h2 class="capitalize">variant</h2></div>
-
-            <!-- Table -->
-            <div class="overflow-x-auto" *ngIf="variant.data">
-              <app-dynamic-table
-                [tHead]="thead"
-                [detail]="true"
-                [data]="variant.data"
-                (eventEmitter)="onDeleteOrUpdateClick($event)"
-              ></app-dynamic-table>
+        <div class="mb-2.5 p-2.5 rounded-md border border-solid border-[var(--active)] bg-[var(--white)]">
+          <div class="mb-1.5"><h2 class="capitalize">media <span class="text-red-500">*</span></h2></div>
+          <div class="flex flex-row flex-wrap items-center gap-2.5">
+            <div
+              class="basis-1/4 aspect-h-1 aspect-w-1 overflow-hidden rounded-md bg-gray-200 lg:aspect-none"
+              *ngFor="let image of currentDetails.urls; let i = index"
+              [style]="{ 'flex-grow': i == 0 ? '1' : '0' }"
+            >
+              <img [src]="image" class="h-full w-full rounded-md object-cover object-center lg:h-full lg:w-full" alt="image">
             </div>
           </div>
         </div>
@@ -141,7 +108,7 @@
         <button
           class="text-white font-bold py-2 px-4 rounded border bg-red-500"
           type="button"
-          (click)="returnBack()">cancel</button>
+          (click)="returnToProductComponent()">cancel</button>
 
         <button type="submit"
                 class="text-white font-bold py-2 px-4 rounded bg-[var(--app-theme)]"
@@ -151,6 +118,56 @@
         >update</button>
       </div>
     </form>
-  </ng-container>
+
+    <!-- Product Variants column -->
+    <ng-container *ngIf="productVariants$ | async as variant" [ngSwitch]="variant.state">
+      <ng-container *ngSwitchCase="'LOADING'">
+        <div class="h-full p-20 flex justify-center items-center">
+          <h1 class="capitalize text-[var(--app-theme-hover)]">
+            loading product variants...
+          </h1>
+        </div>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'ERROR'">
+        <div class="p-10 text-3xl text-red-500">
+          Error {{ variant.error }}
+        </div>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'LOADED'">
+        <div class="flex-1 max-h-2/4">
+          <!-- Variants -->
+          <div class="h-full bg-[var(--white)] mb-2.5 p-2.5 rounded-md border border-solid border-[var(--active)]">
+            <div class="mb-1.5"><h2 class="capitalize">variants</h2></div>
+
+            <!-- Table -->
+            <div class="overflow-auto" *ngIf="variant.data">
+              <app-dynamic-table
+                [tHead]="thead"
+                [detail]="true"
+                [data]="variant.data"
+                (eventEmitter)="onDeleteOrUpdateVariant($event)"
+              ></app-dynamic-table>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+    </ng-container>
+
+  </div>
 
 </ng-container>
+
+<ng-template #error>
+  <div class="lg-scr p-10 text-3xl text-red-500">
+    <button type="button" class="md:px-2.5 border-[var(--border-outline)] border" (click)="returnToProductComponent()">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+           class="w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18"/>
+      </svg>
+    </button>
+    Error retrieving product details
+  </div>
+</ng-template>

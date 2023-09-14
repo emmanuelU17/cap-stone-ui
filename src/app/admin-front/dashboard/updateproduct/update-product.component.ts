@@ -1,23 +1,26 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, inject, Input, OnInit, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {catchError, map, Observable, of, ReplaySubject, startWith, tap} from "rxjs";
+import {catchError, map, Observable, of, ReplaySubject, startWith, switchMap} from "rxjs";
 import {
   CategoryResponse,
   CollectionResponse,
   CustomRowMapper,
   ProductDetailResponse,
+  ProductResponse,
   TableContent,
   UpdateProduct,
 } from "../../shared-util";
 import {HttpErrorResponse} from "@angular/common/http";
 import {ProductService} from "../product/product.service";
-import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
+import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
 import {CKEditorModule} from "ckeditor4-angular";
 import {DirectiveModule} from "../../../directive/directive.module";
 import {CategoryService} from "../category/category.service";
 import {CollectionService} from "../collection/collection.service";
 import {DynamicTableComponent} from "../dynamictable/dynamic-table.component";
 import {Variant} from "../../../global-utils";
+import {NavigationService} from "../../../service/navigation.service";
+import {ActivatedRoute} from "@angular/router";
 
 @Component({
   selector: 'app-update-product',
@@ -27,29 +30,32 @@ import {Variant} from "../../../global-utils";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UpdateProductComponent implements OnInit {
+  private navigationService: NavigationService = inject(NavigationService);
+  private activeRoute: ActivatedRoute = inject(ActivatedRoute);
+  private fb: FormBuilder = inject(FormBuilder);
   private productService: ProductService = inject(ProductService);
   private categoryService: CategoryService = inject(CategoryService);
   private collectionService: CollectionService = inject(CollectionService);
 
-  @Input() id: string = '';
-  @Input() name: string = '';
-  @Input() desc: string = '';
-  @Input() price: number = 0;
-  @Input() category: string = '';
-  @Input() collection: string = '';
-  @Output() parentEmitter = new EventEmitter<boolean>();
-  @Output() refreshEmitter = new EventEmitter<boolean>();
+  // Get id from route
+  private id: string | null = this.activeRoute.snapshot.paramMap.get('id');
+  private uuid: string = this.id ? this.id : '';
 
+  // Product
+  data: ProductResponse | undefined = this.productService.products
+    .find(p => p.id === this.uuid);
+
+  // Categories and Collections
   categories$: Observable<CategoryResponse[]> = this.categoryService._categories$;
   collections$: Observable<CollectionResponse[]> = this.collectionService._collections$;
 
-  private prodId: string = this.productService.getProductID();
-
+  // Retrieve variants on load of application
+  thead: Array<keyof CustomRowMapper> = ['url', 'colour', 'is_visible', 'sku', 'inventory', 'size', 'action'];
   productVariants$: Observable<{
     state: string,
     error?: string,
     data?: CustomRowMapper[]
-  }> = this.productService.fetchProductDetails(this.prodId).pipe(
+  }> = this.productService.fetchProductDetails(this.uuid).pipe(
     map((arr: ProductDetailResponse[]) => {
       // Set SKU to the first Item on load of page
 
@@ -82,28 +88,25 @@ export class UpdateProductComponent implements OnInit {
         return data;
       })
 
-      return {state: 'LOADED', data: mappers};
+      return { state: 'LOADED', data: mappers };
     }),
     startWith({state: 'LOADING'}),
-    catchError((err: HttpErrorResponse) => of({state: 'ERROR', error: err.error}))
+    catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error }))
   );
 
   // Initially the product variant displayed and when user clicks on variant table
   private subjectMapper$ = new ReplaySubject<CustomRowMapper>();
   firstRowMapper$ = this.subjectMapper$.asObservable();
 
-  thead: Array<keyof CustomRowMapper> = ['url', 'colour', 'is_visible', 'sku', 'inventory', 'size', 'action'];
-
   // CKEditor
   config = {};
 
   // FormGroup
-  form = new FormGroup({
-    id: new FormControl('', Validators.required),
-    name: new FormControl(this.name, [Validators.required, Validators.max(50)]),
+  form = this.fb.group({
+    name: new FormControl('', [Validators.required, Validators.max(50)]),
     sku: new FormControl({value: '', disabled: true}, [Validators.required]),
-    price: new FormControl(this.price, Validators.required),
-    desc: new FormControl(this.desc, [Validators.required, Validators.max(400)]),
+    price: new FormControl(0, Validators.required),
+    desc: new FormControl('', [Validators.required, Validators.max(400)]),
     category: new FormControl('', [Validators.required]),
     collection: new FormControl(''),
   });
@@ -119,29 +122,32 @@ export class UpdateProductComponent implements OnInit {
       height: '80px'
     };
 
-    this.form.controls['id'].setValue(this.prodId);
-    this.form.controls['name'].setValue(this.name);
-    this.form.controls['price'].setValue(this.price);
-    this.form.controls['desc'].setValue(this.desc);
-    this.form.controls['category'].setValue(this.category);
+    if (!this.data) {
+      return;
+    }
+
+    this.form.controls['name'].setValue(this.data.name);
+    this.form.controls['price'].setValue(this.data.price);
+    this.form.controls['desc'].setValue(this.data.desc);
+    this.form.controls['category'].setValue(this.data.category);
 
     // possibly null
-    const col: string = !this.collection ? '' : this.collection;
+    const col: string = !this.data.collection ? '' : this.data.collection;
     this.form.controls['collection'].setValue(col);
   }
 
   /** Return back to product component */
-  returnBack(): void {
-    this.parentEmitter.emit(true);
+  returnToProductComponent(): void {
+    this.navigationService.navigateBack('/admin/dashboard/product');
   }
 
   /** Makes call to server to update product not product detail */
   onSubmit(): Observable<number> {
-    const name = this.form.get('name')?.value;
-    const price = this.form.get('price')?.value;
-    const desc = this.form.get('desc')?.value;
-    const category = this.form.get('category')?.value;
-    const collection = this.form.get('collection')?.value;
+    const name = this.form.controls['name'].value;
+    const price = this.form.controls['price'].value;
+    const desc = this.form.controls['desc'].value;
+    const category = this.form.controls['category'].value;
+    const collection = this.form.controls['collection'].value;
 
     if (!name || !price || !desc || !category) {
       // TODO display error via toast
@@ -149,7 +155,7 @@ export class UpdateProductComponent implements OnInit {
     }
 
     const json: UpdateProduct = {
-      id: this.prodId,
+      id: this.uuid,
       name: name,
       price: price,
       desc: desc,
@@ -163,16 +169,21 @@ export class UpdateProductComponent implements OnInit {
   /** Makes a call to our server to update a Product */
   private updateProduct(obj: UpdateProduct): Observable<number> {
     return this.productService.updateProduct(obj).pipe(
-      tap((res: number): void => {
-        if (res >= 200 && res < 300) {
-          // this.toastService.createToast('successfully updated ' + obj.name);
-          this.refreshEmitter.emit(true);
+      switchMap((status: number) => {
+        const res = of(status);
+
+        // Return status code is response is an error
+        if (!(status >= 200 && status < 300)) {
+          return res;
         }
-      }));
+
+        return this.productService.fetchAllProducts().pipe(switchMap(() => res));
+      })
+    );
   }
 
   /** Updates or deletes a product detail based on info received from UpdateProductComponent */
-  onDeleteOrUpdateClick(tableContent: TableContent<CustomRowMapper>): void {
+  onDeleteOrUpdateVariant(tableContent: TableContent<CustomRowMapper>): void {
     this.form.controls['sku'].setValue(tableContent.data.sku);
     this.subjectMapper$.next(tableContent.data);
   }

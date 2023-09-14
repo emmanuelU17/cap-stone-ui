@@ -90,7 +90,7 @@
           <!-- Buttons -->
           <div class="flex" *ngSwitchCase="'action'">
             <!-- Edit button -->
-            <button (click)="onClick(d,'edit')" class="outline-none border-none bg-transparent">
+            <button type="button" (click)="onClick(d,'edit')" class="outline-none border-none bg-transparent">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                    stroke="currentColor" class="w-6 h-6">
                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -99,7 +99,7 @@
             </button>
 
             <!-- Delete button -->
-            <button (click)="onClick(d,'delete')" class="outline-none border-none bg-transparent text-red-500">
+            <button type="button" (click)="onClick(d,'delete')" class="outline-none border-none bg-transparent text-red-500">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                    stroke="currentColor" class="w-6 h-6">
                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -122,6 +122,7 @@
           <button
             *ngSwitchCase="'sku'"
             (click)="onClick(d,'view')"
+            type="button"
             class="outline-none bg-transparent text-blue-400 hover:border-b hover:border-blue-500"
           >{{ d[head] }}</button>
 

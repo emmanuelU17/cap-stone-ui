@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import {BehaviorSubject, map, Observable, ReplaySubject} from "rxjs";
+import {Injectable} from '@angular/core';
+import {map, Observable, of, tap} from "rxjs";
 import {Page} from "../../../global-utils";
 import {ProductDetailResponse, ProductResponse, UpdateProduct} from "../../shared-util";
 import {HttpClient, HttpResponse} from "@angular/common/http";
@@ -11,25 +11,11 @@ import {environment} from "../../../../environments/environment";
 export class ProductService {
   HOST: string | undefined;
 
-  private productIDSubject$ = new BehaviorSubject<string>('');
-  private products$ = new ReplaySubject<Page<ProductResponse>>();
-  _products$ = this.products$.asObservable();
+  _products$: Observable<Page<ProductResponse>> = of();
+  products: ProductResponse[] = [];
 
   constructor(private http: HttpClient) {
     this.HOST = environment.domain;
-  }
-
-  setProductId(id: string): void {
-    this.productIDSubject$.next(id);
-  }
-
-  getProductID(): string {
-    return this.productIDSubject$.getValue();
-  }
-
-  /** On load of application this set Products array */
-  setProducts(arr: Page<ProductResponse>): void {
-    this.products$.next(arr);
   }
 
   /**
@@ -38,10 +24,12 @@ export class ProductService {
    * @return Observable of type HttpStatus
    * */
   updateProduct(obj: UpdateProduct): Observable<number> {
-    return this.http.put<HttpResponse<any>>(this.HOST + 'api/v1/worker/product', obj, {
+    const url = `${this.HOST}api/v1/worker/product`
+    return this.http.put<UpdateProduct>(url, obj, {
+      headers: { 'content-type': 'application/json' },
       observe: 'response',
       withCredentials: true
-    }).pipe(map((res: HttpResponse<any>) => res.status));
+    }).pipe(map((res: HttpResponse<UpdateProduct>) => res.status));
   }
 
   /**
@@ -73,9 +61,15 @@ export class ProductService {
     const url = `${this.HOST}api/v1/worker/product`;
     return this.http.get<Page<ProductResponse>>(url, {
       headers: { 'content-type': 'application/json' },
+      responseType: 'json',
       params: { page: page, size: size },
       withCredentials: true
-    });
+    }).pipe(
+      tap((res: Page<ProductResponse>) => {
+        this._products$ = of(res);
+        this.products = res.content
+      })
+    );
   }
 
 }
