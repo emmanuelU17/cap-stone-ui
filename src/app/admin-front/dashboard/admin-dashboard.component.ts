@@ -15,6 +15,12 @@ import {DASHBOARDLINKS, Display} from "./route-util";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AdminDashboardComponent {
+  // Left column links
+  dashBoardLinks: Display[] = DASHBOARDLINKS;
+
+  // Toggle behaviour when a link are clicked
+  leftColumn: boolean = false;
+
   private dashboardService: DashboardService = inject(DashboardService);
   private categoryService: CategoryService = inject(CategoryService);
   private collectionService: CollectionService = inject(CollectionService);
@@ -48,29 +54,17 @@ export class AdminDashboardComponent {
     principal?: string,
   }> = combineLatest([this.principal$, this.products$, this.category$, this.collection$])
     .pipe(
-      map(([principal]: [AuthResponse, Page<ProductResponse>, CategoryResponse[], CollectionResponse[]]) =>
-        ({ state: 'LOADED', principal: principal.principal })
+      map((
+          [principal]: [
+            AuthResponse,
+            Page<ProductResponse>,
+            CategoryResponse[],
+            CollectionResponse[]
+          ]
+        ) => ({state: 'LOADED', principal: principal.principal})
       ),
       startWith({state: 'LOADING'}),
       catchError((err: HttpErrorResponse) => of({state: 'ERROR', error: err.error}))
     );
-
-
-  // Loading of components
-  dashBoardLinks: Display[] = DASHBOARDLINKS;
-
-  // Current route
-  currentRoute: string = 'statistics'; // statistics as it is the initial route
-  leftColumn: boolean = false;
-
-  /**
-   * Method dynamically loads components based on <li><a>route</a></li> clicked.
-   * @param currentRoute is the current child component rendered
-   * @return void
-   * */
-  activeLink(currentRoute: string): void {
-    this.currentRoute = currentRoute;
-    this.leftColumn = false;
-  }
 
 }

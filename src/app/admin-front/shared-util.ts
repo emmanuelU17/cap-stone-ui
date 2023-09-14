@@ -39,13 +39,6 @@ export interface CustomRowMapper {
   action: string
 }
 
-export interface UpdateDetail {
-  sku: string;
-  is_visible: boolean;
-  qty: number;
-  size: string;
-}
-
 export interface CategoryRequest {
   name: string;
   parent: string;
@@ -73,11 +66,18 @@ export interface CollectionRequest {
 }
 
 export interface CollectionResponse {
+  id: string;
   collection: string;
-  visible: string;
+  visible: boolean;
   created_at: number;
   modified_at: number;
   action: string;
+}
+
+export interface UpdateCollection {
+  id: string;
+  name: string;
+  visible: boolean;
 }
 
 export interface TableContent<T> {

@@ -17,8 +17,6 @@ export class CategoryComponent {
   private categoryService: CategoryService = inject(CategoryService);
   private router: Router = inject(Router);
 
-  data?: CategoryResponse; // data passed to UpdateCategoryComponent
-
   data$: Observable<CategoryResponse[]> = this.categoryService._categories$;
   tHead: Array<keyof CategoryResponse> = ['id', 'category', 'created_at', 'modified_at', 'visible', 'action'];
 

@@ -1,4 +1,4 @@
-import {Component, inject, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {CategoryResponse, ProductResponse} from "../../shared-util";
 import {FormBuilder, FormControl, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
@@ -27,6 +27,7 @@ import {NavigationService} from "../../../service/navigation.service";
     DirectiveModule
   ],
   templateUrl: './update-category.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UpdateCategoryComponent implements OnInit {
   private service: UpdateCategoryService = inject(UpdateCategoryService);
@@ -48,7 +49,7 @@ export class UpdateCategoryComponent implements OnInit {
     state: string,
     error?: string,
     data?: Page<ProductResponse>
-  }> = this.service.allProductByCategory(this.uuid).pipe(
+  }> = this.service.allProductsByCategory(this.uuid).pipe(
     map((arr: Page<ProductResponse>) => ({state: 'LOADED', data: arr})),
     startWith({state: 'LOADING'}),
     catchError((err: HttpErrorResponse) => of({state: 'ERROR', error: err.error.message}))

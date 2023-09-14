@@ -13,6 +13,7 @@ import {Page} from "../../../global-utils";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DynamicTableComponent<T> {
+
   @Input() paginationTable: boolean = false; // validates if pagination table should be rendered
   @Input() tHead: (keyof T)[] = [];
   @Input() detail: boolean = false; // verifies if details button should be displayed
@@ -45,4 +46,5 @@ export class DynamicTableComponent<T> {
   onclickProduct(data: T, key: string): void {
     this.eventEmitter.emit({data: data, key: key});
   }
+
 }

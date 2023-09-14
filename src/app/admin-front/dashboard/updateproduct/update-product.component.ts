@@ -57,11 +57,6 @@ export class UpdateProductComponent implements OnInit {
     data?: CustomRowMapper[]
   }> = this.productService.fetchProductDetails(this.uuid).pipe(
     map((arr: ProductDetailResponse[]) => {
-      // Set SKU to the first Item on load of page
-
-      // this.currDetail = arr[0];
-      // this.form.controls['sku'].setValue(arr[0].sku);
-
       // Flatmap to convert from CustomRowMapper[][] to CustomRowMapper[]
       const mappers: CustomRowMapper[] = arr.flatMap((res: ProductDetailResponse) => {
         const data: CustomRowMapper[] = [];

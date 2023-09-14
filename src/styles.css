@@ -43,6 +43,10 @@ body {
   margin-top: calc(1vh + 70px);
 }
 
+.active-link {
+  background-color: var(--app-theme);
+}
+
 .x-btn::after {
   content: 'x';
   position: absolute;

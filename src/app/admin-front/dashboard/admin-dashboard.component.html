@@ -33,11 +33,13 @@
             <!--    End of title    -->
             <div class="py-2.5 px-0">
               <ul class="list-none" *ngFor="let a of link.array; let i = index">
-                <li class="my-1.5" (click)="activeLink(a.route)">
+                <li
+                  (click)="leftColumn = !leftColumn"
+                  class="my-1.5"
+                  [routerLinkActive]="'active-link'" [routerLinkActiveOptions]="{ exact: true }">
                   <a
                     [routerLink]="a.route"
                     class="w-full h-full flex p-2.5 gap-1.5 capitalize cursor-pointer rounded-md"
-                    [style]="{'background-color': currentRoute === a.route ? 'var(--app-theme)' : 'transparent' }"
                   >
                     <span><mat-icon>{{ a.icon }}</mat-icon></span>
                     <span class="flex h-full items-center">{{ a.name }}</span>

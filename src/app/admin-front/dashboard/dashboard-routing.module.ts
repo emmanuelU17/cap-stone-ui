@@ -44,6 +44,10 @@ const routes: Routes = [
         loadComponent: () => import('./collection/collection.component').then(m => m.CollectionComponent),
       },
       {
+        path: 'collection/:id',
+        loadComponent: () => import('./updatecollection/update-collection.service').then(m => m.UpdateCollectionService),
+      },
+      {
         path: 'customer',
         loadComponent: () => import('./customer/customer.component').then(m => m.CustomerComponent),
       },
