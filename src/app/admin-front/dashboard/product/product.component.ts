@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {ProductResponse, TableContent, UpdateProduct} from "../../shared-util";
+import {ProductResponse, TableContent} from "../../shared-util";
 import {Page} from "../../../global-utils";
 import {catchError, map, Observable, of, startWith} from "rxjs";
 import {ProductService} from "./product.service";
@@ -36,7 +36,7 @@ export class ProductComponent {
    * @param content of custom interface TableContent
    * @return void
    * */
-  infoFromTableComponent(content: TableContent<UpdateProduct>): void {
+  infoFromTableComponent(content: TableContent<ProductResponse>): void {
     switch (content.key) {
       case 'product':
         this.router.navigate([`/admin/dashboard/product/${content.data.id}`]);

@@ -1,6 +1,8 @@
 import {Variant} from "../global-utils";
 
 export interface UpdateProduct {
+  category_id: string;
+  collection_id: string;
   id: string;
   name: string;
   desc: string;
@@ -100,3 +102,14 @@ export interface SizeInventory {
   size: string;
   qty: number;
 }
+
+// https://stackoverflow.com/questions/13499025/how-to-show-ckeditor-with-basic-toolbar
+export const CKEDITOR4CONFIG = {
+  toolbar: [
+    ['Format', 'Font', 'FontSize'],
+    ['Bold', 'Italic', 'Underline', 'StrikeThrough'],
+    ['NumberedList', 'BulletedList', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
+    ['Table', '-', 'Link']
+  ],
+  height: '100px'
+};

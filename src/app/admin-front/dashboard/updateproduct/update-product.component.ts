@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core'
 import {CommonModule} from '@angular/common';
 import {catchError, map, Observable, of, ReplaySubject, startWith, switchMap} from "rxjs";
 import {
-  CategoryResponse,
+  CategoryResponse, CKEDITOR4CONFIG,
   CollectionResponse,
   CustomRowMapper,
   ProductDetailResponse,
@@ -25,7 +25,13 @@ import {ActivatedRoute} from "@angular/router";
 @Component({
   selector: 'app-update-product',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, CKEditorModule, DirectiveModule, DynamicTableComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    CKEditorModule,
+    DirectiveModule,
+    DynamicTableComponent,
+  ],
   templateUrl: './update-product.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -41,15 +47,23 @@ export class UpdateProductComponent implements OnInit {
   private id: string | null = this.activeRoute.snapshot.paramMap.get('id');
   private uuid: string = this.id ? this.id : '';
 
-  // Product
-  data: ProductResponse | undefined = this.productService.products
-    .find(p => p.id === this.uuid);
+  // Custom object
+  private product: ProductResponse | undefined = this.productService.products
+    .find((value: ProductResponse) => value.id === this.uuid)
+
+  data: { categoryId?: string, collectionId?: string, product?: ProductResponse } = {
+    categoryId: this.categoryService.categories
+      .find(c => c.category === this.product?.category)?.id,
+    collectionId: this.collectionService.collections
+      .find(c => c.collection === this.product?.collection)?.id,
+    product: this.product
+  }
 
   // Categories and Collections
   categories$: Observable<CategoryResponse[]> = this.categoryService._categories$;
   collections$: Observable<CollectionResponse[]> = this.collectionService._collections$;
 
-  // Retrieve variants on load of application
+  // Table
   thead: Array<keyof CustomRowMapper> = ['url', 'colour', 'is_visible', 'sku', 'inventory', 'size', 'action'];
   productVariants$: Observable<{
     state: string,
@@ -74,6 +88,7 @@ export class UpdateProductComponent implements OnInit {
             action: ''
           }
           data.push(obj);
+
           if (index === 0) {
             this.subjectMapper$.next(obj);
             this.form.controls['sku'].setValue(variant.sku);
@@ -94,7 +109,7 @@ export class UpdateProductComponent implements OnInit {
   firstRowMapper$ = this.subjectMapper$.asObservable();
 
   // CKEditor
-  config = {};
+  config = CKEDITOR4CONFIG;
 
   // FormGroup
   form = this.fb.group({
@@ -102,33 +117,16 @@ export class UpdateProductComponent implements OnInit {
     sku: new FormControl({value: '', disabled: true}, [Validators.required]),
     price: new FormControl(0, Validators.required),
     desc: new FormControl('', [Validators.required, Validators.max(400)]),
-    category: new FormControl('', [Validators.required]),
-    collection: new FormControl(''),
   });
 
   ngOnInit(): void {
-    this.config = {
-      toolbar: [
-        ['Format', 'Font', 'FontSize'],
-        ['Bold', 'Italic', 'Underline', 'StrikeThrough'],
-        ['NumberedList', 'BulletedList', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
-        ['Table', '-', 'Link']
-      ],
-      height: '80px'
-    };
-
-    if (!this.data) {
+    if (!this.data.product) {
       return;
     }
 
-    this.form.controls['name'].setValue(this.data.name);
-    this.form.controls['price'].setValue(this.data.price);
-    this.form.controls['desc'].setValue(this.data.desc);
-    this.form.controls['category'].setValue(this.data.category);
-
-    // possibly null
-    const col: string = !this.data.collection ? '' : this.data.collection;
-    this.form.controls['collection'].setValue(col);
+    this.form.controls['name'].setValue(this.data.product.name);
+    this.form.controls['price'].setValue(this.data.product.price);
+    this.form.controls['desc'].setValue(this.data.product.desc);
   }
 
   /** Return back to product component */
@@ -136,28 +134,69 @@ export class UpdateProductComponent implements OnInit {
     this.navigationService.navigateBack('/admin/dashboard/product');
   }
 
+  /** Updates data on change of category */
+  onChangeCategory(category: string): void {
+    if (!this.data.product) {
+      return;
+    }
+
+    this.data.product.category = category;
+    const cat: CategoryResponse | undefined = this.categoryService.categories
+      .find(c => c.category === category);
+
+    if (cat) {
+      this.data.categoryId = cat.id
+    }
+
+  }
+
+  /** Updates data on change of collection */
+  onChangeCollection(collection: string): void {
+    if (!this.data.product) {
+      return;
+    }
+
+    this.data.product.collection = collection;
+    const col: CollectionResponse | undefined = this.collectionService.collections
+      .find(c => c.collection === collection);
+
+    if (col) {
+      this.data.collectionId = col.id
+    }
+
+  }
+
   /** Makes call to server to update product not product detail */
   onSubmit(): Observable<number> {
+    // Reactive form
     const name = this.form.controls['name'].value;
     const price = this.form.controls['price'].value;
     const desc = this.form.controls['desc'].value;
-    const category = this.form.controls['category'].value;
-    const collection = this.form.controls['collection'].value;
 
-    if (!name || !price || !desc || !category) {
+    // Data
+    const product = this.data.product;
+    const cat = this.data.categoryId;
+    const col = this.data.collectionId;
+
+    // Validation
+    if (!name || !price || !desc || !product || !cat || !col) {
       // TODO display error via toast
       return of();
     }
 
+    // Create payload
     const json: UpdateProduct = {
+      category_id: cat,
+      collection_id: col,
       id: this.uuid,
       name: name,
       price: price,
       desc: desc,
-      category: category,
-      collection: !collection ? '' : collection
+      category: product.category,
+      collection: product.collection
     };
 
+    // Make call to server
     return this.updateProduct(json);
   }
 
@@ -167,7 +206,7 @@ export class UpdateProductComponent implements OnInit {
       switchMap((status: number) => {
         const res = of(status);
 
-        // Return status code is response is an error
+        // Error
         if (!(status >= 200 && status < 300)) {
           return res;
         }

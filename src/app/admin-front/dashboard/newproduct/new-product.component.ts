@@ -1,6 +1,6 @@
-import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {CategoryResponse, CollectionResponse, ImageFilter, SizeInventory} from "../../shared-util";
+import {CategoryResponse, CKEDITOR4CONFIG, CollectionResponse, ImageFilter, SizeInventory} from "../../shared-util";
 import {Observable, of, switchMap} from "rxjs";
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {CategoryService} from "../category/category.service";
@@ -33,7 +33,7 @@ import {ProductService} from "../product/product.service";
   styleUrls: ['./new-product.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class NewProductComponent implements OnInit {
+export class NewProductComponent {
   private service: NewProductService = inject(NewProductService);
   private categoryService: CategoryService = inject(CategoryService);
   private collectionService: CollectionService = inject(CollectionService);
@@ -42,7 +42,7 @@ export class NewProductComponent implements OnInit {
   categories$: Observable<CategoryResponse[]> = this.categoryService._categories$;
   collections$: Observable<CollectionResponse[]> = this.collectionService._collections$;
 
-  config = {};
+  config = CKEDITOR4CONFIG;
   content: string = '';
   imageUrls: ImageFilter[] = [];
   files: File[] = []; // Images
@@ -60,20 +60,6 @@ export class NewProductComponent implements OnInit {
     colour: new FormControl('', Validators.required),
     sizeInventory: new FormControl(null, Validators.required)
   });
-
-  /** Load CKEditor toolbar config */
-  ngOnInit(): void {
-    // https://stackoverflow.com/questions/13499025/how-to-show-ckeditor-with-basic-toolbar
-    this.config = {
-      toolbar: [
-        ['Format', 'Font', 'FontSize'],
-        ['Bold', 'Italic', 'Underline', 'StrikeThrough'],
-        ['NumberedList', 'BulletedList', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
-        ['Table', '-', 'Link']
-      ],
-      height: '80px'
-    };
-  }
 
   /**
    * Responsible for verifying file uploaded is in image and then updating file FormGroup.

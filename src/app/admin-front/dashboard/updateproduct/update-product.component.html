@@ -1,12 +1,13 @@
-<ng-container *ngIf="data; else error">
+<ng-container *ngIf="data.product && data.collectionId && data.categoryId; else error">
   <!-- Title -->
   <div class="w-full flex py-2.5 px-0 gap-2.5">
     <button type="button" class="md:px-2.5 border-[var(--border-outline)] border" (click)="returnToProductComponent()">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18" />
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+           class="w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18"/>
       </svg>
     </button>
-    <h1 class="txt capitalize">Editing {{ data.name }}</h1>
+    <h1 class="txt capitalize">Editing {{ data.product.name }}</h1>
   </div>
 
   <div class="w-full grid grid-cols-1 lg:grid-cols-2 gap-2.5">
@@ -54,14 +55,12 @@
           <!-- Form-Group Category -->
           <div class="mb-2">
             <h4 class="capitalize pb-3.5">category <span class="text-red-500">*</span></h4>
-            <div class="flex flex-1 gap-1.5">
-              <h3 class="text-xs">{{ data.category }}</h3>
-              <select
-                formControlName="category"
-                class="w-full p-1.5 rounded cursor-pointer border border-solid border-[var(--border-outline)]"
-              >
-                <option value="" disabled selected>Update category?</option>
-                <option *ngFor="let cat of categories$ | async">{{ cat.category }}</option>
+            <div class="grid grid-cols-2 md:flex md:flex-1 gap-1.5">
+              <h3 style="font-size: small">{{ data.product.category }}</h3>
+              <select #selectElem (change)="onChangeCategory(selectElem.value)"
+                      class="p-1.5 rounded cursor-pointer border border-solid border-[var(--border-outline)]">
+                <option [value]="" disabled selected>change?</option>
+                <option *ngFor="let cat of categories$ | async" [value]="cat.category">{{ cat.category }}</option>
               </select>
             </div>
           </div>
@@ -69,14 +68,13 @@
           <!-- Form-Group Collection -->
           <div class="mb-2">
             <h4 class="capitalize pb-3.5">collection <span class="text-red-500">*</span></h4>
-            <div class="flex flex-1 gap-1.5">
-              <h3 class="text-xs">{{ data.collection }}</h3>
-              <select
-                formControlName="collection"
-                class="w-full p-1.5 rounded cursor-pointer border border-solid border-[var(--border-outline)]"
+            <div class="grid grid-cols-2 md:flex md:flex-1 gap-1.5">
+              <h3 style="font-size: small">{{ data.product.collection }}</h3>
+              <select #selectElem (change)="onChangeCollection(selectElem.value)"
+                      class="p-1.5 rounded cursor-pointer border border-solid border-[var(--border-outline)]"
               >
-                <option value="" disabled selected>Update or add collection?</option>
-                <option *ngFor="let coll of collections$ | async">{{ coll.collection }}</option>
+                <option [value]="" disabled selected>change?</option>
+                <option *ngFor="let coll of collections$ | async" [value]="coll.collection">{{ coll.collection }}</option>
               </select>
             </div>
           </div>
@@ -97,7 +95,8 @@
               *ngFor="let image of currentDetails.urls; let i = index"
               [style]="{ 'flex-grow': i == 0 ? '1' : '0' }"
             >
-              <img [src]="image" class="h-full w-full rounded-md object-cover object-center lg:h-full lg:w-full" alt="image">
+              <img [src]="image" class="h-full w-full rounded-md object-cover object-center lg:h-full lg:w-full"
+                   alt="image">
             </div>
           </div>
         </div>
@@ -108,14 +107,16 @@
         <button
           class="text-white font-bold py-2 px-4 rounded border bg-red-500"
           type="button"
-          (click)="returnToProductComponent()">cancel</button>
+          (click)="returnToProductComponent()">cancel
+        </button>
 
         <button type="submit"
                 class="text-white font-bold py-2 px-4 rounded bg-[var(--app-theme)]"
                 [disabled]="!form.valid"
                 [style]="{ 'background-color': form.valid ? 'var(--app-theme-hover)' : 'var(--app-theme)' }"
                 [asyncButton]="onSubmit()"
-        >update</button>
+        >update
+        </button>
       </div>
     </form>
 

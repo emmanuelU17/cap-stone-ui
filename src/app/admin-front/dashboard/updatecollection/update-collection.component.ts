@@ -17,7 +17,15 @@ import {DirectiveModule} from "../../../directive/directive.module";
 @Component({
   selector: 'app-update-collection',
   standalone: true,
-  imports: [CommonModule, DynamicTableComponent, FormsModule, MatButtonModule, MatRadioModule, ReactiveFormsModule, DirectiveModule],
+  imports: [
+    CommonModule,
+    DynamicTableComponent,
+    FormsModule,
+    MatButtonModule,
+    MatRadioModule,
+    ReactiveFormsModule,
+    DirectiveModule
+  ],
   templateUrl: './update-collection.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
