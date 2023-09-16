@@ -1,0 +1,61 @@
+<form class="w-full grid grid-cols-1 gap-2 bg-[var(--white)]" [formGroup]="form">
+
+  <!-- SKU -->
+  <div class="p-6 text-left rounded-md border border-[var(--active)] border-solid bg-[var(--white)]">
+    <h4 style="font-size: small">
+      <span style="color: red">*</span>SKU <span class="font-bold">{{ data.variant.sku }}</span>
+    </h4>
+    <input type="text" class="hidden" formControlName="sku">
+  </div>
+
+  <!-- Radio -->
+  <div class="p-6 text-left rounded-md border border-[var(--active)] border-solid bg-[var(--white)]">
+    <h4 class="txt capitalize">visibility (include in store front) <span [style]="'color: red'">*</span></h4>
+    <mat-radio-group aria-label="Select an option" formControlName="visible">
+      <mat-radio-button [value]="false" [checked]="!data.variant.is_visible">false</mat-radio-button>
+      <mat-radio-button [value]="true" [checked]="data.variant.is_visible">true</mat-radio-button>
+    </mat-radio-group>
+  </div>
+
+  <!-- QTY -->
+  <div class="p-6 text-left rounded-md border border-[var(--active)] border-solid bg-[var(--white)]">
+    <h4 style="font-size: small">
+      <span style="color: red">*</span>SKU <span class="font-bold">{{ data.variant.qty }}</span>
+    </h4>
+    <input
+      type="number"
+      class="p-2.5 w-full flex-1 inline rounded-sm border border-solid border-[var(--border-outline)]"
+      [value]="data.variant.qty"
+      formControlName="qty"
+    >
+  </div>
+
+  <!-- SIZE -->
+  <div class="p-6 text-left rounded-md border border-[var(--active)] border-solid bg-[var(--white)]">
+    <h4 style="font-size: small">
+      <span style="color: red">*</span>SKU <span class="font-bold">{{ data.variant.size }}</span>
+    </h4>
+    <input
+      type="text"
+      class="p-2.5 w-full flex-1 inline rounded-sm border border-solid border-[var(--border-outline)]"
+      [value]="data.variant.size"
+      formControlName="qty"
+    >
+  </div>
+
+  <!-- Btn ctn -->
+  <div class="flex justify-between py-2.5 px-1.5">
+    <button
+      class="text-white font-bold py-2 px-4 rounded border bg-red-500"
+      type="button"
+      (click)="onNoClick()">cancel</button>
+
+    <button type="submit"
+            class="text-white font-bold py-2 px-4 rounded bg-[var(--app-theme)]"
+            [disabled]="!form.valid"
+            [style]="{ 'background-color': form.valid ? 'var(--app-theme-hover)' : 'var(--app-theme)' }"
+            [asyncButton]="update()"
+    >update</button>
+  </div>
+
+</form>

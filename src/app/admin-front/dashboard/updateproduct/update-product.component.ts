@@ -2,7 +2,8 @@ import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core'
 import {CommonModule} from '@angular/common';
 import {catchError, map, Observable, of, ReplaySubject, startWith, switchMap} from "rxjs";
 import {
-  CategoryResponse, CKEDITOR4CONFIG,
+  CategoryResponse,
+  CKEDITOR4CONFIG,
   CollectionResponse,
   CustomRowMapper,
   ProductDetailResponse,
@@ -21,6 +22,9 @@ import {DynamicTableComponent} from "../dynamictable/dynamic-table.component";
 import {Variant} from "../../../global-utils";
 import {NavigationService} from "../../../service/navigation.service";
 import {ActivatedRoute} from "@angular/router";
+import {CustomUpdateVariant} from "../updatevariant/updateVariant";
+import {MatDialog, MatDialogModule} from "@angular/material/dialog";
+import {UpdateVariantComponent} from "../updatevariant/update-variant.component";
 
 @Component({
   selector: 'app-update-product',
@@ -31,6 +35,7 @@ import {ActivatedRoute} from "@angular/router";
     CKEditorModule,
     DirectiveModule,
     DynamicTableComponent,
+    MatDialogModule
   ],
   templateUrl: './update-product.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -42,6 +47,7 @@ export class UpdateProductComponent implements OnInit {
   private productService: ProductService = inject(ProductService);
   private categoryService: CategoryService = inject(CategoryService);
   private collectionService: CollectionService = inject(CollectionService);
+  private dialog: MatDialog = inject(MatDialog);
 
   // Get id from route
   private id: string | null = this.activeRoute.snapshot.paramMap.get('id');
@@ -90,7 +96,7 @@ export class UpdateProductComponent implements OnInit {
           data.push(obj);
 
           if (index === 0) {
-            this.subjectMapper$.next(obj);
+            this.productSubject$.next(obj);
             this.form.controls['sku'].setValue(variant.sku);
           }
         });
@@ -105,8 +111,8 @@ export class UpdateProductComponent implements OnInit {
   );
 
   // Initially the product variant displayed and when user clicks on variant table
-  private subjectMapper$ = new ReplaySubject<CustomRowMapper>();
-  firstRowMapper$ = this.subjectMapper$.asObservable();
+  private productSubject$ = new ReplaySubject<CustomRowMapper>();
+  currentProduct$ = this.productSubject$.asObservable();
 
   // CKEditor
   config = CKEDITOR4CONFIG;
@@ -216,10 +222,38 @@ export class UpdateProductComponent implements OnInit {
     );
   }
 
-  /** Updates or deletes a product detail based on info received from UpdateProductComponent */
-  onDeleteOrUpdateVariant(tableContent: TableContent<CustomRowMapper>): void {
-    this.form.controls['sku'].setValue(tableContent.data.sku);
-    this.subjectMapper$.next(tableContent.data);
+  /**
+   * Based on info key received from Dynamic table Component,
+   * we either do nothing, update or delete action
+   * @param content is info received from Dynamic Table Component
+   * */
+  onDeleteOrUpdateVariant(content: TableContent<CustomRowMapper>): void {
+    this.form.controls['sku'].setValue(content.data.sku);
+    this.productSubject$.next(content.data);
+
+    switch (content.key) {
+      case 'view':
+        console.log('Do nothing')
+        break;
+      case 'edit':
+        const v: CustomUpdateVariant = {
+          productId: this.uuid,
+          variant: {
+            sku: content.data.sku,
+            is_visible: content.data.is_visible,
+            qty: content.data.inventory,
+            size: content.data.size
+          }
+        }
+        this.dialog.open(UpdateVariantComponent, {
+          data: v,
+        })
+        break;
+      case 'delete':
+        break;
+      default:
+        console.error('Invalid key');
+    }
   }
 
 }

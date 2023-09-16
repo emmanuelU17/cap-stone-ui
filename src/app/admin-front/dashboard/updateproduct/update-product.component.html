@@ -15,7 +15,7 @@
     <form class="w-full flex flex-col px-0" [formGroup]="form" *ngIf="data">
 
       <!-- Contents -->
-      <div class="flex-1 " *ngIf="firstRowMapper$ | async as currentDetails">
+      <div class="flex-1 " *ngIf="currentProduct$ | async as currentDetails">
         <div class="bg-[var(--white)] mb-2.5 p-2.5 rounded-md border border-solid border-[var(--active)]">
           <div class="mb-1.5"><h2 class="capitalize">general</h2></div>
 
