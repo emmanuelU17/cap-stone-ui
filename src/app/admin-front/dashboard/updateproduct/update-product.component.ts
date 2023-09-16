@@ -233,7 +233,7 @@ export class UpdateProductComponent implements OnInit {
 
     switch (content.key) {
       case 'view':
-        console.log('Do nothing')
+        console.log('only update sku and row current product variant')
         break;
       case 'edit':
         const v: CustomUpdateVariant = {
