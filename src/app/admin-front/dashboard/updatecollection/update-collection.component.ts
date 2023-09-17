@@ -6,13 +6,14 @@ import {ActivatedRoute} from "@angular/router";
 import {FormBuilder, FormControl, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {CollectionService} from "../collection/collection.service";
 import {CollectionResponse, ProductResponse} from "../../shared-util";
-import {catchError, map, Observable, of, startWith, switchMap} from "rxjs";
+import {catchError, combineLatest, map, Observable, of, startWith, switchMap} from "rxjs";
 import {Page} from "../../../global-utils";
 import {HttpErrorResponse} from "@angular/common/http";
 import {DynamicTableComponent} from "../dynamictable/dynamic-table.component";
 import {MatButtonModule} from "@angular/material/button";
 import {MatRadioModule} from "@angular/material/radio";
 import {DirectiveModule} from "../../../directive/directive.module";
+import {ProductService} from "../product/product.service";
 
 @Component({
   selector: 'app-update-collection',
@@ -32,6 +33,7 @@ import {DirectiveModule} from "../../../directive/directive.module";
 export class UpdateCollectionComponent implements OnInit {
   private updateCollectionService: UpdateCollectionService = inject(UpdateCollectionService);
   private collectionService: CollectionService = inject(CollectionService);
+  private productService: ProductService = inject(ProductService);
   private navigationService: NavigationService = inject(NavigationService);
   private activeRoute: ActivatedRoute = inject(ActivatedRoute);
   private fb: FormBuilder = inject(FormBuilder);
@@ -102,8 +104,12 @@ export class UpdateCollectionComponent implements OnInit {
             return res;
           }
 
-          // Update CategoryResponse array
-          return this.collectionService.fetchCollections().pipe(switchMap(() => res));
+          // Update ProductResponse and CollectionResponse array
+          const product$ = this.productService.fetchAllProducts();
+          const collections$ = this.collectionService.fetchCollections();
+
+          // combineLatest as we need both responses
+          return combineLatest([product$, collections$]).pipe(switchMap(() => res));
         })
       );
   }

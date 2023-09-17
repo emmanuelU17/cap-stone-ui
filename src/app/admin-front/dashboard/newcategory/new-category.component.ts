@@ -3,7 +3,7 @@ import {CommonModule} from '@angular/common';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {NewCategoryService} from "./new-category.service";
 import {Observable, of, switchMap} from "rxjs";
-import {CategoryRequest, CategoryResponse} from "../../shared-util";
+import {CategoryRequest} from "../../shared-util";
 import {MatButtonModule} from "@angular/material/button";
 import {MatRadioModule} from "@angular/material/radio";
 import {DirectiveModule} from "../../../directive/directive.module";
@@ -14,11 +14,9 @@ import {CategoryService} from "../category/category.service";
   standalone: true,
   imports: [CommonModule, MatButtonModule, MatRadioModule, ReactiveFormsModule, DirectiveModule],
   templateUrl: './new-category.component.html',
-  styleUrls: ['./new-category.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NewCategoryComponent {
-
   private newCategoryService: NewCategoryService = inject(NewCategoryService);
   private categoryService: CategoryService = inject(CategoryService);
 

@@ -63,6 +63,16 @@ body {
   cursor: pointer;
 }
 
+.cx-font-size {
+  font-size: 20px;
+}
+
+@media (max-width: 768px) {
+  .cx-font-size {
+    font-size: calc(15px + 1vw);
+  }
+}
+
 /*::-webkit-scrollbar-track {*/
 /*  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);*/
 /*  border-radius: 10px;*/

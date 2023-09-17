@@ -4,7 +4,7 @@ import {CategoryResponse, ProductResponse} from "../../shared-util";
 import {FormBuilder, FormControl, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {MatRadioModule} from "@angular/material/radio";
 import {DynamicTableComponent} from "../dynamictable/dynamic-table.component";
-import {catchError, map, Observable, of, startWith, switchMap} from "rxjs";
+import {catchError, combineLatest, map, Observable, of, startWith, switchMap} from "rxjs";
 import {MatButtonModule} from "@angular/material/button";
 import {DirectiveModule} from "../../../directive/directive.module";
 import {UpdateCategoryService} from "./update-category.service";
@@ -13,6 +13,7 @@ import {Page} from "../../../global-utils";
 import {CategoryService} from "../category/category.service";
 import {ActivatedRoute} from "@angular/router";
 import {NavigationService} from "../../../service/navigation.service";
+import {ProductService} from "../product/product.service";
 
 @Component({
   selector: 'app-update-category',
@@ -30,7 +31,8 @@ import {NavigationService} from "../../../service/navigation.service";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UpdateCategoryComponent implements OnInit {
-  private service: UpdateCategoryService = inject(UpdateCategoryService);
+  private updateCategoryService: UpdateCategoryService = inject(UpdateCategoryService);
+  private productService: ProductService = inject(ProductService);
   private categoryService: CategoryService = inject(CategoryService);
   private navigationService: NavigationService = inject(NavigationService);
   private activeRoute: ActivatedRoute = inject(ActivatedRoute);
@@ -49,7 +51,7 @@ export class UpdateCategoryComponent implements OnInit {
     state: string,
     error?: string,
     data?: Page<ProductResponse>
-  }> = this.service.allProductsByCategory(this.uuid).pipe(
+  }> = this.updateCategoryService.allProductsByCategory(this.uuid).pipe(
     map((arr: Page<ProductResponse>) => ({state: 'LOADED', data: arr})),
     startWith({state: 'LOADING'}),
     catchError((err: HttpErrorResponse) => of({state: 'ERROR', error: err.error.message}))
@@ -87,7 +89,7 @@ export class UpdateCategoryComponent implements OnInit {
       return of(0);
     }
 
-    return this.service
+    return this.updateCategoryService
       .updateCategory({id: this.uuid, name: name, visible: visible})
       .pipe(
         switchMap((status: number): Observable<number> => {
@@ -98,8 +100,12 @@ export class UpdateCategoryComponent implements OnInit {
             return res;
           }
 
-          // Update CategoryResponse array
-          return this.categoryService.fetchCategories().pipe(switchMap(() => res));
+          // Update ProductResponse and CategoryResponse array
+          const product$ = this.productService.fetchAllProducts();
+          const categories$ = this.categoryService.fetchCategories();
+
+          // combineLatest as we need both responses
+          return combineLatest([product$, categories$]).pipe(switchMap(() => res));
         })
       );
   }

@@ -7,7 +7,7 @@
         <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18"/>
       </svg>
     </button>
-    <h1 class="txt capitalize">Editing {{ data.product.name }}</h1>
+    <h1 class="cx-font-size capitalize">Editing {{ data.product.name }}</h1>
   </div>
 
   <div class="w-full grid grid-cols-1 lg:grid-cols-2 gap-2.5">
@@ -17,11 +17,11 @@
       <!-- Contents -->
       <div class="flex-1 " *ngIf="currentProduct$ | async as currentDetails">
         <div class="bg-[var(--white)] mb-2.5 p-2.5 rounded-md border border-solid border-[var(--active)]">
-          <div class="mb-1.5"><h2 class="capitalize">general</h2></div>
+          <div class="cx-font-size mb-1.5"><h2 class="capitalize">general</h2></div>
 
           <!-- Form-Group (product name)-->
           <div class="mb-2">
-            <h4 class="capitalize">name <span class="text-red-500">*</span></h4>
+            <h3 class="capitalize"><span class="text-red-500">*</span> name</h3>
             <input
               formControlName="name"
               type="text"
@@ -33,7 +33,7 @@
           <div class="mb-2 grid gap-3 grid-cols-1 lg:grid-cols-2">
             <!-- SKU -->
             <div>
-              <h4 class="capitalize">sku <span class="text-red-500">*</span></h4>
+              <h3 class="uppercase"><span class="text-red-500">*</span> sku</h3>
               <input
                 formControlName="sku"
                 type="text"
@@ -43,7 +43,7 @@
 
             <!-- PRICE -->
             <div>
-              <h4 class="capitalize">price <span class="text-red-500">*</span></h4>
+              <h3 class="capitalize"><span class="text-red-500">*</span> price</h3>
               <input
                 formControlName="price"
                 type="number"
@@ -54,10 +54,10 @@
 
           <!-- Form-Group Category -->
           <div class="mb-2">
-            <h4 class="capitalize pb-3.5">category <span class="text-red-500">*</span></h4>
+            <h3 class="capitalize pb-3.5"><span class="text-red-500">*</span> category</h3>
             <div class="grid grid-cols-2 md:flex md:flex-1 gap-1.5">
-              <h3 style="font-size: small">{{ data.product.category }}</h3>
-              <select #selectElem (change)="onChangeCategory(selectElem.value)"
+              <p class="">{{ data.product.category }}</p>
+              <select (change)="onChangeCategory($event)"
                       class="p-1.5 rounded cursor-pointer border border-solid border-[var(--border-outline)]">
                 <option [value]="" disabled selected>change?</option>
                 <option *ngFor="let cat of categories$ | async" [value]="cat.category">{{ cat.category }}</option>
@@ -67,10 +67,10 @@
 
           <!-- Form-Group Collection -->
           <div class="mb-2">
-            <h4 class="capitalize pb-3.5">collection <span class="text-red-500">*</span></h4>
+            <h3 class="capitalize pb-3.5">collection</h3>
             <div class="grid grid-cols-2 md:flex md:flex-1 gap-1.5">
-              <h3 style="font-size: small">{{ data.product.collection }}</h3>
-              <select #selectElem (change)="onChangeCollection(selectElem.value)"
+              <p class="">{{ data.product.collection }}</p>
+              <select (change)="onChangeCollection($event)"
                       class="p-1.5 rounded cursor-pointer border border-solid border-[var(--border-outline)]"
               >
                 <option [value]="" disabled selected>change?</option>
@@ -81,14 +81,14 @@
 
           <!-- Form-Group description -->
           <div class="flex flex-col gap-2">
-            <h4 class="capitalize">description <span class="text-red-500">*</span></h4>
+            <h3 class="capitalize"><span class="text-red-500">*</span> description</h3>
             <ckeditor [config]="config" formControlName="desc"></ckeditor>
           </div>
 
         </div>
 
         <div class="mb-2.5 p-2.5 rounded-md border border-solid border-[var(--active)] bg-[var(--white)]">
-          <div class="mb-1.5"><h2 class="capitalize">media <span class="text-red-500">*</span></h2></div>
+          <div class="mb-1.5"><h2 class="cx-font-size capitalize"><span class="text-red-500">*</span> media</h2></div>
           <div class="flex flex-row flex-wrap items-center gap-2.5">
             <div
               class="basis-1/4 aspect-h-1 aspect-w-1 overflow-hidden rounded-md bg-gray-200 lg:aspect-none"
@@ -124,7 +124,7 @@
     <ng-container *ngIf="productVariants$ | async as variant" [ngSwitch]="variant.state">
       <ng-container *ngSwitchCase="'LOADING'">
         <div class="h-full p-20 flex justify-center items-center">
-          <h1 class="capitalize text-[var(--app-theme-hover)]">
+          <h1 class="cx-font-size capitalize text-[var(--app-theme-hover)]">
             loading product variants...
           </h1>
         </div>
@@ -140,7 +140,7 @@
         <div class="flex-1 max-h-2/4">
           <!-- Variants -->
           <div class="h-full bg-[var(--white)] mb-2.5 p-2.5 rounded-md border border-solid border-[var(--active)]">
-            <div class="mb-1.5"><h2 class="capitalize">variants</h2></div>
+            <div class="mb-1.5"><h2 class="cx-font-size capitalize">variants</h2></div>
 
             <!-- Table -->
             <div class="overflow-auto" *ngIf="variant.data">

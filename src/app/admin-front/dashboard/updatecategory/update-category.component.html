@@ -10,10 +10,10 @@
     <h1 class="text-base capitalize">Updating {{ data.category }}</h1>
   </div>
 
-  <div class="w-full h-full flex gap-2.5">
+  <div class="w-full h-full grid gap-2.5 lg:grid-cols-2">
 
     <!-- Category Column -->
-    <div class="flex-1">
+    <div>
       <div class="">
         <h1 class="capitalize mb-0">details</h1>
       </div>
@@ -23,7 +23,7 @@
         <!-- Input box -->
         <div
           class="p-6 flex flex-col gap-2.5 text-left rounded-md border border-[var(--active)] border-solid bg-[var(--white)]">
-          <h4 class="txt capitalize">name <span [style]="'color: red'">*</span></h4>
+          <h4 class="cx-font-size capitalize">name <span [style]="'color: red'">*</span></h4>
           <input
             formControlName="name"
             placeholder="category name"
@@ -34,7 +34,7 @@
 
         <!-- Radio -->
         <div class="p-6 text-left rounded-md border border-[var(--active)] border-solid bg-[var(--white)]">
-          <h4 class="txt capitalize">visibility (include in store front) <span [style]="'color: red'">*</span></h4>
+          <h4 class="cx-font-size capitalize">visibility (include in store front) <span [style]="'color: red'">*</span></h4>
           <mat-radio-group aria-label="Select an option" formControlName="visible">
             <mat-radio-button [value]="false" [checked]="!data.visible">false</mat-radio-button>
             <mat-radio-button [value]="true" [checked]="data.visible">true</mat-radio-button>

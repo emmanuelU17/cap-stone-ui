@@ -8,7 +8,6 @@ import {MatButtonModule} from "@angular/material/button";
   standalone: true,
   imports: [CommonModule, MatButtonModule],
   templateUrl: './size-inventory.component.html',
-  styleUrls: ['./size-inventory.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SizeInventoryComponent {

@@ -1,7 +1,7 @@
 <form class="h-full flex flex-col py-0 px-2.5" [formGroup]="reactiveForm" (ngSubmit)="submit()">
   <!-- Title -->
   <div class="py-2.5 px-0">
-    <h1 class="capitalize">create a new collection</h1>
+    <h1 class="cx-font-size capitalize">create a new collection</h1>
   </div>
 
   <!-- Contents -->
@@ -10,11 +10,11 @@
     <!-- Left-column -->
     <div class="flex-1">
       <div class="p-2.5 rounded-md border border-solid border-[var(--active)] bg-[var(--white)]">
-        <div class="py-1.5 px-0"><h2 class="txt capitalize">general</h2></div>
+        <div class="py-1.5 px-0"><h2 class="cx-font-size capitalize">general</h2></div>
 
         <div class="text-left">
           <div class="flex flex-col gap-2.5">
-            <h4 class="txt capitalize">name <span class="border-red-600">*</span></h4>
+            <h4 class="cx-font-size capitalize">name <span class="border-red-600">*</span></h4>
             <input
               formControlName="name"
               placeholder="collection name"
@@ -36,7 +36,7 @@
 
         <div class="text-left">
           <div>
-            <h4 class="txt capitalize">visibility (include in store front) <span [style]="'color: red'">*</span></h4>
+            <h4 class="cx-font-size capitalize">visibility (include in store front) <span [style]="'color: red'">*</span></h4>
             <mat-radio-group aria-label="Select an option" formControlName="visible">
               <mat-radio-button [checked]='true' value="false">false</mat-radio-button>
               <mat-radio-button value="true">true</mat-radio-button>

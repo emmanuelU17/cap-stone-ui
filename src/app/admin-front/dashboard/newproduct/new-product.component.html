@@ -1,7 +1,7 @@
 <form class="h-full flex flex-col px-0" [formGroup]="reactiveForm">
   <!-- Title-container -->
   <div class="flex py-2.5 px-0">
-    <h1 class="capitalize text-sm md:text-xl">create a new product</h1>
+    <h1 class="cx-font-size capitalize">create a new product</h1>
   </div>
 
   <!-- Contents -->
@@ -9,12 +9,12 @@
     <!-- Left column -->
     <div class="flex-1">
       <div class="bg-[var(--white)] mb-2.5 p-2.5 rounded-md border border-solid border-[var(--active)]">
-        <div class="py-1.5"><h2 class="txt capitalize">general</h2></div>
+        <div class="py-1.5"><h2 class="cx-font-size capitalize">general</h2></div>
 
         <div class="w-full flex gap-1.5 max-[640px]:flex-col">
           <!-- Product Name -->
           <div class="mb-2 flex-1">
-            <h4 class="capitalize">name <span class="text-red-500">*</span></h4>
+            <h4 class="cx-font-size capitalize"><span class="text-red-500">*</span>name</h4>
             <input
               formControlName="name"
               placeholder="product name"
@@ -25,7 +25,7 @@
 
           <!-- Price -->
           <div class="mb-2">
-            <h4 class="capitalize">price <span class="text-red-500">*</span></h4>
+            <h4 class="cx-font-size capitalize"><span class="text-red-500">*</span>price</h4>
             <input
               placeholder="USD"
               formControlName="price"
@@ -43,7 +43,7 @@
       </div>
 
       <div class="bg-[var(--white)] mb-2.5 p-2.5 rounded-md border border-solid border-[var(--active)]">
-        <div class="py-1.5"><h2 class="txt capitalize">media <span class="text-red-500">*</span></h2></div>
+        <div class="py-1.5"><h2 class="cx-font-size capitalize"><span class="text-red-500">*</span>media</h2></div>
 
         <div class="flex flex-wrap items-center">
           <div class="relative" *ngFor="let image of imageUrls">
@@ -51,7 +51,8 @@
               type="button"
               class="x-btn m-0.5 outline-none border-0 text-center cursor-pointer bg-transparent"
               (click)="remove(image)">
-              <img [src]="image.url" alt="logo" class="m-0 min-h-[9.375rem] min-w-[9.375rem] max-h-[12.5rem] max-w-[12.5rem] object-cover">
+              <img [src]="image.url" alt="logo"
+                   class="m-0 min-h-[9.375rem] min-w-[9.375rem] max-h-[12.5rem] max-w-[12.5rem] object-cover">
             </button>
           </div>
 
@@ -62,8 +63,10 @@
                    (change)="onFileSelected($event)"
                    accept="image/gif, image/jpeg, image/png" #fileUpload>
 
-            <button class="flex outline-none border-0 text-center cursor-pointer bg-transparent" type="button" (click)="fileUpload.click()">
-              <p *ngIf="imageUrls.length < 1">No file uploaded yet.</p> <mat-icon>attach_file</mat-icon>
+            <button class="flex outline-none border-0 text-center cursor-pointer bg-transparent" type="button"
+                    (click)="fileUpload.click()">
+              <p *ngIf="imageUrls.length < 1">No file uploaded yet.</p>
+              <mat-icon>attach_file</mat-icon>
             </button>
           </div>
           <!-- End of upload -->
@@ -75,11 +78,11 @@
     <!-- Right column -->
     <div class="flex-1">
       <div class="bg-[var(--white)] mb-2.5 p-2.5 rounded-md border border-solid border-[var(--active)]">
-        <div class="py-1.5"><h2 class="txt capitalize">status</h2></div>
+        <div class="py-1.5"><h2 class="cx-font-size capitalize">status</h2></div>
         <!-- End of attribute-title -->
 
         <div class="mb-2">
-          <h4 class="capitalize">visibility (include in store front) <span class="text-red-500">*</span></h4>
+          <h4 class="cx-font-size capitalize"><span class="text-red-500">*</span> visibility (include in store front)</h4>
           <mat-radio-group aria-label="Select an option" formControlName="visible">
             <mat-radio-button [checked]='true' value="false">false</mat-radio-button>
             <mat-radio-button value="true">true</mat-radio-button>
@@ -87,7 +90,7 @@
         </div>
 
         <div class="mb-2" *ngIf="categories$ | async as categories">
-          <h4 class="capitalize">category <span class="text-red-500">*</span></h4>
+          <h4 class="cx-font-size capitalize"><span class="text-red-500">*</span>category</h4>
           <select
             formControlName="category"
             class="w-full p-3 rounded-md cursor-pointer capitalize border border-solid border-[var(--active)]"
@@ -101,7 +104,7 @@
         </div>
 
         <div class="mb-2" *ngIf="collections$ | async as collections">
-          <h4 class="capitalize">collection</h4>
+          <h4 class="cx-font-size capitalize">collection</h4>
           <select
             formControlName="collection"
             class="w-full p-3 rounded-md cursor-pointer capitalize border border-solid border-[var(--active)]"
@@ -119,11 +122,11 @@
 
       <!-- Colour, Size and Inventory -->
       <div class="bg-[var(--white)] mb-2.5 p-2.5 rounded-md border border-solid border-[var(--active)]">
-        <div class="py-1.5"><h2 class="txt capitalize">Attributes</h2></div>
+        <div class="py-1.5"><h2 class="cx-font-size capitalize">Attributes</h2></div>
 
         <!-- Colour -->
         <div class="mb-2">
-          <h4 class="capitalize">colour <span class="text-red-500">*</span></h4>
+          <h4 class="cx-font-size capitalize"><span class="text-red-500">*</span>colour</h4>
           <input
             formControlName="colour"
             placeholder="colour"
@@ -150,7 +153,8 @@
 
       [style]="{ 'background-color': reactiveForm.valid ? 'var(--app-theme-hover)' : 'var(--app-theme)' }"
       [asyncButton]="submit()"
-    >create</button>
+    >create
+    </button>
   </div>
 
 </form>

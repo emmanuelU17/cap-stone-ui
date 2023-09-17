@@ -30,7 +30,6 @@ import {ProductService} from "../product/product.service";
     DirectiveModule
   ],
   templateUrl: './new-product.component.html',
-  styleUrls: ['./new-product.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NewProductComponent {

@@ -23,6 +23,8 @@ export class CollectionComponent {
   /** Based on the key received from DynamicTableComponent, route to the appropriate page */
   infoFromTableComponent(content: TableContent<CollectionResponse>): void {
     switch (content.key) {
+      case 'view':
+        break;
       case 'edit':
         this.router.navigate([`/admin/dashboard/collection/${content.data.id}`]);
         break;

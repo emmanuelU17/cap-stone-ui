@@ -4,16 +4,16 @@ table {
 }
 
 th {
-  text-align: left;
   text-transform: uppercase;
 }
 
 th, td {
+  text-align: left;
   padding: 1rem;
   border-bottom: var(--cards-border);
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 768px) {
   th, td, mat-icon {
     font-size: calc(10px + 1vw);
   }

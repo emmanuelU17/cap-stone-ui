@@ -22,6 +22,9 @@ export class CategoryComponent {
 
   infoFromTableComponent(content: TableContent<CategoryResponse>): void {
     switch (content.key) {
+      case 'view':
+        console.log('only update sku and row current product variant')
+        break;
       case 'edit':
         this.router.navigate([`/admin/dashboard/category/${content.data.id}`]);
         break;

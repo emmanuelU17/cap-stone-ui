@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {catchError, map, Observable, of, ReplaySubject, startWith, switchMap} from "rxjs";
+import {catchError, combineLatest, map, Observable, of, ReplaySubject, startWith, switchMap} from "rxjs";
 import {
   CategoryResponse,
   CKEDITOR4CONFIG,
@@ -22,7 +22,7 @@ import {DynamicTableComponent} from "../dynamictable/dynamic-table.component";
 import {Variant} from "../../../global-utils";
 import {NavigationService} from "../../../service/navigation.service";
 import {ActivatedRoute} from "@angular/router";
-import {CustomUpdateVariant} from "../updatevariant/updateVariant";
+import {CustomUpdateVariant} from "../updatevariant/update-variant";
 import {MatDialog, MatDialogModule} from "@angular/material/dialog";
 import {UpdateVariantComponent} from "../updatevariant/update-variant.component";
 
@@ -140,8 +140,16 @@ export class UpdateProductComponent implements OnInit {
     this.navigationService.navigateBack('/admin/dashboard/product');
   }
 
-  /** Updates data on change of category */
-  onChangeCategory(category: string): void {
+  // validates if we need to refresh categories and collections array
+  private onChangeCategoryOrCollection = false;
+
+  /**
+   * Updates data on change of category
+   * https://angular.io/guide/user-input
+   * */
+  onChangeCategory(event: Event): void {
+    const category: string = (event.target as HTMLInputElement).value;
+    console.log('Pre-category ', category)
     if (!this.data.product) {
       return;
     }
@@ -151,13 +159,16 @@ export class UpdateProductComponent implements OnInit {
       .find(c => c.category === category);
 
     if (cat) {
+      this.onChangeCategoryOrCollection = true;
       this.data.categoryId = cat.id
     }
 
   }
 
   /** Updates data on change of collection */
-  onChangeCollection(collection: string): void {
+  onChangeCollection(event: Event): void {
+    const collection: string = (event.target as HTMLInputElement).value;
+
     if (!this.data.product) {
       return;
     }
@@ -167,7 +178,8 @@ export class UpdateProductComponent implements OnInit {
       .find(c => c.collection === collection);
 
     if (col) {
-      this.data.collectionId = col.id
+      this.onChangeCategoryOrCollection = true;
+      this.data.collectionId = col.id;
     }
 
   }
@@ -217,7 +229,14 @@ export class UpdateProductComponent implements OnInit {
           return res;
         }
 
-        return this.productService.fetchAllProducts().pipe(switchMap(() => res));
+        const products$ = this.productService.fetchAllProducts();
+        const categories$ = this.categoryService.fetchCategories();
+        const collections$ = this.collectionService.fetchCollections();
+        const combine$ = combineLatest([products$, categories$, collections$])
+          .pipe(switchMap(() => res));
+
+        // If user changes category or collection, refresh the arrays else only refresh products
+        return this.onChangeCategoryOrCollection ?  combine$ : products$.pipe(switchMap(() => res));
       })
     );
   }
@@ -232,12 +251,17 @@ export class UpdateProductComponent implements OnInit {
     this.productSubject$.next(content.data);
 
     switch (content.key) {
+      // view is a global click
       case 'view':
-        console.log('only update sku and row current product variant')
         break;
       case 'edit':
+        if (!this.product) {
+          return;
+        }
+
         const v: CustomUpdateVariant = {
           productId: this.uuid,
+          productName: this.product.name,
           variant: {
             sku: content.data.sku,
             is_visible: content.data.is_visible,
@@ -246,10 +270,14 @@ export class UpdateProductComponent implements OnInit {
           }
         }
         this.dialog.open(UpdateVariantComponent, {
+          height: '400px',
+          width: '600px',
+          maxWidth: '100%',
           data: v,
         })
         break;
       case 'delete':
+        console.log('Delete product variant')
         break;
       default:
         console.error('Invalid key');

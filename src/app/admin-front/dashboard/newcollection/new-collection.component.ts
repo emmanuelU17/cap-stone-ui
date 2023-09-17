@@ -14,7 +14,6 @@ import {CollectionService} from "../collection/collection.service";
   standalone: true,
   imports: [CommonModule, MatButtonModule, MatRadioModule, ReactiveFormsModule, DirectiveModule],
   templateUrl: './new-collection.component.html',
-  styleUrls: ['./new-collection.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NewCollectionComponent {

@@ -7,5 +7,6 @@ export interface UpdateVariant {
 
 export interface CustomUpdateVariant {
   productId: string;
+  productName: string;
   variant: UpdateVariant;
 }

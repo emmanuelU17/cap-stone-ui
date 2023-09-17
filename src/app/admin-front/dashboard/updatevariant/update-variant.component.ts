@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
 import {CommonModule} from "@angular/common";
 import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from "@angular/material/dialog";
-import {CustomUpdateVariant, UpdateVariant} from "./updateVariant";
+import {CustomUpdateVariant, UpdateVariant} from "./update-variant";
 import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {Observable, of, switchMap, tap} from "rxjs";
 import {UpdateVariantService} from "./update-variant.service";

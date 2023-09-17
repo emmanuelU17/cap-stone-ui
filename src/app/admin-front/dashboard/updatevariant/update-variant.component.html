@@ -1,16 +1,18 @@
-<form class="w-full grid grid-cols-1 gap-2 bg-[var(--white)]" [formGroup]="form">
+<div class="w-full p-2 flex justify-center">
+  <h1 class="cx-font-size w-fit capitalize border-b border-b-[var(--app-theme)]">editing {{ data.productName }} variant</h1>
+</div>
+
+<form class="w-full p-2 grid grid-cols-1 gap-2 bg-[var(--white)]" [formGroup]="form">
 
   <!-- SKU -->
   <div class="p-6 text-left rounded-md border border-[var(--active)] border-solid bg-[var(--white)]">
-    <h4 style="font-size: small">
-      <span style="color: red">*</span>SKU <span class="font-bold">{{ data.variant.sku }}</span>
-    </h4>
-    <input type="text" class="hidden" formControlName="sku">
+    <h4 class="cx-font-size"><span style="color: red">*</span> SKU</h4>
+    <input type="text" formControlName="sku">
   </div>
 
   <!-- Radio -->
   <div class="p-6 text-left rounded-md border border-[var(--active)] border-solid bg-[var(--white)]">
-    <h4 class="txt capitalize">visibility (include in store front) <span [style]="'color: red'">*</span></h4>
+    <h4 class="cx-font-size"><span [style]="'color: red'">*</span> Visibility (include in store front)</h4>
     <mat-radio-group aria-label="Select an option" formControlName="visible">
       <mat-radio-button [value]="false" [checked]="!data.variant.is_visible">false</mat-radio-button>
       <mat-radio-button [value]="true" [checked]="data.variant.is_visible">true</mat-radio-button>
@@ -19,9 +21,7 @@
 
   <!-- QTY -->
   <div class="p-6 text-left rounded-md border border-[var(--active)] border-solid bg-[var(--white)]">
-    <h4 style="font-size: small">
-      <span style="color: red">*</span>SKU <span class="font-bold">{{ data.variant.qty }}</span>
-    </h4>
+    <h4 class="cx-font-size capitalize"><span style="color: red">*</span>quantity</h4>
     <input
       type="number"
       class="p-2.5 w-full flex-1 inline rounded-sm border border-solid border-[var(--border-outline)]"
@@ -32,14 +32,12 @@
 
   <!-- SIZE -->
   <div class="p-6 text-left rounded-md border border-[var(--active)] border-solid bg-[var(--white)]">
-    <h4 style="font-size: small">
-      <span style="color: red">*</span>SKU <span class="font-bold">{{ data.variant.size }}</span>
-    </h4>
+    <h4 class="cx-font-size capitalize"><span style="color: red">*</span>size</h4>
     <input
       type="text"
       class="p-2.5 w-full flex-1 inline rounded-sm border border-solid border-[var(--border-outline)]"
       [value]="data.variant.size"
-      formControlName="qty"
+      formControlName="size"
     >
   </div>
 
