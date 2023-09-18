@@ -14,6 +14,8 @@ import {CategoryService} from "../category/category.service";
 import {ActivatedRoute} from "@angular/router";
 import {NavigationService} from "../../../service/navigation.service";
 import {ProductService} from "../product/product.service";
+import {ToastService} from "../../../service/toast/toast.service";
+import {MatDialogModule} from "@angular/material/dialog";
 
 @Component({
   selector: 'app-update-category',
@@ -25,7 +27,8 @@ import {ProductService} from "../product/product.service";
     ReactiveFormsModule,
     DynamicTableComponent,
     MatButtonModule,
-    DirectiveModule
+    DirectiveModule,
+    MatDialogModule
   ],
   templateUrl: './update-category.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -37,6 +40,7 @@ export class UpdateCategoryComponent implements OnInit {
   private navigationService: NavigationService = inject(NavigationService);
   private activeRoute: ActivatedRoute = inject(ActivatedRoute);
   private fb: FormBuilder = inject(FormBuilder);
+  private toastService: ToastService = inject(ToastService);
 
   // Get id from route
   private id: string | null = this.activeRoute.snapshot.paramMap.get('id');
@@ -95,17 +99,16 @@ export class UpdateCategoryComponent implements OnInit {
         switchMap((status: number): Observable<number> => {
           const res = of(status);
 
-          // Return status code is response is an error
-          if (!(status >= 200 && status < 300)) {
-            return res;
-          }
-
           // Update ProductResponse and CategoryResponse array
           const product$ = this.productService.fetchAllProducts();
           const categories$ = this.categoryService.fetchCategories();
 
           // combineLatest as we need both responses
           return combineLatest([product$, categories$]).pipe(switchMap(() => res));
+        }),
+        catchError((err: HttpErrorResponse) => {
+          this.toastService.toastMessage(err.error.message);
+          return of(err.status);
         })
       );
   }

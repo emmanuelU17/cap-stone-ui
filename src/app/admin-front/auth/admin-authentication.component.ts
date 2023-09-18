@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
-import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
+import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
 import {AdminAuthService} from "./admin-auth.service";
 import {Router} from "@angular/router";
 import {Observable, of, tap} from "rxjs";
@@ -16,10 +16,11 @@ import {DirectiveModule} from "../../directive/directive.module";
 export class AdminAuthenticationComponent {
   private authService: AdminAuthService = inject(AdminAuthService);
   private router: Router = inject(Router);
+  private fb: FormBuilder = inject(FormBuilder);
 
   viewPassword = false;
 
-  loginForm = new FormGroup({
+  loginForm = this.fb.group({
     principal: new FormControl("", [Validators.required]),
     password: new FormControl("", [Validators.required]),
   });

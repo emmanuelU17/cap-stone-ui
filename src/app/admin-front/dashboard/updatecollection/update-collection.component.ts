@@ -14,6 +14,8 @@ import {MatButtonModule} from "@angular/material/button";
 import {MatRadioModule} from "@angular/material/radio";
 import {DirectiveModule} from "../../../directive/directive.module";
 import {ProductService} from "../product/product.service";
+import {MatDialogModule} from "@angular/material/dialog";
+import {ToastService} from "../../../service/toast/toast.service";
 
 @Component({
   selector: 'app-update-collection',
@@ -25,7 +27,8 @@ import {ProductService} from "../product/product.service";
     MatButtonModule,
     MatRadioModule,
     ReactiveFormsModule,
-    DirectiveModule
+    DirectiveModule,
+    MatDialogModule
   ],
   templateUrl: './update-collection.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -37,6 +40,7 @@ export class UpdateCollectionComponent implements OnInit {
   private navigationService: NavigationService = inject(NavigationService);
   private activeRoute: ActivatedRoute = inject(ActivatedRoute);
   private fb: FormBuilder = inject(FormBuilder);
+  private toastService: ToastService = inject(ToastService);
 
   // Get id from route
   private id: string | null = this.activeRoute.snapshot.paramMap.get('id');
@@ -99,17 +103,16 @@ export class UpdateCollectionComponent implements OnInit {
         switchMap((status: number) => {
           const res = of(status);
 
-          // Return status code is response is an error
-          if (!(status >= 200 && status < 300)) {
-            return res;
-          }
-
           // Update ProductResponse and CollectionResponse array
           const product$ = this.productService.fetchAllProducts();
           const collections$ = this.collectionService.fetchCollections();
 
           // combineLatest as we need both responses
           return combineLatest([product$, collections$]).pipe(switchMap(() => res));
+        }),
+        catchError((err: HttpErrorResponse) => {
+          this.toastService.toastMessage(err.error.message);
+          return of(err.status);
         })
       );
   }

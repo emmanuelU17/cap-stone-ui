@@ -25,6 +25,7 @@ import {ActivatedRoute} from "@angular/router";
 import {CustomUpdateVariant} from "../updatevariant/update-variant";
 import {MatDialog, MatDialogModule} from "@angular/material/dialog";
 import {UpdateVariantComponent} from "../updatevariant/update-variant.component";
+import {ToastService} from "../../../service/toast/toast.service";
 
 @Component({
   selector: 'app-update-product',
@@ -48,6 +49,7 @@ export class UpdateProductComponent implements OnInit {
   private categoryService: CategoryService = inject(CategoryService);
   private collectionService: CollectionService = inject(CollectionService);
   private dialog: MatDialog = inject(MatDialog);
+  private toastService: ToastService = inject(ToastService);
 
   // Get id from route
   private id: string | null = this.activeRoute.snapshot.paramMap.get('id');
@@ -124,6 +126,11 @@ export class UpdateProductComponent implements OnInit {
     price: new FormControl(0, Validators.required),
     desc: new FormControl('', [Validators.required, Validators.max(400)]),
   });
+
+  constructor() {
+    console.log('Product ', this.product)
+    console.log('Product Data ', this.data)
+  }
 
   ngOnInit(): void {
     if (!this.data.product) {
@@ -224,11 +231,6 @@ export class UpdateProductComponent implements OnInit {
       switchMap((status: number) => {
         const res = of(status);
 
-        // Error
-        if (!(status >= 200 && status < 300)) {
-          return res;
-        }
-
         const products$ = this.productService.fetchAllProducts();
         const categories$ = this.categoryService.fetchCategories();
         const collections$ = this.collectionService.fetchCollections();
@@ -237,6 +239,10 @@ export class UpdateProductComponent implements OnInit {
 
         // If user changes category or collection, refresh the arrays else only refresh products
         return this.onChangeCategoryOrCollection ?  combine$ : products$.pipe(switchMap(() => res));
+      }),
+      catchError((err: HttpErrorResponse) => {
+        this.toastService.toastMessage(err.error.message);
+        return of(err.status);
       })
     );
   }
