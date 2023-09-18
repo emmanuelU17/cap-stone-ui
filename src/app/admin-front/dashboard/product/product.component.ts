@@ -46,7 +46,6 @@ export class ProductComponent {
   infoFromTableComponent(content: TableContent<ProductResponse>): void {
     switch (content.key) {
       case 'product':
-        console.log('Product name clicked')
         this.router.navigate([`/admin/dashboard/product/${content.data.id}`]);
         break;
       case 'delete':

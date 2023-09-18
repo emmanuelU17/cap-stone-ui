@@ -127,11 +127,6 @@ export class UpdateProductComponent implements OnInit {
     desc: new FormControl('', [Validators.required, Validators.max(400)]),
   });
 
-  constructor() {
-    console.log('Product ', this.product)
-    console.log('Product Data ', this.data)
-  }
-
   ngOnInit(): void {
     if (!this.data.product) {
       return;
@@ -156,7 +151,6 @@ export class UpdateProductComponent implements OnInit {
    * */
   onChangeCategory(event: Event): void {
     const category: string = (event.target as HTMLInputElement).value;
-    console.log('Pre-category ', category)
     if (!this.data.product) {
       return;
     }
@@ -201,10 +195,10 @@ export class UpdateProductComponent implements OnInit {
     // Data
     const product = this.data.product;
     const cat = this.data.categoryId;
-    const col = this.data.collectionId;
+    const col = this.data.collectionId ? this.data.collectionId : '';
 
     // Validation
-    if (!name || !price || !desc || !product || !cat || !col) {
+    if (!name || !price || !desc || !product || !cat) {
       // TODO display error via toast
       return of();
     }
@@ -275,6 +269,8 @@ export class UpdateProductComponent implements OnInit {
             size: content.data.size
           }
         }
+
+        // Open Component
         this.dialog.open(UpdateVariantComponent, {
           height: '400px',
           width: '600px',
