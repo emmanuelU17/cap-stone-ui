@@ -1,8 +1,8 @@
-import {ChangeDetectionStrategy, Component, DestroyRef, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ProductResponse, TableContent} from "../../shared-util";
 import {Page} from "../../../global-utils";
-import {catchError, delay, map, Observable, of, startWith} from "rxjs";
+import {catchError, map, Observable, of, startWith} from "rxjs";
 import {ProductService} from "./product.service";
 import {DynamicTableComponent} from "../dynamictable/dynamic-table.component";
 import {HttpErrorResponse} from "@angular/common/http";
@@ -15,12 +15,11 @@ import {DeleteComponent} from "../delete/delete.component";
   standalone: true,
   imports: [CommonModule, DynamicTableComponent, MatDialogModule],
   templateUrl: './product.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductComponent {
   private productService: ProductService = inject(ProductService);
   private router: Router = inject(Router);
-  private destroyRef: DestroyRef = inject(DestroyRef);
   private dialog: MatDialog = inject(MatDialog);
 
   // Table details
@@ -41,20 +40,25 @@ export class ProductComponent {
    * @return void
    * */
   infoFromTableComponent(content: TableContent<ProductResponse>): void {
-    console.log('Key ', content.key)
     switch (content.key) {
       case 'product':
         this.router.navigate([`/admin/dashboard/product/${content.data.id}`]);
         break;
       case 'delete':
-        // TODO
-        const dialogRef = this.dialog.open(DeleteComponent, {
+        const obs: Observable<{ status: number, message: string }> = this.productService
+          .deleteProduct(content.data.id)
+          .pipe(
+            map((status: number) => ({ status: status, message: 'deleted!' })),
+            catchError((err) => of({ status: err.status, message: err.error.message }))
+          );
+
+        this.dialog.open(DeleteComponent, {
           width: '500px',
           maxWidth: '100%',
           height: 'fit-content',
           data: {
             name: content.data.name,
-            obs: of(200).pipe(delay(5000))
+            asyncButton: obs
           }
         });
 
@@ -62,11 +66,6 @@ export class ProductComponent {
       default :
         console.error('Invalid key chosen');
     }
-  }
-
-  /** Makes a call to our server. param name is the products id */
-  deleteProduct(id: string): Observable<number> {
-    return this.productService.deleteProduct(id);
   }
 
 }

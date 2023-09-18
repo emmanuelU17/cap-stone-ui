@@ -277,7 +277,6 @@ export class UpdateProductComponent implements OnInit {
         })
         break;
       case 'delete':
-        console.log('Delete product variant')
         break;
       default:
         console.error('Invalid key');

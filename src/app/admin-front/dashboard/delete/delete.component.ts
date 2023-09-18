@@ -1,10 +1,11 @@
-import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, Inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {MatButtonModule} from "@angular/material/button";
 import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from "@angular/material/dialog";
 import {DeleteData} from "./delete-data";
 import {DirectiveModule} from "../../../directive/directive.module";
-import {Observable, tap} from "rxjs";
+import {map, Observable} from "rxjs";
+import {ToastService} from "../../../service/toast/toast.service";
 
 @Component({
   selector: 'app-delete',
@@ -14,10 +15,11 @@ import {Observable, tap} from "rxjs";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DeleteComponent {
+  private toastService: ToastService = inject(ToastService);
 
   constructor(
     private dialogRef: MatDialogRef<DeleteComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: DeleteData<number>,
+    @Inject(MAT_DIALOG_DATA) public data: DeleteData<{ status: number, message: string }>,
   ) { }
 
   /** Emits false if a user wants delete */
@@ -27,7 +29,12 @@ export class DeleteComponent {
 
   /** Emits true if a user wants delete */
   delete(): Observable<number> {
-    return this.data.obs.pipe(tap(d => console.log('Data ', d)));
+    return this.data.asyncButton.pipe(
+      map((obj: { status: number, message: string }) => {
+        this.toastService.toastMessage(obj.message);
+        return obj.status;
+      })
+    );
   }
 
 }
