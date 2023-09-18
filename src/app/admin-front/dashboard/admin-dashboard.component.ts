@@ -61,7 +61,7 @@ export class AdminDashboardComponent {
             CategoryResponse[],
             CollectionResponse[]
           ]
-        ) => ({state: 'LOADED', principal: principal.principal})
+        ) => ({ state: 'LOADED', principal: principal.principal })
       ),
       startWith({state: 'LOADING'}),
       catchError((err: HttpErrorResponse) => of({state: 'ERROR', error: err.error}))

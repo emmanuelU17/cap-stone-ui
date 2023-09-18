@@ -17,6 +17,16 @@ export class CollectionService {
     this.HOST = environment.domain;
   }
 
+  // Delete collection based on id
+  deleteCollection(id: string): Observable<number> {
+    const url = `${this.HOST}api/v1/worker/collection`;
+    return this.http.delete<HttpResponse<any>>(url,{
+      observe: 'response',
+      params: {id: id},
+      withCredentials: true
+    }).pipe(map((res: HttpResponse<any>) => res.status));
+  }
+
   // Fetch Collection
   fetchCollections(): Observable<CollectionResponse[]> {
     const url = `${this.HOST}api/v1/worker/collection`;
@@ -36,4 +46,5 @@ export class CollectionService {
       })
     );
   }
+
 }

@@ -2,13 +2,15 @@ import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ProductResponse, TableContent} from "../../shared-util";
 import {Page} from "../../../global-utils";
-import {catchError, map, Observable, of, startWith} from "rxjs";
+import {catchError, combineLatest, map, Observable, of, startWith, switchMap} from "rxjs";
 import {ProductService} from "./product.service";
 import {DynamicTableComponent} from "../dynamictable/dynamic-table.component";
 import {HttpErrorResponse} from "@angular/common/http";
 import {Router} from "@angular/router";
 import {MatDialog, MatDialogModule} from "@angular/material/dialog";
 import {DeleteComponent} from "../delete/delete.component";
+import {CollectionService} from "../collection/collection.service";
+import {CategoryService} from "../category/category.service";
 
 @Component({
   selector: 'app-product',
@@ -19,6 +21,8 @@ import {DeleteComponent} from "../delete/delete.component";
 })
 export class ProductComponent {
   private productService: ProductService = inject(ProductService);
+  private categoryService: CategoryService = inject(CategoryService);
+  private collectionService: CollectionService = inject(CollectionService);
   private router: Router = inject(Router);
   private dialog: MatDialog = inject(MatDialog);
 
@@ -48,8 +52,21 @@ export class ProductComponent {
         const obs: Observable<{ status: number, message: string }> = this.productService
           .deleteProduct(content.data.id)
           .pipe(
-            map((status: number) => ({ status: status, message: 'deleted!' })),
-            catchError((err) => of({ status: err.status, message: err.error.message }))
+            switchMap((status: number) => {
+              // Refresh Product, Category and Collection array
+              const products$ = this.productService.fetchAllProducts();
+              const categories$ = this.categoryService.fetchCategories();
+              const collections$ = this.collectionService.fetchCollections();
+
+              return of(status).pipe(
+                switchMap((num: number) =>
+                  combineLatest([products$, categories$, collections$]).pipe(
+                    map(() => ({ status: num, message: 'deleted!' }))
+                  )
+                )
+              );
+            }),
+            catchError((err: HttpErrorResponse) => of({ status: err.status, message: err.error.message }))
           );
 
         this.dialog.open(DeleteComponent, {
