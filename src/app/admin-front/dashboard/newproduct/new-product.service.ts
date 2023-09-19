@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, map, Observable} from "rxjs";
-import {ImageFilter} from "../../shared-util";
+import {map, Observable} from "rxjs";
 import {HttpClient, HttpResponse} from "@angular/common/http";
 import {environment} from "../../../../environments/environment";
 
@@ -9,15 +8,9 @@ import {environment} from "../../../../environments/environment";
 })
 export class NewProductService {
   private HOST: string | undefined;
-  private imageUrls$: BehaviorSubject<ImageFilter[]> = new BehaviorSubject<ImageFilter[]>([]);
-  images$ = this.imageUrls$.asObservable();
 
   constructor(private http: HttpClient) {
     this.HOST = environment.domain;
-  }
-
-  setImageUrl(arr: ImageFilter[]): void {
-    this.imageUrls$.next(arr);
   }
 
   /**

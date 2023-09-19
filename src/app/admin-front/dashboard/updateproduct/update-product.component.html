@@ -121,41 +121,53 @@
     </form>
 
     <!-- Product Variants column -->
-    <ng-container *ngIf="productVariants$ | async as variant" [ngSwitch]="variant.state">
-      <ng-container *ngSwitchCase="'LOADING'">
-        <div class="h-full p-20 flex justify-center items-center">
-          <h1 class="cx-font-size capitalize text-[var(--app-theme-hover)]">
-            loading product variants...
-          </h1>
-        </div>
-      </ng-container>
+    <div class="h-fit max-h-2/4 mb-2.5 p-2.5 overflow-auto rounded-md border border-solid border-[var(--active)] bg-[var(--white)]">
+      <div class="mb-1.5 flex gap-1.5">
+        <h2 class="cx-font-size capitalize">variants</h2>
+        <button type="button" (click)="openVariant()">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-6 h-6 text-[var(--app-theme)]"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </button>
+      </div>
 
-      <ng-container *ngSwitchCase="'ERROR'">
-        <div class="p-10 text-3xl text-red-500">
-          Error {{ variant.error }}
-        </div>
-      </ng-container>
-
-      <ng-container *ngSwitchCase="'LOADED'">
-        <div class="flex-1 max-h-2/4">
-          <!-- Variants -->
-          <div class="h-full bg-[var(--white)] mb-2.5 p-2.5 rounded-md border border-solid border-[var(--active)]">
-            <div class="mb-1.5"><h2 class="cx-font-size capitalize">variants</h2></div>
-
-            <!-- Table -->
-            <div class="overflow-auto" *ngIf="variant.data">
-              <app-dynamic-table
-                [tHead]="thead"
-                [detail]="true"
-                [data]="variant.data"
-                (eventEmitter)="onDeleteOrUpdateVariant($event)"
-              ></app-dynamic-table>
-            </div>
+      <ng-container *ngIf="productVariants$ | async as variant" [ngSwitch]="variant.state">
+        <ng-container *ngSwitchCase="'LOADING'">
+          <div class="h-full p-20 flex justify-center items-center">
+            <h1 class="cx-font-size capitalize text-[var(--app-theme-hover)]">
+              loading product variants...
+            </h1>
           </div>
-        </div>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'ERROR'">
+          <div class="p-10 text-3xl text-red-500">
+            Error {{ variant.error }}
+          </div>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'LOADED'">
+          <!-- Table -->
+          <div class="" *ngIf="variant.data">
+            <app-dynamic-table
+              [tHead]="thead"
+              [detail]="true"
+              [data]="variant.data"
+              (eventEmitter)="onDeleteOrUpdateVariant($event)"
+            ></app-dynamic-table>
+          </div>
+        </ng-container>
+
       </ng-container>
 
-    </ng-container>
+    </div>
 
   </div>
 

@@ -17,6 +17,7 @@ import {MatRadioModule} from "@angular/material/radio";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UpdateVariantComponent {
+
   form: FormGroup;
 
   constructor(

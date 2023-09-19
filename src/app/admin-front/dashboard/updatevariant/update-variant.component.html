@@ -12,7 +12,7 @@
 
   <!-- Radio -->
   <div class="p-6 text-left rounded-md border border-[var(--active)] border-solid bg-[var(--white)]">
-    <h4 class="cx-font-size"><span [style]="'color: red'">*</span> Visibility (include in store front)</h4>
+    <h4 class="cx-font-size">Visibility (include in store front) <span [style]="'color: red'">*</span></h4>
     <mat-radio-group aria-label="Select an option" formControlName="visible">
       <mat-radio-button [value]="false" [checked]="!data.variant.is_visible">false</mat-radio-button>
       <mat-radio-button [value]="true" [checked]="data.variant.is_visible">true</mat-radio-button>

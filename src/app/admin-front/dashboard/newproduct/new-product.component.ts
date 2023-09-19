@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {CategoryResponse, CKEDITOR4CONFIG, CollectionResponse, SizeInventory} from "../../shared-util";
 import {catchError, Observable, of, switchMap} from "rxjs";
-import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
+import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
 import {CategoryService} from "../category/category.service";
 import {CollectionService} from "../collection/collection.service";
 import {NewProductService} from "./new-product.service";
@@ -15,6 +15,7 @@ import {DirectiveModule} from "../../../directive/directive.module";
 import {ProductService} from "../product/product.service";
 import {HttpErrorResponse} from "@angular/common/http";
 import {ToastService} from "../../../service/toast/toast.service";
+import {HelperService} from "../../helper.service";
 
 @Component({
   selector: 'app-new-product',
@@ -35,11 +36,16 @@ import {ToastService} from "../../../service/toast/toast.service";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NewProductComponent {
-  private readonly service: NewProductService = inject(NewProductService);
+  // prototype: URL, createObjectURL(obj: (Blob | MediaSource)): string
+  protected readonly URL = URL;
+
+  private readonly newProductService: NewProductService = inject(NewProductService);
   private readonly categoryService: CategoryService = inject(CategoryService);
   private readonly collectionService: CollectionService = inject(CollectionService);
   private readonly productService: ProductService = inject(ProductService);
   private readonly toastService: ToastService = inject(ToastService);
+  private readonly fb: FormBuilder = inject(FormBuilder);
+  private readonly helperService: HelperService = inject(HelperService);
 
   categories$: Observable<CategoryResponse[]> = this.categoryService._categories$;
   collections$: Observable<CollectionResponse[]> = this.collectionService._collections$;
@@ -47,19 +53,17 @@ export class NewProductComponent {
   config = CKEDITOR4CONFIG;
   content: string = '';
   files: File[] = []; // Images
-  inputRows: SizeInventory[] = [];
+  rows: SizeInventory[] = [];
 
-  reactiveForm: FormGroup = new FormGroup({
+  reactiveForm = this.fb.group({
     category: new FormControl('', [Validators.required]),
     collection: new FormControl(''),
     name: new FormControl('', [Validators.required, Validators.max(50)]),
     price: new FormControl('', Validators.required),
     desc: new FormControl('', [Validators.required, Validators.max(400)]),
     currency: new FormControl("USD"),
-    files: new FormControl(null, Validators.required),
     visible: new FormControl(false, Validators.required),
     colour: new FormControl('', Validators.required),
-    sizeInventory: new FormControl(null, Validators.required)
   });
 
   /**
@@ -71,14 +75,12 @@ export class NewProductComponent {
   onFileSelected(event: any): void {
     const file: File = event.target.files[0];
     if (file) {
-      this.reactiveForm.controls['files'].setValue(file);
       this.files.push(file);
     }
   }
 
   /** Clears reactiveForm */
   clear(): void {
-    this.service.setImageUrl([])
     this.files = [];
     this.reactiveForm.reset();
   }
@@ -95,8 +97,7 @@ export class NewProductComponent {
 
   /** Sets Size and Inventory to FormGroup */
   sizeInv(arr: SizeInventory[]): void {
-    this.inputRows = arr;
-    this.reactiveForm.controls['sizeInventory'].setValue(arr);
+    this.rows = arr;
   }
 
   /**
@@ -104,15 +105,18 @@ export class NewProductComponent {
    * @return void
    * */
   submit(): Observable<number> {
-    return this.service.create(this.toFormData(this.reactiveForm)).pipe(
+    const data: FormData = this.helperService
+      .toFormData(this.reactiveForm, this.files, this.rows);
+
+    return this.newProductService.create(data).pipe(
       switchMap((status: number) => {
         // TODO clear sizeInventory
-
         this.clear();
         this.reactiveForm.controls['collection'].setValue('');
         this.reactiveForm.controls['category'].setValue('');
 
-        return this.productService.fetchAllProducts().pipe(switchMap(() => of(status)));
+        return this.productService.fetchAllProducts()
+          .pipe(switchMap(() => of(status)));
       }),
       catchError((err: HttpErrorResponse) => {
         this.toastService.toastMessage(err.error.message);
@@ -121,20 +125,5 @@ export class NewProductComponent {
     );
   }
 
-  /** Responsible for converting from FormGroup to FormData */
-  private toFormData(formGroup: FormGroup): FormData {
-    this.reactiveForm.controls['sizeInventory'].setValue(null);
-    this.reactiveForm.controls['files'].setValue(null);
-    const formData: FormData = new FormData();
-    for (const key in formGroup.controls) {
-      if (key !== 'files' && key !== 'sizeInventory') {
-        formData.append(key, formGroup.controls[key].value);
-      }
-    }
-    this.files.forEach((file: File) => formData.append('files', file));
-    this.inputRows.forEach((row: SizeInventory) => formData.append('sizeInventory', JSON.stringify(row)));
-    return formData;
-  }
 
-  protected readonly URL = URL;
 }

@@ -26,6 +26,7 @@ import {CustomUpdateVariant} from "../updatevariant/update-variant";
 import {MatDialog, MatDialogModule} from "@angular/material/dialog";
 import {UpdateVariantComponent} from "../updatevariant/update-variant.component";
 import {ToastService} from "../../../service/toast/toast.service";
+import {CreateVariantComponent} from "../create-variant/create-variant.component";
 
 @Component({
   selector: 'app-update-product',
@@ -106,10 +107,10 @@ export class UpdateProductComponent implements OnInit {
         return data;
       })
 
-      return { state: 'LOADED', data: mappers };
+      return {state: 'LOADED', data: mappers};
     }),
     startWith({state: 'LOADING'}),
-    catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error }))
+    catchError((err: HttpErrorResponse) => of({state: 'ERROR', error: err.error}))
   );
 
   // Initially the product variant displayed and when user clicks on variant table
@@ -135,6 +136,19 @@ export class UpdateProductComponent implements OnInit {
     this.form.controls['name'].setValue(this.data.product.name);
     this.form.controls['price'].setValue(this.data.product.price);
     this.form.controls['desc'].setValue(this.data.product.desc);
+  }
+
+  /**
+   * Open Create new variant component
+   * */
+  openVariant(): void {
+    console.log('Open Variant ');
+    this.dialog.open(CreateVariantComponent, {
+      height: '450px',
+      width: '900px',
+      maxWidth: '100%',
+      maxHeight: '100%'
+    })
   }
 
   /** Return back to product component */
@@ -232,7 +246,7 @@ export class UpdateProductComponent implements OnInit {
           .pipe(switchMap(() => res));
 
         // If user changes category or collection, refresh the arrays else only refresh products
-        return this.onChangeCategoryOrCollection ?  combine$ : products$.pipe(switchMap(() => res));
+        return this.onChangeCategoryOrCollection ? combine$ : products$.pipe(switchMap(() => res));
       }),
       catchError((err: HttpErrorResponse) => {
         this.toastService.toastMessage(err.error.message);

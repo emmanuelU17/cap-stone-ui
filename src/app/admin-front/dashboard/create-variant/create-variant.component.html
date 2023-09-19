@@ -1,0 +1,97 @@
+<form class="h-full flex flex-col px-2.5 overflow-auto" [formGroup]="reactiveForm">
+  <!-- Title-container -->
+  <div class="flex py-2.5 px-0 justify-center">
+    <h1 class="cx-font-size capitalize">create a new product variant</h1>
+  </div>
+
+  <!-- Contents -->
+  <div class="flex gap-2.5 max-[945px]:flex-col">
+    <!-- Left column -->
+    <div class="flex-1">
+      <div class="bg-[var(--white)] mb-2.5 p-2.5 rounded-md border border-solid border-[var(--active)]">
+        <div class="py-1.5"><h6 class="cx-font-size capitalize">media <span class="text-red-500">*</span></h6></div>
+
+        <div class="flex flex-wrap items-center">
+          <div class="relative" *ngFor="let image of files">
+            <button
+              type="button"
+              class="x-btn m-0.5 outline-none border-0 text-center cursor-pointer bg-transparent"
+              (click)="remove(image)"
+            >
+              <img [src]="URL.createObjectURL(image)" alt="logo"
+                   class="m-0 object-cover min-h-[4rem] min-w-[4rem] sm:min-h-[9.375rem] sm:min-w-[9.375rem] max-h-[12.5rem] max-w-[12.5rem]">
+            </button>
+          </div>
+
+          <div class="upload">
+            <input type="file"
+                   multiple
+                   class="hidden"
+                   (change)="onFileSelected($event)"
+                   accept="image/gif, image/jpeg, image/png" #fileUpload>
+
+            <button class="flex outline-none border-0 text-center cursor-pointer bg-transparent" type="button"
+                    (click)="fileUpload.click()">
+              <p *ngIf="files.length < 1">No file uploaded yet.</p>
+              <mat-icon>attach_file</mat-icon>
+            </button>
+          </div>
+          <!-- End of upload -->
+        </div>
+      </div>
+      <!-- End of mat-card -->
+    </div>
+
+    <!-- Right column -->
+    <div class="flex-1">
+      <div class="bg-[var(--white)] mb-2.5 p-2.5 rounded-md border border-solid border-[var(--active)]">
+
+        <div class="mb-2">
+          <h6 class="cx-font-size">Visibility (include in store front) <span class="text-red-500">*</span></h6>
+          <mat-radio-group aria-label="Select an option" formControlName="visible">
+            <mat-radio-button [checked]='true' value="false">false</mat-radio-button>
+            <mat-radio-button value="true">true</mat-radio-button>
+          </mat-radio-group>
+        </div>
+
+      </div>
+      <!-- End of mat-card right -->
+
+      <!-- Colour, Size and Inventory -->
+      <div class="bg-[var(--white)] mb-2.5 p-2.5 rounded-md border border-solid border-[var(--active)]">
+        <!-- Colour -->
+        <div class="mb-2">
+          <h6 class="cx-font-size capitalize">colour <span class="text-red-500">*</span></h6>
+          <input
+            formControlName="colour"
+            placeholder="colour"
+            type="text"
+            class="p-2.5 w-full flex-1 inline rounded-sm border border-solid border-[var(--border-outline)]"
+          />
+        </div>
+
+        <!-- Size and Inventory -->
+        <div class="pt-2.5">
+          <app-size-inventory (eventEmitter)="sizeInv($event)"></app-size-inventory>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Button ctn -->
+  <div class="p-2.5 px-1.5 flex justify-between">
+    <button mat-stroked-button color="warn" [style.border-color]="'red'" type="button" (click)="cancel()">
+      cancel
+    </button>
+    <button
+      class="text-white font-bold py-2 px-4 rounded bg-[var(--app-theme)]"
+      type="submit"
+      [disabled]="!reactiveForm.valid || files.length === 0 || rows.length === 0"
+      [style]="{ 'background-color': reactiveForm.valid && files.length > 0 && rows.length > 0 ? 'var(--app-theme-hover)' : 'var(--app-theme)' }"
+      [asyncButton]="create()"
+    >create
+    </button>
+  </div>
+
+</form>
