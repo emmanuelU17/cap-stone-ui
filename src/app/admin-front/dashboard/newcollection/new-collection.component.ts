@@ -4,10 +4,12 @@ import {MatButtonModule} from "@angular/material/button";
 import {MatRadioModule} from "@angular/material/radio";
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {NewCollectionService} from "./new-collection.service";
-import {Observable, of, switchMap} from "rxjs";
+import {catchError, Observable, of, switchMap} from "rxjs";
 import {CollectionRequest} from "../../shared-util";
 import {DirectiveModule} from "../../../directive/directive.module";
 import {CollectionService} from "../collection/collection.service";
+import {HttpErrorResponse} from "@angular/common/http";
+import {ToastService} from "../../../service/toast/toast.service";
 
 @Component({
   selector: 'app-new-collection',
@@ -17,9 +19,9 @@ import {CollectionService} from "../collection/collection.service";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NewCollectionComponent {
-
-  private service: NewCollectionService = inject(NewCollectionService);
-  private collectionService: CollectionService = inject(CollectionService);
+  private readonly newCollectionService: NewCollectionService = inject(NewCollectionService);
+  private readonly collectionService: CollectionService = inject(CollectionService);
+  private readonly toastService: ToastService = inject(ToastService);
 
   reactiveForm: FormGroup = new FormGroup({
     name: new FormControl('', [Validators.required, Validators.max(50)]),
@@ -42,7 +44,7 @@ export class NewCollectionComponent {
       visible: this.reactiveForm.get('visible')?.value
     };
 
-    return this.service.create(obj).pipe(
+    return this.newCollectionService.create(obj).pipe(
       switchMap((status: number): Observable<number> => {
         const res = of(status);
         if (!(status >= 200 && status < 300)) {
@@ -51,6 +53,10 @@ export class NewCollectionComponent {
 
         this.clear();
         return this.collectionService.fetchCollections().pipe(switchMap(() => res));
+      }),
+      catchError((err: HttpErrorResponse) => {
+        this.toastService.toastMessage(err.error.message);
+        return of(err.status);
       })
     );
   }

@@ -43,15 +43,17 @@
       </div>
 
       <div class="bg-[var(--white)] mb-2.5 p-2.5 rounded-md border border-solid border-[var(--active)]">
-        <div class="py-1.5"><h2 class="cx-font-size capitalize"><span class="text-red-500">*</span>media</h2></div>
+        <div class="py-1.5"><h2 class="cx-font-size capitalize"><span class="text-red-500">*</span> media</h2></div>
 
         <div class="flex flex-wrap items-center">
-          <div class="relative" *ngFor="let image of imageUrls">
+          <div class="relative" *ngFor="let image of files">
             <button
               type="button"
               class="x-btn m-0.5 outline-none border-0 text-center cursor-pointer bg-transparent"
-              (click)="remove(image)">
-              <img [src]="image.url" alt="logo"
+              (click)="remove(image)"
+              >
+              <!-- (click)="remove(image)" -->
+              <img [src]="URL.createObjectURL(image)" alt="logo"
                    class="m-0 min-h-[9.375rem] min-w-[9.375rem] max-h-[12.5rem] max-w-[12.5rem] object-cover">
             </button>
           </div>
@@ -65,7 +67,7 @@
 
             <button class="flex outline-none border-0 text-center cursor-pointer bg-transparent" type="button"
                     (click)="fileUpload.click()">
-              <p *ngIf="imageUrls.length < 1">No file uploaded yet.</p>
+              <p *ngIf="files.length < 1">No file uploaded yet.</p>
               <mat-icon>attach_file</mat-icon>
             </button>
           </div>

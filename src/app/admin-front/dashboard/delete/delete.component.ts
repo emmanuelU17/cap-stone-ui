@@ -4,8 +4,9 @@ import {MatButtonModule} from "@angular/material/button";
 import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from "@angular/material/dialog";
 import {DeleteData} from "./delete-data";
 import {DirectiveModule} from "../../../directive/directive.module";
-import {map, Observable} from "rxjs";
+import {catchError, map, Observable, of} from "rxjs";
 import {ToastService} from "../../../service/toast/toast.service";
+import {HttpErrorResponse} from "@angular/common/http";
 
 @Component({
   selector: 'app-delete',
@@ -15,6 +16,7 @@ import {ToastService} from "../../../service/toast/toast.service";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DeleteComponent {
+
   private toastService: ToastService = inject(ToastService);
 
   constructor(
@@ -32,7 +34,13 @@ export class DeleteComponent {
     return this.data.asyncButton.pipe(
       map((obj: { status: number, message: string }) => {
         this.toastService.toastMessage(obj.message);
+        this.cancel();
         return obj.status;
+      }),
+      catchError((err: HttpErrorResponse) => {
+        this.toastService.toastMessage(err.error.message);
+        this.cancel();
+        return of(err.status);
       })
     );
   }

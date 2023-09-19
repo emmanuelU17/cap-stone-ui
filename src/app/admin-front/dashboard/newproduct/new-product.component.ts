@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {CategoryResponse, CKEDITOR4CONFIG, CollectionResponse, ImageFilter, SizeInventory} from "../../shared-util";
-import {Observable, of, switchMap} from "rxjs";
+import {CategoryResponse, CKEDITOR4CONFIG, CollectionResponse, SizeInventory} from "../../shared-util";
+import {catchError, Observable, of, switchMap} from "rxjs";
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {CategoryService} from "../category/category.service";
 import {CollectionService} from "../collection/collection.service";
@@ -13,6 +13,8 @@ import {MatIconModule} from "@angular/material/icon";
 import {MatRadioModule} from "@angular/material/radio";
 import {DirectiveModule} from "../../../directive/directive.module";
 import {ProductService} from "../product/product.service";
+import {HttpErrorResponse} from "@angular/common/http";
+import {ToastService} from "../../../service/toast/toast.service";
 
 @Component({
   selector: 'app-new-product',
@@ -33,17 +35,17 @@ import {ProductService} from "../product/product.service";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NewProductComponent {
-  private service: NewProductService = inject(NewProductService);
-  private categoryService: CategoryService = inject(CategoryService);
-  private collectionService: CollectionService = inject(CollectionService);
-  private productService: ProductService = inject(ProductService);
+  private readonly service: NewProductService = inject(NewProductService);
+  private readonly categoryService: CategoryService = inject(CategoryService);
+  private readonly collectionService: CollectionService = inject(CollectionService);
+  private readonly productService: ProductService = inject(ProductService);
+  private readonly toastService: ToastService = inject(ToastService);
 
   categories$: Observable<CategoryResponse[]> = this.categoryService._categories$;
   collections$: Observable<CollectionResponse[]> = this.collectionService._collections$;
 
   config = CKEDITOR4CONFIG;
   content: string = '';
-  imageUrls: ImageFilter[] = [];
   files: File[] = []; // Images
   inputRows: SizeInventory[] = [];
 
@@ -70,35 +72,25 @@ export class NewProductComponent {
     const file: File = event.target.files[0];
     if (file) {
       this.reactiveForm.controls['files'].setValue(file);
-      this.imageUrls.push({url: URL.createObjectURL(file), name: file.name});
       this.files.push(file);
     }
   }
 
   /** Clears reactiveForm */
   clear(): void {
-    this.imageUrls = [];
     this.service.setImageUrl([])
     this.files = [];
     this.reactiveForm.reset();
   }
 
-  // TODO
   /**
    * Removes image clicked
-   * @param url is image name transformed into a url from method above *onFileSelected*
+   * @param file
    * @return void
    * */
-  remove(url: ImageFilter): void {
-    // Get index in File array based on url
-    const fileIndex: number = this.files.findIndex((file: File): boolean => file.name === url.name);
-    // Get index in image url array based on url
-    const urlIndex: number = this.imageUrls.findIndex((img: ImageFilter): boolean => img.url === url.url);
-    // Delete if present
-    if (fileIndex !== -1 && urlIndex !== -1) {
-      // this.files.slice(fileIndex, 1);
-      // this.imageUrls.slice(urlIndex, 1);
-    }
+  remove(file: File): void {
+    const index: number = this.files.findIndex((value: File) => value.name === file.name);
+    this.files.splice(index, 1);
   }
 
   /** Sets Size and Inventory to FormGroup */
@@ -114,18 +106,18 @@ export class NewProductComponent {
   submit(): Observable<number> {
     return this.service.create(this.toFormData(this.reactiveForm)).pipe(
       switchMap((status: number) => {
-        const res = of(status);
-        if (!(status >= 200 && status < 300)) {
-          return res;
-        }
         // TODO clear sizeInventory
 
         this.clear();
         this.reactiveForm.controls['collection'].setValue('');
         this.reactiveForm.controls['category'].setValue('');
 
-        return this.productService.fetchAllProducts().pipe(switchMap(() => res));
+        return this.productService.fetchAllProducts().pipe(switchMap(() => of(status)));
       }),
+      catchError((err: HttpErrorResponse) => {
+        this.toastService.toastMessage(err.error.message);
+        return of(err.status);
+      })
     );
   }
 
@@ -143,4 +135,6 @@ export class NewProductComponent {
     this.inputRows.forEach((row: SizeInventory) => formData.append('sizeInventory', JSON.stringify(row)));
     return formData;
   }
+
+  protected readonly URL = URL;
 }

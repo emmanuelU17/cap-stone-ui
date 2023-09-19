@@ -2,14 +2,17 @@ import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
 import {AdminAuthService} from "./admin-auth.service";
 import {Router} from "@angular/router";
-import {Observable, of, tap} from "rxjs";
+import {catchError, Observable, of, tap} from "rxjs";
 import {CommonModule} from "@angular/common";
 import {DirectiveModule} from "../../directive/directive.module";
+import {ToastService} from "../../service/toast/toast.service";
+import {MatDialogModule} from "@angular/material/dialog";
+import {HttpErrorResponse} from "@angular/common/http";
 
 @Component({
   selector: 'app-admin-authentication',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, DirectiveModule],
+  imports: [CommonModule, ReactiveFormsModule, DirectiveModule, MatDialogModule],
   templateUrl: './admin-authentication.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -17,6 +20,7 @@ export class AdminAuthenticationComponent {
   private authService: AdminAuthService = inject(AdminAuthService);
   private router: Router = inject(Router);
   private fb: FormBuilder = inject(FormBuilder);
+  private toastService: ToastService = inject(ToastService)
 
   viewPassword = false;
 
@@ -47,6 +51,10 @@ export class AdminAuthenticationComponent {
             this.loginForm.reset();
             this.router.navigate(['/admin/dashboard/statistics']);
           }
+        }),
+        catchError((err: HttpErrorResponse) => {
+          this.toastService.toastMessage(err.error.message);
+          return of(err.status);
         })
       );
   }

@@ -35,6 +35,7 @@ export class CollectionComponent {
         this.router.navigate([`/admin/dashboard/collection/${content.data.id}`]);
         break;
       case 'delete':
+        // Build response
         const obs: Observable<{ status: number, message: string }> = this.collectionService
           .deleteCollection(content.data.id)
           .pipe(
@@ -46,9 +47,7 @@ export class CollectionComponent {
               return of(status).pipe(
                 switchMap((num: number) =>
                   combineLatest([products$, collections$])
-                    .pipe(
-                      map(() => ({ status: num, message: 'deleted!' }))
-                    )
+                    .pipe(map(() => ({ status: num, message: 'deleted!' })))
                 )
               );
             }),

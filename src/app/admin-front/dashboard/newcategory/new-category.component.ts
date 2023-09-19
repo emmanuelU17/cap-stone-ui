@@ -2,12 +2,14 @@ import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {NewCategoryService} from "./new-category.service";
-import {Observable, of, switchMap} from "rxjs";
+import {catchError, Observable, of, switchMap} from "rxjs";
 import {CategoryRequest} from "../../shared-util";
 import {MatButtonModule} from "@angular/material/button";
 import {MatRadioModule} from "@angular/material/radio";
 import {DirectiveModule} from "../../../directive/directive.module";
 import {CategoryService} from "../category/category.service";
+import {HttpErrorResponse} from "@angular/common/http";
+import {ToastService} from "../../../service/toast/toast.service";
 
 @Component({
   selector: 'app-new-category',
@@ -17,8 +19,9 @@ import {CategoryService} from "../category/category.service";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NewCategoryComponent {
-  private newCategoryService: NewCategoryService = inject(NewCategoryService);
-  private categoryService: CategoryService = inject(CategoryService);
+  private readonly newCategoryService: NewCategoryService = inject(NewCategoryService);
+  private readonly categoryService: CategoryService = inject(CategoryService);
+  private readonly toastService: ToastService = inject(ToastService);
 
   reactiveForm: FormGroup = new FormGroup({
     name: new FormControl('', [Validators.required, Validators.max(80)]),
@@ -38,25 +41,23 @@ export class NewCategoryComponent {
    * */
   submit(): Observable<number> {
     const obj: CategoryRequest = {
-      name: this.reactiveForm.get('name')?.value,
-      parent: this.reactiveForm.get('parent')?.value,
-      visible: this.reactiveForm.get('visible')?.value
+      name: this.reactiveForm.controls['name'].value,
+      parent: this.reactiveForm.controls['parent'].value,
+      visible: this.reactiveForm.controls['visible'].value
     };
 
     return this.newCategoryService.create(obj).pipe(
       switchMap((status: number): Observable<number> => {
-        const res = of(status);
-
-        if (!(status >= 200 && status < 300)) {
-          return res;
-        }
-
         // Clear Input field
         this.clear();
         this.reactiveForm.controls['parent'].setValue('');
 
         // Make call to server to update CategoryResponse[]
-        return this.categoryService.fetchCategories().pipe(switchMap(() => res));
+        return this.categoryService.fetchCategories().pipe(switchMap(() => of(status)));
+      }),
+      catchError((err: HttpErrorResponse) => {
+        this.toastService.toastMessage(err.error.message);
+        return of(err.status);
       })
     );
   }

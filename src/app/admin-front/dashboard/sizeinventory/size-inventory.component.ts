@@ -2,6 +2,7 @@ import {ChangeDetectionStrategy, Component, EventEmitter, Output} from '@angular
 import {CommonModule} from '@angular/common';
 import {SizeInventory} from "../../shared-util";
 import {MatButtonModule} from "@angular/material/button";
+import {CustomQueue} from "./custom-queue";
 
 @Component({
   selector: 'app-size-inventory',
@@ -11,18 +12,38 @@ import {MatButtonModule} from "@angular/material/button";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SizeInventoryComponent {
-  inputRow: SizeInventory[] = [];
+  queue = new CustomQueue<SizeInventory>();
+  indexOfError = -1;
 
   @Output() eventEmitter = new EventEmitter<SizeInventory[]>();
 
-  constructor() { }
-
   // https://stackoverflow.com/questions/175739/how-can-i-check-if-a-string-is-a-valid-number
   private isNumeric = (num: any) =>
-    (typeof (num) === 'number' || typeof (num) === "string" && num.trim() !== '') && !isNaN(num as number);
+    (typeof (num) === 'number' || typeof (num) === 'string' && num.trim() !== '') && !isNaN(num as number);
+
+  /**
+   * Validates if size and quantity pair are in the right format
+   * @return boolean
+   * */
+  invalidInputImpl = (): boolean => {
+    if (this.queue.empty()) {
+      return false;
+    }
+
+    for (let i = 0; i < this.queue.toArray().length; i++) {
+      const obj = this.queue.toArray()[i]
+      if (!this.isNumeric(obj.qty)|| obj.size === '' || obj.qty < 0) {
+        this.indexOfError = i;
+        return true;
+      }
+    }
+
+    const end = this.queue.endOfQueue();
+    return !this.isNumeric(end.qty) || end.qty < 0 || end.size === '';
+  }
 
   addInputRow(): void {
-    this.inputRow.push({size: '', qty: -1});
+    this.queue.addToQueue({size: '', qty: -1});
   }
 
   /**
@@ -34,10 +55,7 @@ export class SizeInventoryComponent {
    * */
   onKeyQty(event: KeyboardEvent, index: number): void {
     const qty: string = (event.target as HTMLInputElement).value;
-    if (!this.isNumeric(qty)) {
-      return;
-    }
-    this.inputRow[index].qty = Number(qty);
+    this.queue.toArray()[index].qty = Number(qty);
   }
 
   /**
@@ -48,7 +66,7 @@ export class SizeInventoryComponent {
    * @param index is the row on the html
    * */
   onKeySize(event: KeyboardEvent, index: number): void {
-    this.inputRow[index].size = (event.target as HTMLInputElement).value;
+    this.queue.toArray()[index].size = (event.target as HTMLInputElement).value;
   }
 
   /**
@@ -57,26 +75,11 @@ export class SizeInventoryComponent {
    * @return void
    * */
   deleteRow(index: number): void {
-    if (index > -1) {
-      this.inputRow.splice(index, 1);
-    }
+    this.queue.toArray().splice(index, 1);
   }
 
   /** Updates parent content with array of SizeInventory */
   informParent(): void {
-    for (let i = 0; i < this.inputRow.length; i++) {
-      if (this.inputRow[i].size === '' || this.inputRow[i].qty < 0) {
-        this.inputRow.splice(i, 1);
-      }
-    }
-
-    if (this.inputRow.length === 0) {
-      // this.toastService.createToast('Please enter a size and quantity for product');
-      return;
-    }
-
-    // this.toastService.createToast('Saved Size and Quantity, waiting to for CREATE button to be clicked');
-
-    this.eventEmitter.emit(this.inputRow);
+    this.eventEmitter.emit(this.queue.toArray());
   }
 }
