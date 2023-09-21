@@ -16,7 +16,7 @@ export class CreateVariantService {
   }
 
   create(data: FormData): Observable<number> {
-    const url = `${this.HOST}api/v1/worker/`
+    const url = `${this.HOST}api/v1/worker/product/detail`
     return this.http.post<CreateVariantData>(url, data, {
       observe: 'response',
       withCredentials: true

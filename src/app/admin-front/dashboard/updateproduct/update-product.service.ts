@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ProductDetailResponse} from "../../shared-util";
-import {Observable, of, tap} from "rxjs";
-import {HttpClient} from "@angular/common/http";
+import {map, Observable} from "rxjs";
+import {HttpClient, HttpResponse} from "@angular/common/http";
 import {environment} from "../../../../environments/environment";
 
 @Injectable({
@@ -9,8 +9,6 @@ import {environment} from "../../../../environments/environment";
 })
 export class UpdateProductService {
   HOST: string | undefined;
-
-  productDetailResponse$: Observable<ProductDetailResponse[]> = of();
 
   constructor(private http: HttpClient) {
     this.HOST = environment.domain;
@@ -23,11 +21,17 @@ export class UpdateProductService {
       params: { id: id },
       responseType: 'json',
       withCredentials: true
-    }).pipe(
-      tap((arr: ProductDetailResponse[]): void => {
-        this.productDetailResponse$ = of(arr);
-      })
-    );
+    });
+  }
+
+  /** Delete Product Variant */
+  deleteVariant(sku: string): Observable<number> {
+    const url = `${this.HOST}api/v1/worker/product/detail/sku`;
+    return this.http.delete<number>(url, {
+      params: { sku: sku },
+      observe: 'response',
+      withCredentials: true
+    }).pipe(map((res: HttpResponse<number>) => res.status));
   }
 
 }

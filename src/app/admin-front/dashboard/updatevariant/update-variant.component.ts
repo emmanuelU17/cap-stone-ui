@@ -34,6 +34,7 @@ export class UpdateVariantComponent {
   ) {
     this.form = this.fb.group({
       sku: new FormControl({value: this.data.variant.sku, disabled: true}, [Validators.required]),
+      colour: new FormControl(this.data.variant.colour, [Validators.required]),
       visible: new FormControl(this.data.variant.is_visible, [Validators.required]),
       qty: new FormControl(this.data.variant.qty, Validators.required),
       size: new FormControl(this.data.variant.size, [Validators.required]),
@@ -49,11 +50,13 @@ export class UpdateVariantComponent {
   update(): Observable<number> {
     const sku = this.form.controls['sku'].value;
     const visible = this.form.controls['visible'].value;
+    const colour = this.form.controls['colour'].value;
     const qty = this.form.controls['qty'].value;
     const size = this.form.controls['size'].value;
 
     const payload: UpdateVariant = {
       sku: sku,
+      colour: colour,
       is_visible: visible,
       qty: qty,
       size: size

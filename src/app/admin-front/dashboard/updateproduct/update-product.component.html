@@ -73,7 +73,7 @@
               <select (change)="onChangeCollection($event)"
                       class="p-1.5 rounded cursor-pointer border border-solid border-[var(--border-outline)]"
               >
-                <option [value]="" disabled selected>change?</option>
+                <option value="" disabled selected>change?</option>
                 <option *ngFor="let coll of collections$ | async" [value]="coll.collection">{{ coll.collection }}</option>
               </select>
             </div>
@@ -124,7 +124,7 @@
     <div class="h-fit max-h-2/4 mb-2.5 p-2.5 overflow-auto rounded-md border border-solid border-[var(--active)] bg-[var(--white)]">
       <div class="mb-1.5 flex gap-1.5">
         <h2 class="cx-font-size capitalize">variants</h2>
-        <button type="button" (click)="openVariant()">
+        <button type="button" (click)="openCreateVariantComponent()">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"

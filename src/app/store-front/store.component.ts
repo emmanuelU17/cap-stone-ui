@@ -1,4 +1,4 @@
-import {Component, HostListener, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, HostListener, inject} from '@angular/core';
 import {HomeService} from "./home/home.service";
 import {ProductService} from "./shop/service/product.service";
 import {CategoryService} from "./shop/service/category.service";
@@ -11,6 +11,7 @@ import {Product} from "./store-front-utils";
 @Component({
   selector: 'app-store',
   templateUrl: './store.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class StoreComponent {
   private homeService: HomeService = inject(HomeService);

@@ -28,6 +28,7 @@ import {ToastService} from "../../../service/toast/toast.service";
 import {CreateVariantComponent} from "../create-variant/create-variant.component";
 import {UpdateProductService} from "./update-product.service";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {DeleteComponent} from "../delete/delete.component";
 
 @Component({
   selector: 'app-update-product',
@@ -84,7 +85,7 @@ export class UpdateProductComponent implements OnInit {
   }> = this.updateProductService.fetchProductDetails(this.uuid).pipe(
     map((arr: ProductDetailResponse[]) => {
       const mappers: CustomRowMapper[] = this.toCustomRowMapperArray(arr)
-      return { state: 'LOADED', data: mappers };
+      return {state: 'LOADED', data: mappers};
     }),
     startWith({state: 'LOADING'}),
     catchError((err: HttpErrorResponse) => of({state: 'ERROR', error: err.error}))
@@ -96,6 +97,9 @@ export class UpdateProductComponent implements OnInit {
 
   // CKEditor
   config = CKEDITOR4CONFIG;
+
+  // Needed if a cx wants to create a product variant of the same colour
+  private colours: string[] = [];
 
   // FormGroup
   form = this.fb.group({
@@ -121,6 +125,9 @@ export class UpdateProductComponent implements OnInit {
     return arr.flatMap((res: ProductDetailResponse) => {
       const data: CustomRowMapper[] = [];
 
+      // add all colours
+      this.colours.push(...[res.colour]);
+
       // Based on the amount of Variants, append to CustomMapper
       res.variants.forEach((variant: Variant, index: number): void => {
         const obj: CustomRowMapper = {
@@ -145,16 +152,35 @@ export class UpdateProductComponent implements OnInit {
     });
   }
 
+  private afterComponentClose<T extends { arr: ProductDetailResponse[] }>(obs: Observable<T>): void {
+    obs
+      .pipe(
+        tap((arr: { arr: ProductDetailResponse[] }): void => {
+          if (!arr || !(arr.arr && arr.arr.length > 0)) {
+            return;
+          }
+
+          const mapper = this.toCustomRowMapperArray(arr.arr);
+          this.productVariants$ = of({state: 'LOADED', data: mapper});
+        }),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe();
+  }
+
   /**
-   * Open Create new variant component
+   * Opens CreateVariantComponent
    * */
-  openVariant(): void {
-    this.dialog.open(CreateVariantComponent, {
+  openCreateVariantComponent(): void {
+    const open = this.dialog.open(CreateVariantComponent, {
       height: '450px',
       width: '900px',
       maxWidth: '100%',
-      maxHeight: '100%'
+      maxHeight: '100%',
+      data: { id: this.uuid, colours: this.colours }
     });
+
+    this.afterComponentClose(open.afterClosed());
   }
 
   /** Return back to product component */
@@ -274,7 +300,8 @@ export class UpdateProductComponent implements OnInit {
       // view is a global click
       case 'view':
         break;
-      case 'edit':
+
+      case 'edit': {
         if (!this.product) {
           return;
         }
@@ -284,6 +311,7 @@ export class UpdateProductComponent implements OnInit {
           productName: this.product.name,
           variant: {
             sku: content.data.sku,
+            colour: content.data.colour,
             is_visible: content.data.is_visible,
             qty: content.data.inventory,
             size: content.data.size
@@ -298,25 +326,43 @@ export class UpdateProductComponent implements OnInit {
           data: v,
         })
 
-        open.afterClosed()
+        this.afterComponentClose(open.afterClosed());
+        break;
+      }
+
+      case 'delete': {
+        // Delete Observable/Request
+        const obs = this.updateProductService
+          .deleteVariant(content.data.sku)
           .pipe(
-            tap((arr: { arr: ProductDetailResponse[] }): void => {
-              // { detail: ProductDetailResponse }
-              if (!(arr.arr && arr.arr.length > 0)) {
-                return;
-              }
+            switchMap((status: number) => {
+              return this.updateProductService
+                .fetchProductDetails(this.uuid)
+                .pipe(
+                  tap((arr: ProductDetailResponse[]) => {
+                    // On successful deletion, update productVariants$
+                    const mapper = this.toCustomRowMapperArray(arr);
+                    this.productVariants$ = of({state: 'LOADED', data: mapper});
+                  }),
+                  switchMap(() => of(status))
+                );
+            })
+          );
 
-              const mapper = this.toCustomRowMapperArray(arr.arr);
-              this.productVariants$ = of({ state: 'LOADED', data: mapper });
-            }),
-            takeUntilDestroyed(this.destroyRef)
-          )
-          .subscribe();
+        const open = this.dialog.open(DeleteComponent, {
+          width: '500px',
+          maxWidth: '100%',
+          height: 'fit-content',
+          data: {
+            name: 'Product Variant ' + content.data.colour,
+            asyncButton: obs
+          }
+        });
+
 
         break;
-      case 'delete':
-        console.log('Clicked delete ', content)
-        break;
+      }
+
       default:
         console.error('Invalid key');
     }
