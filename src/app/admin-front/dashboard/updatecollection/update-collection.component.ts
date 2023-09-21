@@ -1,11 +1,10 @@
 import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {UpdateCollectionService} from "./update-collection.service";
-import {NavigationService} from "../../../service/navigation.service";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {FormBuilder, FormControl, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {CollectionService} from "../collection/collection.service";
-import {CollectionResponse, ProductResponse} from "../../shared-util";
+import {CollectionResponse, ProductResponse, TableContent} from "../../shared-util";
 import {catchError, combineLatest, map, Observable, of, startWith, switchMap} from "rxjs";
 import {Page} from "../../../global-utils";
 import {HttpErrorResponse} from "@angular/common/http";
@@ -34,13 +33,13 @@ import {ToastService} from "../../../service/toast/toast.service";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UpdateCollectionComponent implements OnInit {
-  private updateCollectionService: UpdateCollectionService = inject(UpdateCollectionService);
-  private collectionService: CollectionService = inject(CollectionService);
-  private productService: ProductService = inject(ProductService);
-  private navigationService: NavigationService = inject(NavigationService);
-  private activeRoute: ActivatedRoute = inject(ActivatedRoute);
-  private fb: FormBuilder = inject(FormBuilder);
-  private toastService: ToastService = inject(ToastService);
+  private readonly updateCollectionService: UpdateCollectionService = inject(UpdateCollectionService);
+  private readonly collectionService: CollectionService = inject(CollectionService);
+  private readonly productService: ProductService = inject(ProductService);
+  private readonly activeRoute: ActivatedRoute = inject(ActivatedRoute);
+  private readonly fb: FormBuilder = inject(FormBuilder);
+  private readonly toastService: ToastService = inject(ToastService);
+  private readonly router: Router = inject(Router);
 
   // Get id from route
   private id: string | null = this.activeRoute.snapshot.paramMap.get('id');
@@ -75,7 +74,12 @@ export class UpdateCollectionComponent implements OnInit {
 
   /** Return back to parent */
   returnToCollectionComponent(): void {
-    this.navigationService.navigateBack('/admin/dashboard/collection');
+    this.router.navigate(['/admin/dashboard/collection']);
+  }
+
+  /** Onclick of product title in table, routes client to update product component */
+  eventEmitter(content: TableContent<ProductResponse>): void {
+    this.router.navigate([`/admin/dashboard/product/${content.data.id}`]);
   }
 
   /** Clear input field */

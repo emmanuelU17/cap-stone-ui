@@ -1,13 +1,16 @@
-import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, Inject} from '@angular/core';
 import {CommonModule} from "@angular/common";
 import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from "@angular/material/dialog";
 import {CustomUpdateVariant, UpdateVariant} from "./update-variant";
 import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
-import {Observable, of, switchMap, tap} from "rxjs";
+import {catchError, Observable, of, switchMap, tap} from "rxjs";
 import {UpdateVariantService} from "./update-variant.service";
-import {ProductService} from "../product/product.service";
 import {DirectiveModule} from "../../../directive/directive.module";
 import {MatRadioModule} from "@angular/material/radio";
+import {HttpErrorResponse} from "@angular/common/http";
+import {ToastService} from "../../../service/toast/toast.service";
+import {UpdateProductService} from "../updateproduct/update-product.service";
+import {ProductDetailResponse} from "../../shared-util";
 
 @Component({
   selector: 'app-update-variant',
@@ -18,12 +21,14 @@ import {MatRadioModule} from "@angular/material/radio";
 })
 export class UpdateVariantComponent {
 
+  private readonly updateVariantService: UpdateVariantService = inject(UpdateVariantService);
+  private readonly updateProductService: UpdateProductService = inject(UpdateProductService);
+  private readonly toastService: ToastService = inject(ToastService);
+  private readonly fb: FormBuilder = inject(FormBuilder);
+
   form: FormGroup;
 
   constructor(
-    private updateVariantService: UpdateVariantService,
-    private productService: ProductService,
-    private fb: FormBuilder,
     private dialogRef: MatDialogRef<UpdateVariantComponent>,
     @Inject(MAT_DIALOG_DATA) public data: CustomUpdateVariant,
   ) {
@@ -37,7 +42,7 @@ export class UpdateVariantComponent {
 
   /** Closes modal */
   onNoClick(): void {
-    this.dialogRef.close();
+    this.dialogRef.close({ arr: [] });
   }
 
   /** Update ProductVariant */
@@ -57,19 +62,17 @@ export class UpdateVariantComponent {
     return this.updateVariantService.updateVariant(payload)
       .pipe(
         switchMap((status: number) => {
-          const res = of(status);
-
-          // Error
-          if (!(status >= 200 && status < 300)) {
-            return res;
-          }
-
-          return this.productService.fetchProductDetails(this.data.productId)
-            // refresh variants table and close the modal
+          // refresh variants table and close the modal
+          return this.updateProductService
+            .fetchProductDetails(this.data.productId)
             .pipe(
-              switchMap(() => res),
-              tap(() => this.onNoClick())
+              tap((arr: ProductDetailResponse[]) => this.dialogRef.close({ arr: arr })),
+              switchMap(() => of(status)),
             )
+        }),
+        catchError((err: HttpErrorResponse) => {
+          this.toastService.toastMessage(err.message);
+          return of(err.status);
         })
       );
   }

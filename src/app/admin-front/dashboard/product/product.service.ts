@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {map, Observable, of, tap} from "rxjs";
 import {Page} from "../../../global-utils";
-import {ProductDetailResponse, ProductResponse, UpdateProduct} from "../../shared-util";
+import {ProductResponse, UpdateProduct} from "../../shared-util";
 import {HttpClient, HttpResponse} from "@angular/common/http";
 import {environment} from "../../../../environments/environment";
 
@@ -44,16 +44,6 @@ export class ProductService {
       params: {id: id},
       withCredentials: true
     }).pipe(map((res: HttpResponse<any>) => res.status));
-  }
-
-  /** Fetch ProductDetail based on id */
-  fetchProductDetails(id: string): Observable<ProductDetailResponse[]> {
-    const url: string = `${this.HOST}api/v1/worker/product/detail`;
-    return this.http.get<ProductDetailResponse[]>(url, {
-      params: { id: id },
-      responseType: 'json',
-      withCredentials: true
-    });
   }
 
   /** Called on load of application */

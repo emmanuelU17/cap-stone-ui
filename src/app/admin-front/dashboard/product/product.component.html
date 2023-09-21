@@ -1,6 +1,6 @@
 <div class="flex flex-col h-full py-0">
   <div class="px-0 py-2.5">
-    <h1 class="cx-font-size capitalize">products</h1>
+    <h1 class="cx-font-size w-fit capitalize border-b border-[var(--app-theme)]">products</h1>
   </div>
 
   <div class="flex-1" *ngIf="data$ | async as data" [ngSwitch]="data.state">

@@ -13,12 +13,12 @@
   <div class="w-full h-full grid gap-2.5 lg:grid-cols-2">
 
     <!-- Category Column -->
-    <div>
-      <div class="">
-        <h1 class="capitalize mb-0">details</h1>
+    <div class="p-2">
+      <div class="mb-2">
+        <h1 class="capitalize">details</h1>
       </div>
 
-      <form class="w-full flex flex-col py-6 gap-2.5" [formGroup]="reactiveForm">
+      <form class="w-full flex flex-col gap-2.5" [formGroup]="reactiveForm">
 
         <!-- Input box -->
         <div
@@ -59,7 +59,7 @@
     </div>
 
     <!-- Product Table Column -->
-    <div class="max-h-3/5 overflow-auto flex-1 p-2">
+    <div class="max-h-3/5 overflow-auto flex-1 p-2 ">
 
       <div class="flex flex-col h-full w-full py-0">
         <div class="mb-2">
@@ -89,6 +89,7 @@
                 [detail]="true"
                 [pageData]="data.data"
                 [tHead]="thead"
+                (eventEmitter)="eventEmitter($event)"
               ></app-dynamic-table>
             </ng-container>
 

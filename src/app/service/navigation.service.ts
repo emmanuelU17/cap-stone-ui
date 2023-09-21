@@ -7,8 +7,8 @@ import {Router} from "@angular/router";
 export class NavigationService {
   private router: Router = inject(Router);
 
-  /** Navigates back to the previous page based on param supplied */
-  navigateBack(url: string): void {
+  /** Navigates */
+  navigateTo(url: string): void {
     this.router.navigate([url]);
   }
 

@@ -12,7 +12,7 @@
 
   <div class="w-full grid grid-cols-1 lg:grid-cols-2 gap-2.5">
     <!-- Product column -->
-    <form class="w-full flex flex-col px-0" [formGroup]="form" *ngIf="data">
+    <form class="w-full flex flex-col px-0" [formGroup]="form">
 
       <!-- Contents -->
       <div class="flex-1 " *ngIf="currentProduct$ | async as currentDetails">
@@ -155,7 +155,7 @@
 
         <ng-container *ngSwitchCase="'LOADED'">
           <!-- Table -->
-          <div class="" *ngIf="variant.data">
+          <div *ngIf="variant.data">
             <app-dynamic-table
               [tHead]="thead"
               [detail]="true"

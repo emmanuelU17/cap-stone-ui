@@ -1,17 +1,16 @@
-import {Directive, ElementRef, HostListener, Input} from '@angular/core';
-import {Observable, takeUntil, tap} from "rxjs";
-import {UnsubscribeService} from "../service/unsubscribe.service";
+import {DestroyRef, Directive, ElementRef, HostListener, inject, Input} from '@angular/core';
+import {Observable, tap} from "rxjs";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Directive({
   selector: '[asyncButton]'
 })
-export class AsyncButtonDirective extends UnsubscribeService {
+export class AsyncButtonDirective {
+
+  private readonly destroyRef: DestroyRef = inject(DestroyRef);
+  private readonly el: ElementRef = inject(ElementRef);
 
   @Input('asyncButton') clickFunc!: Observable<unknown>;
-
-  constructor(private el: ElementRef) {
-    super();
-  }
 
   @HostListener('click', ['$event']) onClick(): void {
     const spinner: string = `
@@ -49,7 +48,7 @@ export class AsyncButtonDirective extends UnsubscribeService {
           this.el.nativeElement.disabled = false;
         }
       }),
-      takeUntil(this.unsubscribe$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe();
   }
 
