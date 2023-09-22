@@ -15,7 +15,7 @@
 </div>
 
 <div class="mb-1.5" *ngFor="let row of queue.toArray(); let i = index">
-  <div class=block>
+  <div class="dom block">
     <!-- Error message -->
     <p
       class="m-0 hidden"
@@ -52,7 +52,6 @@
           <path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
       </button>
-
     </div>
   </div>
 </div>
@@ -63,8 +62,7 @@
     class="capitalize text-white font-bold py-2 px-4 rounded"
     type="button"
     [disabled]="invalidInputImpl()"
-    [style]="{ 'background-color': !invalidInputImpl() ? 'var(--app-theme-hover)' : 'var(--app-theme)' }"
-    (click)="informParent()">save
-  </button>
+    [style]="{ 'background-color': invalidInputImpl() ? 'var(--app-theme)' : 'var(--app-theme-hover)' }"
+    (click)="informParent()"
+  >save</button>
 </div>
-<!-- [style]="{ 'backgroundColor': error ? 'bg-[var(--app-theme)]' : 'bg-[var(--app-theme-hover)]' }" -->

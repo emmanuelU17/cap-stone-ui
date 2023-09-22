@@ -6,18 +6,22 @@ import {CollectionService} from "./shop/service/collection.service";
 import {catchError, combineLatest, map, Observable, of, startWith, tap} from "rxjs";
 import {HttpErrorResponse} from "@angular/common/http";
 import {Product} from "./store-front-utils";
+import {StoreFrontService} from "./store-front.service";
 
-// Component where storefront details will be rendered
 @Component({
   selector: 'app-store',
   templateUrl: './store.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class StoreComponent {
-  private homeService: HomeService = inject(HomeService);
-  private productService: ProductService = inject(ProductService);
-  private categoryService: CategoryService = inject(CategoryService);
-  private collectionService: CollectionService = inject(CollectionService);
+  private readonly storeFrontService: StoreFrontService = inject(StoreFrontService);
+  private readonly homeService: HomeService = inject(HomeService);
+  private readonly productService: ProductService = inject(ProductService);
+  private readonly categoryService: CategoryService = inject(CategoryService);
+  private readonly collectionService: CollectionService = inject(CollectionService);
+
+  // Navigation background on scroll
+  navBg: any;
 
   private bgImages$: Observable<string[]> = this.homeService.fetchHomeBackground();
   private products$: Observable<Product[]> = this.productService.fetchProducts(0, 40);
@@ -59,7 +63,7 @@ export class StoreComponent {
       catchError((err: HttpErrorResponse) => of({state: 'ERROR', error: err.error.message}))
     );
 
-  navBg: any;
+  wbSocket = this.storeFrontService.webSocketConnection();
 
   /** Applies bg white on nav container when scrolled down */
   @HostListener('document:scroll') scroll(): void {

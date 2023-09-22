@@ -15,6 +15,8 @@ import {CreateVariantData} from "./createVariantData";
 import {HelperService} from "../../helper.service";
 import {HttpErrorResponse} from "@angular/common/http";
 import {UpdateProductService} from "../updateproduct/update-product.service";
+import {CustomQueue} from "../sizeinventory/custom-queue";
+import {SizeInventoryService} from "../sizeinventory/size-inventory.service";
 
 @Component({
   selector: 'app-create-variant',
@@ -33,16 +35,19 @@ import {UpdateProductService} from "../updateproduct/update-product.service";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CreateVariantComponent {
+
   private readonly createVariantService: CreateVariantService = inject(CreateVariantService);
   private readonly fb: FormBuilder = inject(FormBuilder);
   private readonly toastService: ToastService = inject(ToastService);
   private readonly helperService: HelperService = inject(HelperService);
   private readonly updateProductService: UpdateProductService = inject(UpdateProductService);
+  private readonly sizeInventoryService: SizeInventoryService = inject(SizeInventoryService);
 
   files: File[] = []; // Images
   rows: SizeInventory[] = [];
   colourExists = true;
 
+  // Converts file to image strings
   toString = (file: File): string => URL.createObjectURL(file);
 
   reactiveForm = this.fb.group({
@@ -121,7 +126,8 @@ export class CreateVariantComponent {
             .fetchProductDetails(this.data.id)
             .pipe(
               switchMap((arr: ProductDetailResponse[]) => {
-                this.dialogRef.close({arr: arr});
+                this.dialogRef.close({ arr: arr });
+                this.sizeInventoryService.setSubject(true);
                 return of(status);
               }),
               tap(() => this.toastService.toastMessage('Created!'))

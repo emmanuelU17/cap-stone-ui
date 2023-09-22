@@ -1,30 +1,34 @@
-<ng-container *ngIf="combine$ | async as combine" [ngSwitch]="combine.state">
+<!--<ng-container *ngIf="combine$ | async as combine" [ngSwitch]="combine.state">-->
 
-  <ng-container *ngSwitchCase="'LOADING'">
-    <div class="lg-scr h-full p-20 flex justify-center items-center">
-      <h1 class="capitalize text-[var(--app-theme-hover)]">
-        loading...
-      </h1>
-    </div>
-  </ng-container>
+<!--  <ng-container *ngSwitchCase="'LOADING'">-->
+<!--    <div class="lg-scr h-full p-20 flex justify-center items-center">-->
+<!--      <h1 class="capitalize text-[var(&#45;&#45;app-theme-hover)]">-->
+<!--        loading...-->
+<!--      </h1>-->
+<!--    </div>-->
+<!--  </ng-container>-->
 
-  <ng-container *ngSwitchCase="'ERROR'">
-    <div class="lg-scr p-10 capitalize text-3xl text-red-500">
-      Error {{ combine.error }}
-    </div>
-  </ng-container>
+<!--  <ng-container *ngSwitchCase="'ERROR'">-->
+<!--    <div class="lg-scr p-10 capitalize text-3xl text-red-500">-->
+<!--      Error {{ combine.error }}-->
+<!--    </div>-->
+<!--  </ng-container>-->
 
-  <ng-container *ngSwitchCase="'LOADED'">
-    <div>
-      <div class="lg-scr z-10 border-b border-transparent fixed left-0 top-0 right-0" [ngStyle]="navBg">
-        <app-store-front-navigation-navigation></app-store-front-navigation-navigation>
-      </div>
-    </div>
+<!--  <ng-container *ngSwitchCase="'LOADED'">-->
+<!--    <div>-->
+<!--      <div class="lg-scr z-10 border-b border-transparent fixed left-0 top-0 right-0" [ngStyle]="navBg">-->
+<!--        <app-store-front-navigation-navigation></app-store-front-navigation-navigation>-->
+<!--      </div>-->
+<!--    </div>-->
 
-    <router-outlet></router-outlet>
+<!--    <router-outlet></router-outlet>-->
 
-    <div class="lg-scr mg-top p-5 w-full bg-blue-300">
-      TODO Render footer
-    </div>
-  </ng-container>
-</ng-container>
+<!--    <div class="lg-scr mg-top p-5 w-full bg-blue-300">-->
+<!--      TODO Render footer-->
+<!--    </div>-->
+<!--  </ng-container>-->
+<!--</ng-container>-->
+
+<div class="" *ngIf="wbSocket | async as wb">
+  Web socket connection {{ wb }}
+</div>

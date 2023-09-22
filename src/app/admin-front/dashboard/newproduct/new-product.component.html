@@ -52,7 +52,7 @@
               class="x-btn m-0.5 outline-none border-0 text-center cursor-pointer bg-transparent"
               (click)="remove(image)"
               >
-              <img [src]="URL.createObjectURL(image)" alt="logo"
+              <img [src]="toString(image)" alt="logo"
                    class="m-0 min-h-[9.375rem] min-w-[9.375rem] max-h-[12.5rem] max-w-[12.5rem] object-cover">
             </button>
           </div>
@@ -138,7 +138,8 @@
 
         <!-- Size and Inventory -->
         <div class="pt-2.5">
-          <app-size-inventory (eventEmitter)="sizeInv($event)"></app-size-inventory>
+          <app-size-inventory
+            (eventEmitter)="sizeInv($event)"></app-size-inventory>
         </div>
       </div>
 
