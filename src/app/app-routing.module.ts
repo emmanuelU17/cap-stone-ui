@@ -15,8 +15,8 @@ const routes: Routes = [
     component: AdminComponent,
     loadChildren: () => import('./admin-front/admin-front.module').then(m => m.AdminFrontModule),
   },
-  {path: '404', component: PageNotFoundComponent},
-  {path: '**', redirectTo: '/404'},
+  { path: '404', component: PageNotFoundComponent },
+  { path: '**', redirectTo: '/404' },
 ];
 
 @NgModule({

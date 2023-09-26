@@ -44,7 +44,7 @@ export class ProductService {
    * @return Observable array of ProductDetails
    * */
   fetchProductDetails(uuid: string): Observable<ProductDetail[]> {
-    const p: Product | undefined = this.products$.getValue().find((p: Product): boolean => p.id === uuid);
+    const p: Product | undefined = this.products$.getValue().find((p: Product): boolean => p.product_id === uuid);
     const url: string = `${this.HOST}api/v1/client/product/detail`;
 
     return this.http.get<ProductDetail[]>(url, {

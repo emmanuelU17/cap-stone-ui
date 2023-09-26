@@ -19,10 +19,13 @@ import {UtilService} from "../service/util.service";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductComponent {
+
   private readonly productService: ProductService = inject(ProductService);
-  readonly utilService: UtilService = inject(UtilService);
+  private readonly utilService: UtilService = inject(UtilService);
   private readonly route: ActivatedRoute = inject(ActivatedRoute);
   private readonly fb: FormBuilder = inject(FormBuilder);
+
+  range = (num: number): number[] => this.utilService.getRange(num);
 
   // ProductDetail array and Current ProductDetail
   private productDetailArray: ProductDetail[] = [];
@@ -48,9 +51,9 @@ export class ProductComponent {
         // Current ProductDetail with the first item in arr
         this.currentProductDetail = { currImage: curr.url[0], detail: curr };
 
-        return {state: 'LOADED', data: arr};
+        return { state: 'LOADED', data: arr };
       }),
-      startWith({state: 'LOADING'}),
+      startWith({ state: 'LOADING' }),
       catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.message }))
     );
 

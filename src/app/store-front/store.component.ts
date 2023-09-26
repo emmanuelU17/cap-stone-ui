@@ -12,6 +12,7 @@ import {Category, Collection} from "./shop/shop.helper";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class StoreComponent {
+
   private readonly homeService: HomeService = inject(HomeService);
   private readonly categoryService: CategoryService = inject(CategoryService);
   private readonly collectionService: CollectionService = inject(CollectionService);

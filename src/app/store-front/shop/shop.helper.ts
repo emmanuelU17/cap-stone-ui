@@ -26,5 +26,3 @@ export interface ProductDetail {
   url: string[];
   variants: Variant[];
 }
-
-

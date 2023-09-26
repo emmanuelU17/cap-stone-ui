@@ -13,7 +13,9 @@ import {CardComponent} from "../utils/card/card.component";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HomeComponent {
+
   private homeService: HomeService = inject(HomeService);
+
   // Get bg images from HomeService on load of home page
   bgImages$: Observable<string[]> = this.homeService._bgImage$;
   private render: Renderer2 = inject(Renderer2);
