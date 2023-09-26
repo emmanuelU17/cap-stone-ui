@@ -11,5 +11,4 @@ import {StoreFrontNavigationComponent} from "./utils/navigation/store-front-navi
     StoreFrontNavigationComponent
   ],
 })
-export class StoreFrontModule {
-}
+export class StoreFrontModule { }

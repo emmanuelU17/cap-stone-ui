@@ -19,10 +19,10 @@ import {UtilService} from "../service/util.service";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductComponent {
-  private productService: ProductService = inject(ProductService);
-  utilService: UtilService = inject(UtilService);
-  private route: ActivatedRoute = inject(ActivatedRoute);
-  private fb: FormBuilder = inject(FormBuilder);
+  private readonly productService: ProductService = inject(ProductService);
+  readonly utilService: UtilService = inject(UtilService);
+  private readonly route: ActivatedRoute = inject(ActivatedRoute);
+  private readonly fb: FormBuilder = inject(FormBuilder);
 
   // ProductDetail array and Current ProductDetail
   private productDetailArray: ProductDetail[] = [];

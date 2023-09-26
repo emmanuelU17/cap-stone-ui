@@ -19,11 +19,6 @@ export class ProductService {
     this.HOST = environment.domain;
   }
 
-  /** Update product observable with product array received from server on load of application */
-  setProducts(arr: Product[]): void {
-    this.products$.next(arr);
-  }
-
   /**
    * Returns a Page of Products
    * @param page is the page number
@@ -37,7 +32,10 @@ export class ProductService {
         size: size
       },
       withCredentials: true
-    }).pipe(map((page: Page<Product>): Product[] => page.content === undefined || page.content === null ? [] : page.content));
+    }).pipe(
+      map((page: Page<Product>): Product[] =>
+        page.content === undefined || page.content === null ? [] : page.content)
+    );
   }
 
   /**
@@ -52,15 +50,19 @@ export class ProductService {
     return this.http.get<ProductDetail[]>(url, {
       params: { id: uuid },
       withCredentials: true
-    }).pipe(map((arr: ProductDetail[]) => arr.map((detail: ProductDetail) => {
-      if (p) {
-        detail.name = p.name;
-        detail.desc = p.desc;
-        detail.currency = p.currency;
-        detail.price = p.price;
-      }
-      return detail;
-    })));
+    })
+      .pipe(
+        map((arr: ProductDetail[]) => arr.map((detail: ProductDetail) => {
+            if (p) {
+              detail.name = p.name;
+              detail.desc = p.desc;
+              detail.currency = p.currency;
+              detail.price = p.price;
+            }
+            return detail;
+          })
+        )
+      );
   }
 
 }

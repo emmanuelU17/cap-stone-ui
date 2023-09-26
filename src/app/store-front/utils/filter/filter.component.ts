@@ -7,16 +7,16 @@ import {CommonModule} from "@angular/common";
   standalone: true,
   imports: [CommonModule],
   templateUrl: './filter.component.html',
-  styleUrls: ['./filter.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FilterComponent<T> {
   private render: Renderer2 = inject(Renderer2);
 
-  indexToOpen: number = -1;
   @Input() title: string = '';
   @Input() filters: Filter<T>[] = [];
   @Output() emitter = new EventEmitter<T>();
+
+  indexToOpen: number = -1;
 
   /** Close filter component */
   closeModal(): void {

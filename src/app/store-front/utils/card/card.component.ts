@@ -6,7 +6,6 @@ import {CommonModule} from "@angular/common";
   standalone: true,
   imports: [CommonModule],
   templateUrl: './card.component.html',
-  styleUrls: ['./card.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CardComponent {

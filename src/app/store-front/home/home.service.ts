@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, map, Observable} from "rxjs";
+import {BehaviorSubject, map, Observable, tap} from "rxjs";
 import {HttpClient, HttpResponse} from "@angular/common/http";
 import {environment} from "../../../environments/environment";
 import {HomeResponse} from "./homeResponse";
@@ -17,16 +17,7 @@ export class HomeService {
     this.HOST = environment.domain;
   }
 
-  /**
-   * Adds an array of pre-assigned urls. Method is called in AppComponent
-   * @param arr of pre-assigned urls
-   * @return void
-   * */
-  setBgImages(arr: string[]): void {
-    this.bgImages$.next(arr);
-  }
-
-  getImageArray(): string[] {
+  get getImages(): string[] {
     return this.bgImages$.getValue();
   }
 
@@ -37,8 +28,11 @@ export class HomeService {
       observe: 'response',
       responseType: 'json',
       withCredentials: true
-    }).pipe(map((res: HttpResponse<HomeResponse[]>): string[] =>
-      res.body === null ? [] : res.body.map((url: HomeResponse) => url.url))
+    }).pipe(
+      map((res: HttpResponse<HomeResponse[]>): string[] =>
+        res.body === null ? [] : res.body.map((url: HomeResponse) => url.url)
+      ),
+      tap((arr: string[]) => this.bgImages$.next(arr))
     );
   }
 

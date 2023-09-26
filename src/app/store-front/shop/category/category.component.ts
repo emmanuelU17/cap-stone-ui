@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
-import {map, Observable, switchMap, take} from "rxjs";
-import {Filter} from "../shop.helper";
+import {map, Observable, startWith, switchMap, take} from "rxjs";
+import {Category, Filter} from "../shop.helper";
 import {CategoryService} from "../service/category.service";
 import {ProductService} from "../service/product.service";
 import {UtilService} from "../service/util.service";
@@ -18,23 +18,31 @@ import {RouterLink} from "@angular/router";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CategoryComponent {
-  private categoryService: CategoryService = inject(CategoryService);
-  private productService: ProductService = inject(ProductService);
-  public utilService: UtilService = inject(UtilService);
+
+  private readonly categoryService: CategoryService = inject(CategoryService);
+  private readonly productService: ProductService = inject(ProductService);
+  private readonly utilService: UtilService = inject(UtilService);
+
+  iteration = (num: number) => this.utilService.getRange(num);
 
   activeGridIcon: boolean = true; // Approves if products should be displayed x3 or x4 in the x-axis
   filterByPrice: boolean = true; // A variable need to keep the state of price filter for future filtering
   displayFilter: boolean = false; // Displays filter button
 
   // Categories
-  private categories$: Observable<string[]> = this.categoryService._categories$;
-  private firstCategory$: Observable<string> = this.categories$
-    .pipe(map((collections: string[]) => collections[0]), take(1));
+  private categories$: Observable<Category[]> = this.categoryService._categories$;
+  private firstCategory$: Observable<Category> = this.categories$
+    .pipe(map((collections: Category[]) => collections[0]), take(1));
+
+  productsOnCategory$: Observable<Product[]> = this.firstCategory$.pipe(
+    switchMap((category: Category) => this.categoryService.productsBasedOnCategory(category.id)),
+    startWith({ state: 'LOADING' })
+  );
 
   // Filter based on the firstCategory and Sort array based on filterByPrice status
   products$: Observable<Product[]> = this.firstCategory$.pipe(
-    switchMap((firstCategory: string) => this.productService._products$.pipe(
-      map((arr: Product[]) => arr.filter((prod: Product): boolean => prod.category === firstCategory)))
+    switchMap((firstCategory: Category) => this.productService._products$.pipe(
+      map((arr: Product[]) => arr.filter((prod: Product): boolean => prod.category === firstCategory.category)))
     ),
     map((arr: Product[]): Product[] => this.utilService.sortArray(this.filterByPrice, arr))
   );
@@ -60,7 +68,7 @@ export class CategoryComponent {
    * */
   setEmitter(str: string): void {
     this.products$ = this.categoryService
-      .fetchProductsBasedOnCategoryName(str)
+      .productsBasedOnCategory(str)
       .pipe(map((arr: Product[]): Product[] => this.utilService.sortArray(this.filterByPrice, arr)));
   }
 

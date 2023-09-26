@@ -9,10 +9,12 @@ export interface Filter<T> {
 
 export interface Category {
   category: string;
+  id: string;
 }
 
 export interface Collection {
   collection: string;
+  id: string;
 }
 
 export interface ProductDetail {

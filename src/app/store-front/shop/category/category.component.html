@@ -21,7 +21,7 @@
                 (click)="activeGridIcon = true"
                 [style.background-color]="activeGridIcon ? 'var(--app-theme)' : 'var(--in-active)'"
         >
-          <span *ngFor="let i of utilService.getRange(4)" class="h-1.5 w-1.5 p-1.5 m-0 border bg-transparent"></span>
+          <span *ngFor="let i of iteration(4)" class="h-1.5 w-1.5 p-1.5 m-0 border bg-transparent"></span>
         </button>
 
         <!--      <button type="button"-->
@@ -57,7 +57,7 @@
               <li class="py-1">
                 <a
                   (click)="onclickFilterByPrice(true)"
-                  [style]="{ 'background-color': filterByPrice ? 'var(--app-theme)' : 'transparent'}"
+                  [style]="{ 'background-color': filterByPrice ? 'var(--app-theme)' : 'transparent' }"
                   class="text-left text-gray-500 block px-4 py-2 text-sm hover:bg-[var(--app-theme)]"
                   role="menuitem"
                   tabindex="-1"

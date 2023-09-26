@@ -1,12 +1,10 @@
 import {ChangeDetectionStrategy, Component, HostListener, inject} from '@angular/core';
 import {HomeService} from "./home/home.service";
-import {ProductService} from "./shop/service/product.service";
 import {CategoryService} from "./shop/service/category.service";
 import {CollectionService} from "./shop/service/collection.service";
-import {catchError, combineLatest, map, Observable, of, startWith, tap} from "rxjs";
+import {catchError, combineLatest, map, Observable, of, startWith} from "rxjs";
 import {HttpErrorResponse} from "@angular/common/http";
-import {Product} from "./store-front-utils";
-import {StoreFrontService} from "./store-front.service";
+import {Category, Collection} from "./shop/shop.helper";
 
 @Component({
   selector: 'app-store',
@@ -14,9 +12,7 @@ import {StoreFrontService} from "./store-front.service";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class StoreComponent {
-  private readonly storeFrontService: StoreFrontService = inject(StoreFrontService);
   private readonly homeService: HomeService = inject(HomeService);
-  private readonly productService: ProductService = inject(ProductService);
   private readonly categoryService: CategoryService = inject(CategoryService);
   private readonly collectionService: CollectionService = inject(CollectionService);
 
@@ -24,46 +20,22 @@ export class StoreComponent {
   navBg: any;
 
   private bgImages$: Observable<string[]> = this.homeService.fetchHomeBackground();
-  private products$: Observable<Product[]> = this.productService.fetchProducts(0, 40);
-  private categories$: Observable<string[]> = this.categoryService.fetchCategories();
-  private collections$: Observable<string[]> = this.collectionService.fetchCollections();
+  private categories$: Observable<Category[]> = this.categoryService.fetchCategories();
+  private collections$: Observable<Collection[]> = this.collectionService.fetchCollections();
 
   // On load of storefront routes, get necessary data to improve user experience
   combine$: Observable<{
     state: string,
     error?: string,
     bgImages?: string[],
-    products?: Product[],
-    categories?: string[],
-    collections?: string[]
-  }> = combineLatest([this.bgImages$, this.products$, this.categories$, this.collections$])
+    categories?: Category[],
+    collections?: Collection[]
+  }> = combineLatest([this.bgImages$, this.categories$, this.collections$])
     .pipe(
-      map(([bgImages, products, categories, collections]: [string[], Product[], string[], string[]]) => {
-        return {
-          state: 'LOADED',
-          bgImages: bgImages,
-          products: products,
-          categories: categories,
-          collections: collections
-        };
-      }),
-      tap((state: {
-        state: string,
-        bgImages: string[],
-        products: Product[],
-        categories: string[],
-        collections: string[]
-      }): void => {
-        this.homeService.setBgImages(state.bgImages)
-        this.productService.setProducts(state.products);
-        this.categoryService.setCategories(state.categories);
-        this.collectionService.setCollection(state.collections);
-      }),
-      startWith({state: 'LOADING'}),
-      catchError((err: HttpErrorResponse) => of({state: 'ERROR', error: err.error.message}))
+      map((): { state: string } => ({ state: 'LOADED' })),
+      startWith({ state: 'LOADING' }),
+      catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error.message }))
     );
-
-  wbSocket = this.storeFrontService.webSocketConnection();
 
   /** Applies bg white on nav container when scrolled down */
   @HostListener('document:scroll') scroll(): void {
