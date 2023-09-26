@@ -24,18 +24,18 @@ export class CategoryComponent {
   private dialog: MatDialog = inject(MatDialog);
 
   data$: Observable<CategoryResponse[]> = this.categoryService._categories$;
-  tHead: Array<keyof CategoryResponse> = ['id', 'category', 'created_at', 'modified_at', 'visible', 'action'];
+  tHead: Array<keyof CategoryResponse> = ['category_id', 'category', 'created_at', 'modified_at', 'visible', 'action'];
 
   infoFromTableComponent(content: TableContent<CategoryResponse>): void {
     switch (content.key) {
       case 'view':
         break;
       case 'edit':
-        this.router.navigate([`/admin/dashboard/category/${content.data.id}`]);
+        this.router.navigate([`/admin/dashboard/category/${content.data.category_id}`]);
         break;
       case 'delete':
         const obs: Observable<{ status: number, message: string }> = this.categoryService
-          .deleteCategory(content.data.id)
+          .deleteCategory(content.data.category_id)
           .pipe(
             switchMap((status: number) => {
               // Refresh Category and Product Array

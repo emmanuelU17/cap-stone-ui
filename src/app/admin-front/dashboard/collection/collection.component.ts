@@ -24,7 +24,7 @@ export class CollectionComponent {
   private dialog: MatDialog = inject(MatDialog);
 
   data$: Observable<CollectionResponse[]> = this.collectionService._collections$;
-  columns: Array<keyof CollectionResponse> = ['id', 'collection', 'created_at', 'modified_at', 'visible', 'action'];
+  columns: Array<keyof CollectionResponse> = ['collection_id', 'collection', 'created_at', 'modified_at', 'visible', 'action'];
 
   /** Based on the key received from DynamicTableComponent, route to the appropriate page */
   infoFromTableComponent(content: TableContent<CollectionResponse>): void {
@@ -32,12 +32,12 @@ export class CollectionComponent {
       case 'view':
         break;
       case 'edit':
-        this.router.navigate([`/admin/dashboard/collection/${content.data.id}`]);
+        this.router.navigate([`/admin/dashboard/collection/${content.data.collection_id}`]);
         break;
       case 'delete':
         // Build response
         const obs: Observable<{ status: number, message: string }> = this.collectionService
-          .deleteCollection(content.data.id)
+          .deleteCollection(content.data.collection_id)
           .pipe(
             switchMap((status: number) => {
               // Refresh Collection and Product Array

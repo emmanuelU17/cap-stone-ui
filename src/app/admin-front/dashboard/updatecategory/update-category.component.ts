@@ -46,10 +46,10 @@ export class UpdateCategoryComponent implements OnInit {
   private uuid: string = this.id ? this.id : '';
 
   data: CategoryResponse | undefined = this.categoryService.categories
-    .find(c => c.id === this.uuid);
+    .find(c => c.category_id === this.uuid);
 
   // Table
-  thead: Array<keyof ProductResponse> = ['image', 'id', 'name', 'desc', 'currency', 'price'];
+  thead: Array<keyof ProductResponse> = ['image', 'product_id', 'name', 'desc', 'currency', 'price'];
   data$: Observable<{
     state: string,
     error?: string,
@@ -85,7 +85,7 @@ export class UpdateCategoryComponent implements OnInit {
 
   /** Onclick of product title in table, routes client to update product component */
   eventEmitter(content: TableContent<ProductResponse>): void {
-    this.router.navigate([`/admin/dashboard/product/${content.data.id}`]);
+    this.router.navigate([`/admin/dashboard/product/${content.data.product_id}`]);
   }
 
   /** Updates category */
@@ -98,7 +98,7 @@ export class UpdateCategoryComponent implements OnInit {
     }
 
     return this.updateCategoryService
-      .updateCategory({id: this.uuid, name: name, visible: visible})
+      .updateCategory({category_id: this.uuid, name: name, visible: visible})
       .pipe(
         switchMap((status: number): Observable<number> => {
           const res = of(status);

@@ -21,7 +21,7 @@ export class UpdateCollectionService {
     return this.http.get<Page<ProductResponse>>(url, {
       headers: { 'content-type': 'application/json' },
       params: {
-        id: id,
+        collection_id: id,
         page: page,
         size: size
       },

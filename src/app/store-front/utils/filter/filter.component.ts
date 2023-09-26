@@ -10,10 +10,12 @@ import {CommonModule} from "@angular/common";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FilterComponent<T> {
+
   private render: Renderer2 = inject(Renderer2);
 
   @Input() title: string = '';
   @Input() filters: Filter<T>[] = [];
+  @Input() data: T[] = [];
   @Output() emitter = new EventEmitter<T>();
 
   indexToOpen: number = -1;

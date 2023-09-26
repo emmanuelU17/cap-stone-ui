@@ -21,7 +21,7 @@ export class UpdateCategoryService {
     return this.http.get<Page<ProductResponse>>(url, {
       headers: { 'content-type': 'application/json' },
       params: {
-        id: id,
+        category_id: id,
         page: page,
         size: size
       },

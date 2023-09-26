@@ -3,7 +3,7 @@ import {Variant} from "../global-utils";
 export interface UpdateProduct {
   category_id: string;
   collection_id: string;
-  id: string;
+  product_id: string;
   name: string;
   desc: string;
   price: number;
@@ -14,7 +14,7 @@ export interface UpdateProduct {
 export interface ProductResponse {
   collection: string;
   category: string;
-  id: string;
+  product_id: string;
   name: string;
   desc: string;
   price: number;
@@ -31,6 +31,7 @@ export interface ProductDetailResponse {
 }
 
 export interface CustomRowMapper {
+  index: number;
   colour: string;
   is_visible: boolean;
   url: string;
@@ -48,7 +49,7 @@ export interface CategoryRequest {
 }
 
 export interface CategoryResponse {
-  id: string;
+  category_id: string;
   category: string;
   created_at?: number;
   modified_at?: number;
@@ -57,7 +58,7 @@ export interface CategoryResponse {
 }
 
 export interface UpdateCategory {
-  id: string;
+  category_id: string;
   name: string;
   visible: boolean;
 }
@@ -68,7 +69,7 @@ export interface CollectionRequest {
 }
 
 export interface CollectionResponse {
-  id: string;
+  collection_id: string;
   collection: string;
   visible: boolean;
   created_at: number;
@@ -77,7 +78,7 @@ export interface CollectionResponse {
 }
 
 export interface UpdateCollection {
-  id: string;
+  collection_id: string;
   name: string;
   visible: boolean;
 }

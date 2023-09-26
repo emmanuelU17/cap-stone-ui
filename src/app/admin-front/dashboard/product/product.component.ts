@@ -27,7 +27,7 @@ export class ProductComponent {
   private dialog: MatDialog = inject(MatDialog);
 
   // Table details
-  thead: Array<keyof ProductResponse> = ['image', 'id', 'name', 'desc', 'currency', 'price', 'action'];
+  thead: Array<keyof ProductResponse> = ['product_id', 'image', 'name', 'desc', 'currency', 'price', 'action'];
   data$: Observable<{
     state: string,
     error?: string,
@@ -45,12 +45,14 @@ export class ProductComponent {
    * */
   infoFromTableComponent(content: TableContent<ProductResponse>): void {
     switch (content.key) {
-      case 'product':
-        this.router.navigate([`/admin/dashboard/product/${content.data.id}`]);
+      case 'product':{
+        this.router.navigate([`/admin/dashboard/product/${content.data.product_id}`]);
         break;
-      case 'delete':
+      }
+
+      case 'delete': {
         const obs: Observable<{ status: number, message: string }> = this.productService
-          .deleteProduct(content.data.id)
+          .deleteProduct(content.data.product_id)
           .pipe(
             switchMap((status: number) => {
               // Refresh Product, Category and Collection array
@@ -80,6 +82,8 @@ export class ProductComponent {
         });
 
         break;
+      }
+
       default :
         console.error('Invalid key chosen');
     }

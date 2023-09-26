@@ -19,8 +19,13 @@ export class CategoryService {
     this.HOST = environment.domain;
   }
 
+  get categories(): Category[] {
+    return this.categories$.getValue();
+  }
+
   /**
    * Returns all categories from server that are marked as visible
+   *
    * @return Observable of Category array
    * */
   fetchCategories(): Observable<Category[]> {
@@ -32,15 +37,16 @@ export class CategoryService {
 
   /**
    * Fetches products based on category name
+   *
    * @param id is the category uuid
    * @param page is the page number
    * @param size is the amount of items to be displayed on a page
    * */
-  productsBasedOnCategory(id: string, page: number = 0, size: number = 18): Observable<Product[]> {
-    const url: string = `${this.HOST}api/v1/client/category/product`;
+  productsBasedOnCategory(id: string, page: number = 0, size: number = 20): Observable<Product[]> {
+    const url: string = `${this.HOST}api/v1/client/category/products`;
     return this.http.get<Page<Product>>(url, {
       params: {
-        id: id,
+        category_id: id,
         page: page,
         size: size
       },

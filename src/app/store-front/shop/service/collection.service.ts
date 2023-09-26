@@ -19,6 +19,10 @@ export class CollectionService {
     this.HOST = environment.domain;
   }
 
+  get collections(): Collection[] {
+    return this.collections$.getValue();
+  }
+
   /**
    * Returns all collections from server that are marked as visible
    * @return Observable of Category array
@@ -31,16 +35,16 @@ export class CollectionService {
   }
 
   /**
-   * Fetches products based on collection name
-   * @param name is the product name
+   * Fetches products based on collection id
+   * @param id is the product id
    * @param page is the page number
    * @param size is the amount of items to be displayed on a page
    * */
-  fetchProductsBasedOnCollectionName(name: string = '', page: number = 0, size: number = 18): Observable<Product[]> {
-    const url: string = `${this.HOST}api/v1/client/collection/product`;
+  productsBasedOnCollection(id: string, page: number = 0, size: number = 20): Observable<Product[]> {
+    const url: string = `${this.HOST}api/v1/client/collection/products`;
     return this.http.get<Page<Product>>(url, {
       params: {
-        name: name,
+        collection_id: id,
         page: page,
         size: size
       },

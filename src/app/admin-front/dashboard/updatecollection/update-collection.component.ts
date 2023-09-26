@@ -45,10 +45,10 @@ export class UpdateCollectionComponent implements OnInit {
   private id: string | null = this.activeRoute.snapshot.paramMap.get('id');
   private uuid: string = this.id ? this.id : '';
   data: CollectionResponse | undefined = this.collectionService.collections
-    .find(c => c.id === this.uuid)
+    .find(c => c.collection_id === this.uuid)
 
   // Table
-  thead: Array<keyof ProductResponse> = ['image', 'id', 'name', 'desc', 'currency', 'price'];
+  thead: Array<keyof ProductResponse> = ['image', 'product_id', 'name', 'desc', 'currency', 'price'];
   data$: Observable<{
     state: string,
     error?: string,
@@ -79,7 +79,7 @@ export class UpdateCollectionComponent implements OnInit {
 
   /** Onclick of product title in table, routes client to update product component */
   eventEmitter(content: TableContent<ProductResponse>): void {
-    this.router.navigate([`/admin/dashboard/product/${content.data.id}`]);
+    this.router.navigate([`/admin/dashboard/product/${content.data.product_id}`]);
   }
 
   /** Clear input field */
@@ -102,7 +102,7 @@ export class UpdateCollectionComponent implements OnInit {
 
   private updateCollection(name: string, visible: boolean): Observable<number> {
     return this.updateCollectionService
-      .updateCollection({id: this.uuid, name: name, visible: visible})
+      .updateCollection({collection_id: this.uuid, name: name, visible: visible})
       .pipe(
         switchMap((status: number) => {
           const res = of(status);

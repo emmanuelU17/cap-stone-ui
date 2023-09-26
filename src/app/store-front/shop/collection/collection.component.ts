@@ -1,14 +1,14 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
-import {map, Observable, switchMap, take} from "rxjs";
-import {Filter} from "../shop.helper";
+import {catchError, map, Observable, of, startWith, switchMap, take} from "rxjs";
+import {Collection, Filter} from "../shop.helper";
 import {CollectionService} from "../service/collection.service";
-import {ProductService} from "../service/product.service";
 import {UtilService} from "../service/util.service";
 import {Product} from "../../store-front-utils";
 import {CommonModule} from "@angular/common";
 import {CardComponent} from "../../utils/card/card.component";
 import {FilterComponent} from "../../utils/filter/filter.component";
 import {RouterLink} from "@angular/router";
+import {HttpErrorResponse} from "@angular/common/http";
 
 @Component({
   selector: 'app-collection',
@@ -19,48 +19,67 @@ import {RouterLink} from "@angular/router";
 })
 export class CollectionComponent {
   private collectionService: CollectionService = inject(CollectionService);
-  private productService: ProductService = inject(ProductService);
   public utilService: UtilService = inject(UtilService);
+
+  iteration = (num: number): number[] => this.utilService.getRange(num);
 
   activeGridIcon: boolean = true; // Approves if products should be displayed x3 or x4 in the x-axis
   filterByPrice: boolean = true; // A variable need to keep the state of price filter for future filtering
   displayFilter: boolean = false; // Displays filter button
 
   // Fetch Collections
-  private collections$: Observable<string[]> = this.collectionService._collections$;
-  private firstCollection$: Observable<string> = this.collections$
-    .pipe(map((collections: string[]) => collections[0]), take(1));
-
-  // Filter based on the firstCollection and Sort array based on filterByPrice status
-  products$: Observable<Product[]> = this.firstCollection$.pipe(
-    switchMap((firstCollection: string) => this.productService._products$.pipe(
-      map((arr: Product[]) => arr.filter((prod: Product): boolean => prod.collection === firstCollection))
-    )),
-    map((arr: Product[]): Product[] => this.utilService.sortArray(this.filterByPrice, arr))
+  collections$ = this.collectionService._collections$.pipe(
+    map((arr: Collection[]) => {
+      const collection: string[] = arr.map(m => m.collection);
+      const filter: Filter<string>[] = [{isOpen: false, parent: 'collections', children: collection}];
+      return filter;
+    })
   );
 
-  combine$: Observable<{
+  private readonly firstCollection$: Observable<Collection> = this.collectionService._collections$
+    .pipe(map((collections: Collection[]) => collections[0]), take(1));
+
+  // On load of shop/collection, fetch products based on the first collection
+  products$: Observable<{
     state: string,
     error?: string,
-    products?: Product[],
-    filter?: Filter<string>[]
-  }> = this.utilService.getCombine$(this.products$, this.collections$, 'collections');
+    data?: Product[]
+  }> = this.firstCollection$.pipe(
+    switchMap((col: Collection) =>
+      this.collectionService.productsBasedOnCollection(col.collection_id)
+        .pipe(map((arr: Product[]) => ({ state: 'LOADED', data: arr })))
+    ),
+    startWith({state: 'LOADING'}),
+    catchError((err: HttpErrorResponse) => of({state: 'ERROR', error: err.error.message}))
+  );
 
-  /** Re-renders product array to filter products by price */
-  onclickFilterByPrice(bool: boolean): void {
-    this.filterByPrice = bool;
-    this.products$ = this.products$
-      .pipe(map((arr: Product[]): Product[] => this.utilService.sortArray(bool, arr)));
-  }
+  /** Filters products array in ascending or descending order based on price */
+  ascendingOrDescending = (arr: Product[]): Product[] => this.utilService.sortArray(this.filterByPrice, arr);
 
   /**
    * Refreshes allProduct array with contents new contents which is based on collection clicked.
-   * @param str is the category clicked
+   *
+   * @param str is the category
    * @return void
    * */
-  setEmitter(str: string): void {
-    this.products$ = this.collectionService.fetchProductsBasedOnCollectionName(str)
-      .pipe(map((arr: Product[]): Product[] => this.utilService.sortArray(this.filterByPrice, arr)));
+  filterProductsByCollection(str: string): void {
+    const arr: Collection[] = this.collectionService.collections;
+    const collection = arr.find(c => c.collection === str);
+
+    console.log('Collection arr ', arr);
+
+    if (!collection) {
+      return;
+    }
+
+    console.log('Collection ', collection);
+
+    this.products$ = this.collectionService.productsBasedOnCollection(collection.collection_id)
+      .pipe(
+        map((arr: Product[]) => ({ state: 'LOADED', data: arr })),
+        startWith({ state: 'LOADING' }),
+        catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error.message }))
+      );
   }
 
 }
