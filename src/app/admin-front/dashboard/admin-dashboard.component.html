@@ -28,15 +28,16 @@
         >
           <div class="w-52 py-0 px-2.5 max-[768px]:w-[calc(200px + 1vw)]" *ngFor="let link of dashBoardLinks">
             <div class="uppercase">
-              <h3>{{ link.title }}</h3>
+              <h3 class="cx-font-size w-fit capitalize border-b border-[var(--app-theme)]">{{ link.title }}</h3>
             </div>
             <!--    End of title    -->
             <div class="py-2.5 px-0">
               <ul class="list-none" *ngFor="let a of link.array; let i = index">
                 <li
                   (click)="leftColumn = !leftColumn"
-                  class="my-1.5"
-                  [routerLinkActive]="'active-link'" [routerLinkActiveOptions]="{ exact: true }">
+                  class="my-1.5 rounded-md"
+                  routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }"
+                >
                   <a
                     [routerLink]="a.route"
                     class="w-full h-full flex p-2.5 gap-1.5 capitalize cursor-pointer rounded-md"

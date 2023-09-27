@@ -1,6 +1,15 @@
 <form class="h-full flex flex-col px-0" [formGroup]="reactiveForm">
   <!-- Title-container -->
   <div class="flex py-2.5 px-0 mb-4">
+    <button type="button"
+            class="mr-1.5 md:px-2.5 border-[var(--border-outline)] border"
+            (click)="routeToProductComponent()"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+           class="w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18"/>
+      </svg>
+    </button>
     <h1 class="cx-font-size w-fit capitalize border-b border-[var(--app-theme)]">create a new product</h1>
   </div>
 

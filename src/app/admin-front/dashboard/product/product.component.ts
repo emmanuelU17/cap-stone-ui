@@ -20,6 +20,7 @@ import {CategoryService} from "../category/category.service";
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductComponent {
+
   private productService: ProductService = inject(ProductService);
   private categoryService: CategoryService = inject(CategoryService);
   private collectionService: CollectionService = inject(CollectionService);
@@ -37,6 +38,10 @@ export class ProductComponent {
     startWith({ state: 'LOADING' }),
     catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error.message }))
   );
+
+  routeToNewProduct = (): void => {
+    this.router.navigate(['/admin/dashboard/new-product']);
+  }
 
   /**
    * Displays UpdateProduct component based on the product clicked from DynamicTable

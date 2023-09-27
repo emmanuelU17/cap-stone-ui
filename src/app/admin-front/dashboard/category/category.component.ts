@@ -18,13 +18,18 @@ import {HttpErrorResponse} from "@angular/common/http";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CategoryComponent {
-  private categoryService: CategoryService = inject(CategoryService);
-  private productService: ProductService = inject(ProductService);
-  private router: Router = inject(Router);
-  private dialog: MatDialog = inject(MatDialog);
+
+  private readonly categoryService: CategoryService = inject(CategoryService);
+  private readonly productService: ProductService = inject(ProductService);
+  private readonly router: Router = inject(Router);
+  private readonly dialog: MatDialog = inject(MatDialog);
 
   data$: Observable<CategoryResponse[]> = this.categoryService._categories$;
   tHead: Array<keyof CategoryResponse> = ['category_id', 'category', 'created_at', 'modified_at', 'visible', 'action'];
+
+  routeToNewCategory = (): void => {
+    this.router.navigate(['/admin/dashboard/new-category']);
+  }
 
   infoFromTableComponent(content: TableContent<CategoryResponse>): void {
     switch (content.key) {

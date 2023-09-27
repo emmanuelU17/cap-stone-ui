@@ -8,9 +8,28 @@ import {HttpErrorResponse} from "@angular/common/http";
 import {CollectionService} from "./collection/collection.service";
 import {ProductService} from "./product/product.service";
 import {DASHBOARDLINKS, Display} from "./route-util";
+import {CommonModule} from "@angular/common";
+import {NavigationComponent} from "./navigation/navigation.component";
+import {MatIconModule} from "@angular/material/icon";
+import {FooterComponent} from "./footer/footer.component";
+import {AuthMenuComponent} from "./authmenu/auth-menu.component";
+import {DirectiveModule} from "../../directive/directive.module";
+import {RouterLink, RouterLinkActive, RouterOutlet} from "@angular/router";
 
 @Component({
   selector: 'app-admin-dashboard',
+  standalone: true,
+  imports: [
+    CommonModule,
+    NavigationComponent,
+    MatIconModule,
+    FooterComponent,
+    AuthMenuComponent,
+    DirectiveModule,
+    RouterLinkActive,
+    RouterLink,
+    RouterOutlet
+  ],
   templateUrl: './admin-dashboard.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })

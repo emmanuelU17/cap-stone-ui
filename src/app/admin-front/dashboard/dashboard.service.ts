@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, catchError, map, Observable, of} from "rxjs";
+import {BehaviorSubject, catchError, map, Observable, of, tap} from "rxjs";
 import {Router} from "@angular/router";
 import {HttpClient, HttpResponse} from "@angular/common/http";
 import {environment} from "../../../environments/environment";
@@ -9,7 +9,9 @@ import {AuthResponse} from "../../global-utils";
   providedIn: 'root'
 })
 export class DashboardService {
+
   private readonly HOST: string | undefined;
+
   private principal$ = new BehaviorSubject<AuthResponse>({ principal: '' });
   _principal$ = this.principal$.asObservable();
 
@@ -24,15 +26,12 @@ export class DashboardService {
       responseType: 'json',
       withCredentials: true
     }).pipe(
+      map((res: HttpResponse<AuthResponse>) => res.body === null ? '' : res.body.principal),
+      tap((principal: string) => this.principal$.next({ principal: principal })),
       catchError((err) => {
         this.router.navigate(['/admin']);
         return of(err);
       }),
-      map((res: HttpResponse<AuthResponse>) => {
-        const principal: string = res.body === null ? '' : res.body.principal
-        this.principal$.next({ principal: principal });
-        return principal;
-      })
     );
   }
 

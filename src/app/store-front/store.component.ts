@@ -5,9 +5,14 @@ import {CollectionService} from "./shop/service/collection.service";
 import {catchError, combineLatest, map, Observable, of, startWith} from "rxjs";
 import {HttpErrorResponse} from "@angular/common/http";
 import {Category, Collection} from "./shop/shop.helper";
+import {CommonModule} from "@angular/common";
+import {StoreFrontNavigationComponent} from "./utils/navigation/store-front-navigation.component";
+import {RouterOutlet} from "@angular/router";
 
 @Component({
   selector: 'app-store',
+  standalone: true,
+  imports: [CommonModule, StoreFrontNavigationComponent, RouterOutlet],
   templateUrl: './store.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })

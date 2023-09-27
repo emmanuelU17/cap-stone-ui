@@ -17,6 +17,7 @@ import {HttpErrorResponse} from "@angular/common/http";
 import {ToastService} from "../../../service/toast/toast.service";
 import {HelperService} from "../../helper.service";
 import {SizeInventoryService} from "../sizeinventory/size-inventory.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-new-product',
@@ -37,13 +38,6 @@ import {SizeInventoryService} from "../sizeinventory/size-inventory.service";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NewProductComponent {
-  // Converts from file to string
-  toString = (file: File): string => URL.createObjectURL(file);
-
-  config = CKEDITOR4CONFIG;
-  content: string = '';
-  files: File[] = []; // Images
-  rows: SizeInventory[] = [];
 
   private readonly newProductService: NewProductService = inject(NewProductService);
   private readonly categoryService: CategoryService = inject(CategoryService);
@@ -53,6 +47,15 @@ export class NewProductComponent {
   private readonly fb: FormBuilder = inject(FormBuilder);
   private readonly helperService: HelperService = inject(HelperService);
   private readonly sizeInventoryService: SizeInventoryService = inject(SizeInventoryService);
+  private readonly router: Router = inject(Router);
+
+  // Converts from file to string
+  toString = (file: File): string => URL.createObjectURL(file);
+
+  config = CKEDITOR4CONFIG;
+  content: string = '';
+  files: File[] = []; // Images
+  rows: SizeInventory[] = [];
 
   categories$: Observable<CategoryResponse[]> = this.categoryService._categories$;
   collections$: Observable<CollectionResponse[]> = this.collectionService._collections$;
@@ -67,6 +70,10 @@ export class NewProductComponent {
     visible: new FormControl(false, Validators.required),
     colour: new FormControl('', Validators.required),
   });
+
+  routeToProductComponent = (): void => {
+    this.router.navigate(['/admin/dashboard/product']);
+  }
 
   /**
    * Responsible for verifying file uploaded is in image and then updating file FormGroup.

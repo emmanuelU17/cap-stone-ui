@@ -18,21 +18,6 @@ export const DASHBOARDLINKS: Display[] = [
         name: 'statistics',
         route: 'statistics',
       },
-      {
-        icon: 'shopping_basket-hunt',
-        name: 'new product',
-        route: 'new-product',
-      },
-      {
-        icon: 'new_releases',
-        name: 'new category',
-        route: 'new-category',
-      },
-      {
-        icon: 'card_giftcard',
-        name: 'new collection',
-        route: 'new-collection',
-      },
     ]
   },
   {
@@ -65,14 +50,4 @@ export const DASHBOARDLINKS: Display[] = [
       }
     ]
   },
-  {
-    title: 'register',
-    array: [
-      {
-        icon: 'build',
-        name: 'register',
-        route: 'register',
-      }
-    ]
-  }
 ];

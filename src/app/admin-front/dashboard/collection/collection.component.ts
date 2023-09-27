@@ -18,23 +18,30 @@ import {ProductService} from "../product/product.service";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CollectionComponent {
-  private collectionService: CollectionService = inject(CollectionService);
-  private productService: ProductService = inject(ProductService);
-  private router: Router = inject(Router);
-  private dialog: MatDialog = inject(MatDialog);
+
+  private readonly collectionService: CollectionService = inject(CollectionService);
+  private readonly productService: ProductService = inject(ProductService);
+  private readonly router: Router = inject(Router);
+  private readonly dialog: MatDialog = inject(MatDialog);
 
   data$: Observable<CollectionResponse[]> = this.collectionService._collections$;
   columns: Array<keyof CollectionResponse> = ['collection_id', 'collection', 'created_at', 'modified_at', 'visible', 'action'];
+
+  routeToNewCollection = (): void => {
+    this.router.navigate(['/admin/dashboard/new-collection']);
+  }
 
   /** Based on the key received from DynamicTableComponent, route to the appropriate page */
   infoFromTableComponent(content: TableContent<CollectionResponse>): void {
     switch (content.key) {
       case 'view':
         break;
+
       case 'edit':
         this.router.navigate([`/admin/dashboard/collection/${content.data.collection_id}`]);
         break;
-      case 'delete':
+
+      case 'delete': {
         // Build response
         const obs: Observable<{ status: number, message: string }> = this.collectionService
           .deleteCollection(content.data.collection_id)
@@ -65,8 +72,9 @@ export class CollectionComponent {
         });
 
         break;
-      default :
-        console.error('Invalid key chosen');
+      }
+
+      default: console.error('Invalid key chosen');
     }
   }
 

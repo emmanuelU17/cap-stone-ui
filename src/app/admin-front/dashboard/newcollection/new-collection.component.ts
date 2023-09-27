@@ -10,6 +10,7 @@ import {DirectiveModule} from "../../../directive/directive.module";
 import {CollectionService} from "../collection/collection.service";
 import {HttpErrorResponse} from "@angular/common/http";
 import {ToastService} from "../../../service/toast/toast.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-new-collection',
@@ -19,14 +20,20 @@ import {ToastService} from "../../../service/toast/toast.service";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NewCollectionComponent {
+
   private readonly newCollectionService: NewCollectionService = inject(NewCollectionService);
   private readonly collectionService: CollectionService = inject(CollectionService);
   private readonly toastService: ToastService = inject(ToastService);
+  private readonly router: Router = inject(Router);
 
   reactiveForm: FormGroup = new FormGroup({
     name: new FormControl('', [Validators.required, Validators.max(50)]),
     visible: new FormControl(false, Validators.required)
   });
+
+  routeToCollectionComponent = (): void => {
+    this.router.navigate(['/admin/dashboard/collection']);
+  }
 
   /** Clears reactiveForm */
   clear(): void {
