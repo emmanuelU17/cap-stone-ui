@@ -1,9 +1,9 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
-import {PageNotFoundComponent} from "./store-front/utils/pagenotfound/page-not-found.component";
 import {adminFrontAuthGuard} from "./admin-front/admin-front-auth-guard";
 
 const routes: Routes = [
+
   // Store-front
   {
     path: '',
@@ -15,11 +15,11 @@ const routes: Routes = [
       },
       {
         path: 'shop',
-        loadChildren: () => import('./store-front/shop/shop.module').then(m => m.ShopModule)
+        loadChildren: () => import('./store-front/shop/shop.routes').then(m => m.SHOP_ROUTES)
       },
       {
         path: 'profile',
-        loadChildren: () => import('./store-front/profile/profile.module').then(m => m.ProfileModule)
+        loadChildren: () => import('./store-front/profile/profile.routes').then(m => m.PROFILE_ROUTES)
       },
     ]
   },
@@ -41,13 +41,16 @@ const routes: Routes = [
         canActivateChild: [adminFrontAuthGuard],
         loadChildren: () => import('./admin-front/dashboard/admin-dashboard.routes')
           .then(m => m.ADMIN_DASHBOARD_ROUTES),
-        // children: ADMIN_DASHBOARD_ROUTES
       }
     ]
   },
 
   // Error
-  { path: '404', component: PageNotFoundComponent },
+  {
+    path: '404',
+    loadComponent: () => import('./store-front/utils/pagenotfound/page-not-found.component')
+      .then(m => m.PageNotFoundComponent)
+  },
   { path: '**', redirectTo: '/404' },
 ];
 

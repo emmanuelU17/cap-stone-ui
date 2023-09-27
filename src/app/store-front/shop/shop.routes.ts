@@ -1,7 +1,6 @@
-import {NgModule} from '@angular/core';
-import {RouterModule, Routes} from '@angular/router';
+import {Routes} from '@angular/router';
 
-const routes: Routes = [
+export const SHOP_ROUTES: Routes = [
   {
     path: 'category',
     loadComponent: () => import('./category/category.component').then(m => m.CategoryComponent)
@@ -17,11 +16,11 @@ const routes: Routes = [
   {
     path: 'cart',
     loadComponent: () => import('./cart/cart.component').then(m => m.CartComponent)
+  },
+  // Path matcher
+  {
+    path: '',
+    redirectTo: 'category',
+    pathMatch: 'full'
   }
 ];
-
-@NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
-})
-export class ShopRoutingModule { }

@@ -14,7 +14,7 @@ import {CardComponent} from "../utils/card/card.component";
 })
 export class HomeComponent {
 
-  private homeService: HomeService = inject(HomeService);
+  private readonly homeService: HomeService = inject(HomeService);
 
   // Get bg images from HomeService on load of home page
   bgImages$: Observable<string[]> = this.homeService._bgImage$;

@@ -34,18 +34,19 @@ import {RouterLink, RouterLinkActive, RouterOutlet} from "@angular/router";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AdminDashboardComponent {
+
+  private readonly dashboardService: DashboardService = inject(DashboardService);
+  private readonly categoryService: CategoryService = inject(CategoryService);
+  private readonly collectionService: CollectionService = inject(CollectionService);
+  private readonly productService: ProductService = inject(ProductService);
+
   // Left column links
   dashBoardLinks: Display[] = DASHBOARDLINKS;
 
   // Toggle behaviour when a link are clicked
   leftColumn: boolean = false;
 
-  private dashboardService: DashboardService = inject(DashboardService);
-  private categoryService: CategoryService = inject(CategoryService);
-  private collectionService: CollectionService = inject(CollectionService);
-  private productService: ProductService = inject(ProductService);
-
-  // User principal
+  // Principal (email)
   private principal$: Observable<AuthResponse> = this.dashboardService._principal$.pipe();
 
   // Products
@@ -73,17 +74,15 @@ export class AdminDashboardComponent {
     principal?: string,
   }> = combineLatest([this.principal$, this.products$, this.category$, this.collection$])
     .pipe(
-      map((
-          [principal]: [
-            AuthResponse,
-            Page<ProductResponse>,
-            CategoryResponse[],
-            CollectionResponse[]
-          ]
-        ) => ({ state: 'LOADED', principal: principal.principal })
+      map(([principal]: [
+        AuthResponse,
+        Page<ProductResponse>,
+        CategoryResponse[],
+        CollectionResponse[]
+        ]): { state: string, principal: string } => ({ state: 'LOADED', principal: principal.principal })
       ),
-      startWith({state: 'LOADING'}),
-      catchError((err: HttpErrorResponse) => of({state: 'ERROR', error: err.error}))
+      startWith({ state: 'LOADING' }),
+      catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error }))
     );
 
 }

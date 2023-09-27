@@ -10,7 +10,8 @@ import {CSRF} from "./global-utils";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppComponent {
-  private appService: AppService = inject(AppService);
+
+  private readonly appService: AppService = inject(AppService);
 
   // Onload of application, retrieve CSRF token
   csrf$: Observable<{ state: string, error?: string, csrf?: CSRF }> = this.appService.csrf().pipe(
