@@ -1,6 +1,7 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {adminFrontAuthGuard} from "./admin-front/admin-front-auth-guard";
+import {ADMIN_DASHBOARD_ROUTES} from "./admin-front/dashboard/admin-dashboard.routes";
 
 const routes: Routes = [
 
@@ -38,9 +39,9 @@ const routes: Routes = [
         path: 'dashboard',
         loadComponent: () => import('./admin-front/dashboard/admin-dashboard.component')
           .then(m => m.AdminDashboardComponent),
-        canActivateChild: [adminFrontAuthGuard],
-        loadChildren: () => import('./admin-front/dashboard/admin-dashboard.routes')
-          .then(m => m.ADMIN_DASHBOARD_ROUTES),
+        children: ADMIN_DASHBOARD_ROUTES,
+        canActivate: [adminFrontAuthGuard],
+        // canActivateChild: [adminFrontAuthGuard],
       }
     ]
   },

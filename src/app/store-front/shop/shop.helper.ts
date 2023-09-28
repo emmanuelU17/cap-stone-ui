@@ -26,3 +26,7 @@ export interface ProductDetail {
   url: string[];
   variants: Variant[];
 }
+
+export enum SESSION_STORAGE_KEY {
+  PRODUCT = 'PRODUCT'
+}

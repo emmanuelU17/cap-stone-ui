@@ -1,13 +1,13 @@
 import {Injectable} from '@angular/core';
 import {catchError, combineLatest, map, Observable, of, startWith} from "rxjs";
-import {Filter} from "../shop.helper";
+import {Filter} from "./shop.helper";
 import {HttpErrorResponse} from "@angular/common/http";
-import {Product} from "../../store-front-utils";
+import {Product} from "../store-front-utils";
 
 @Injectable({
   providedIn: 'root'
 })
-export class UtilService {
+export class ShopService {
 
   /**
    * Method allows displays a set of squares. These squares display the amount of products to be displayed on the page.

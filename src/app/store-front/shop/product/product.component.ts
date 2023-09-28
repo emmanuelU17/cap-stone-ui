@@ -3,12 +3,13 @@ import {ProductDetail} from "../shop.helper";
 import {State, Variant} from "../../../global-utils";
 import {catchError, map, Observable, of, startWith} from "rxjs";
 import {ActivatedRoute, RouterLink} from "@angular/router";
-import {ProductService} from "../service/product.service";
+import {ProductService} from "./product.service";
 import {HttpErrorResponse} from "@angular/common/http";
 import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
 import {CommonModule} from "@angular/common";
 import {CartComponent} from "../cart/cart.component";
-import {UtilService} from "../service/util.service";
+import {ShopService} from "../shop.service";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'app-product',
@@ -21,7 +22,7 @@ import {UtilService} from "../service/util.service";
 export class ProductComponent {
 
   private readonly productService: ProductService = inject(ProductService);
-  private readonly utilService: UtilService = inject(UtilService);
+  private readonly utilService: ShopService = inject(ShopService);
   private readonly route: ActivatedRoute = inject(ActivatedRoute);
   private readonly fb: FormBuilder = inject(FormBuilder);
 

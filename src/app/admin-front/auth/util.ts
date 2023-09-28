@@ -1,4 +1,4 @@
-export interface RegisterDto {
+export interface RegisterDTO {
   firstname: string;
   lastname: string;
   email: string;
@@ -7,7 +7,7 @@ export interface RegisterDto {
   password: string;
 }
 
-export interface LoginDto {
+export interface LoginDTO {
   principal: string;
   password: string;
 }

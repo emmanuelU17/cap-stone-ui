@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {HomeService} from "./home/home.service";
-import {CategoryService} from "./shop/service/category.service";
-import {CollectionService} from "./shop/service/collection.service";
+import {CategoryService} from "./shop/category/category.service";
+import {CollectionService} from "./shop/collection/collection.service";
 import {catchError, combineLatest, map, Observable, of, startWith} from "rxjs";
 import {HttpErrorResponse} from "@angular/common/http";
 import {Category, Collection} from "./shop/shop.helper";

@@ -1,8 +1,8 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {catchError, map, Observable, of, startWith, switchMap, take} from "rxjs";
-import {Category, Filter} from "../shop.helper";
-import {CategoryService} from "../service/category.service";
-import {UtilService} from "../service/util.service";
+import {Category, Filter, SESSION_STORAGE_KEY} from "../shop.helper";
+import {CategoryService} from "./category.service";
+import {ShopService} from "../shop.service";
 import {Product} from "../../store-front-utils";
 import {CommonModule} from "@angular/common";
 import {CardComponent} from "../../utils/card/card.component";
@@ -20,7 +20,7 @@ import {HttpErrorResponse} from "@angular/common/http";
 export class CategoryComponent {
 
   private readonly categoryService: CategoryService = inject(CategoryService);
-  private readonly utilService: UtilService = inject(UtilService);
+  private readonly utilService: ShopService = inject(ShopService);
 
   iteration = (num: number): number[] => this.utilService.getRange(num);
 
@@ -53,6 +53,11 @@ export class CategoryComponent {
     startWith({ state: 'LOADING' }),
     catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error.message }))
   );
+
+  /** Passes needed detail for ProductDetail. e.g description */
+  setProductClicked = (p: Product): void => {
+    sessionStorage.setItem(SESSION_STORAGE_KEY.PRODUCT, JSON.stringify(p));
+  }
 
   /** Filters products array in ascending or descending order based on price */
   ascendingOrDescending = (arr: Product[]): Product[] => this.utilService.sortArray(this.filterByPrice, arr);
