@@ -10,19 +10,19 @@
               (click)="activeGridIcon = true"
               [style.background-color]="activeGridIcon ? 'var(--app-theme)' : 'var(--in-active)'"
       >
-        <span *ngFor="let i of utilService.getRange(4)" class="h-1.5 w-1.5 p-1.5 m-0 border bg-transparent"></span>
+        <span *ngFor="let i of iteration(4)" class="h-1.5 w-1.5 p-1.5 m-0 border bg-transparent"></span>
       </button>
     </div>
 
     <!--  Sort Container  -->
     <div [style]="{ 'margin-left' : 'auto' }" class="flex items-center">
       <div class="inline-block text-left">
-        <button type="button"
-                class="group relative inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900"
-                id="menu-button"
-                aria-expanded="false"
-                aria-haspopup="true"
-
+        <button
+          type="button"
+          class="group relative inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900"
+          id="menu-button"
+          aria-expanded="false"
+          aria-haspopup="true"
         >
           Sort
           <svg class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -42,7 +42,6 @@
                 class="text-left text-gray-500 block px-4 py-2 text-sm hover:bg-[var(--app-theme)]"
                 role="menuitem"
                 tabindex="-1"
-                id="menu-item-3"
               >Price: Low to High</a>
               <a
                 (click)="filterByPrice = !filterByPrice"
@@ -50,7 +49,6 @@
                 class="text-left text-gray-500 block px-4 py-2 text-sm hover:bg-[var(--app-theme)]"
                 role="menuitem"
                 tabindex="-1"
-                id="menu-item-4"
               >Price: High to Low</a>
             </li>
           </ul>

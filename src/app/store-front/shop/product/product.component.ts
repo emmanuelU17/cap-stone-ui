@@ -39,7 +39,7 @@ export class ProductComponent {
   private uuid: string = this.id === null ? '' : this.id;
 
   productDetails$: Observable<State<ProductDetail[]>> = this.productService
-    .fetchProductDetails(this.uuid)
+    .productDetailsByProductUUID(this.uuid)
     .pipe(
       map((arr: ProductDetail[]): State<ProductDetail[]> => {
         // Add all product detail to product array

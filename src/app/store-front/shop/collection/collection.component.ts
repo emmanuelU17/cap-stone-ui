@@ -18,8 +18,9 @@ import {HttpErrorResponse} from "@angular/common/http";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CollectionComponent {
-  private collectionService: CollectionService = inject(CollectionService);
-  public utilService: UtilService = inject(UtilService);
+
+  private readonly collectionService: CollectionService = inject(CollectionService);
+  private readonly utilService: UtilService = inject(UtilService);
 
   iteration = (num: number): number[] => this.utilService.getRange(num);
 
@@ -66,13 +67,9 @@ export class CollectionComponent {
     const arr: Collection[] = this.collectionService.collections;
     const collection = arr.find(c => c.collection === str);
 
-    console.log('Collection arr ', arr);
-
     if (!collection) {
       return;
     }
-
-    console.log('Collection ', collection);
 
     this.products$ = this.collectionService.productsBasedOnCollection(collection.collection_id)
       .pipe(

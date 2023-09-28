@@ -14,8 +14,8 @@ export class StoreFrontNavigationComponent {
   links: Link[] = [{ name: 'home', value: '', bool: false }, { name: 'shop',  value: '',  bool: true, }];
   openNavMobile: boolean = false;
 
-  // Navigation background on scroll
   navBg: any;
+
   /** Applies bg white on nav container when scrolled down */
   @HostListener('document:scroll') scroll(): void {
     let bool: boolean = document.body.scrollTop > 0 || document.documentElement.scrollTop > 0;
