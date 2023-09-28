@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, inject, Renderer2} from '@angular/core';
 import {CommonModule} from "@angular/common";
-import {concatMap, delay, from, Observable, of, repeat, startWith} from "rxjs";
+import {concatMap, delay, from, Observable, of, repeat, startWith, switchMap} from "rxjs";
 import {HomeService} from "./home.service";
 import {CardComponent} from "../utils/card/card.component";
 
@@ -13,27 +13,22 @@ import {CardComponent} from "../utils/card/card.component";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HomeComponent {
-  private homeService: HomeService = inject(HomeService);
-  private render: Renderer2 = inject(Renderer2);
+
+  private readonly homeService: HomeService = inject(HomeService);
 
   // Get bg images from HomeService on load of home page
   bgImages$: Observable<string[]> = this.homeService._bgImage$;
-
+  private render: Renderer2 = inject(Renderer2);
   /**
-   * Function achieves typing effect for home background image only difference is this is done with images.
-   * Because I want to infinitely loop the items in array, Concat map because I want to way for the
-   * iteration of inner array before emitting the next array
+   * Function achieves an infinite typing effect only difference is
+   * this is done with images.
    * */
-  private imageArr: string[] = this.homeService.getImageArray();
+  private imageArr: string[] = this.homeService.getImages;
   image$: Observable<string> = of(this.imageArr).pipe(
-    concatMap((photos: string[]) => {
-      return from(photos).pipe(
-        concatMap((photo: string) => {
-          return of(photo).pipe(delay(5000));
-        }),
-        repeat()
+    switchMap((photos: string[]) => from(photos).pipe(
+      concatMap((photo: string) => of(photo).pipe(delay(5000))), repeat()
       )
-    }),
+    ),
     startWith(this.imageArr[0])
   );
 

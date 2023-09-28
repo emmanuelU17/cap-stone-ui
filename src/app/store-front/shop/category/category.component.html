@@ -1,118 +1,117 @@
-<div class="lg-scr mg-top flex flex-col min-h-full px-2.5 relative" *ngIf="combine$ | async as combine" [ngSwitch]="combine.state">
-  <ng-container *ngSwitchCase="'LOADING'">
-    <div class="lg-scr h-full p-20 flex justify-center items-center">
-      <h1 class="capitalize text-[var(--app-theme-hover)]">
-        loading...
-      </h1>
-    </div>
-  </ng-container>
-  <ng-container *ngSwitchCase="'ERROR'">
-    <div class="lg-scr mg-top p-10 capitalize text-3xl text-red-500">
-      Error {{ combine.error }}
-    </div>
-  </ng-container>
-  <ng-container *ngSwitchCase="'LOADED'">
-    <!-- Grid and Sort div -->
-    <div class="pb-1.5 flex items-baseline">
-      <!--  View div  -->
-      <div class="hidden min-[1000px]:flex">
-        <button type="button"
-                class="mr-3 flex gap-1 text-gray-400 hover:bg-gray-500"
-                (click)="activeGridIcon = true"
-                [style.background-color]="activeGridIcon ? 'var(--app-theme)' : 'var(--in-active)'"
-        >
-          <span *ngFor="let i of utilService.getRange(4)" class="h-1.5 w-1.5 p-1.5 m-0 border bg-transparent"></span>
-        </button>
+<div class="lg-scr mg-top flex flex-col min-h-full px-2.5 relative"
+     *ngIf="categories$ | async as categories">
 
-        <!--      <button type="button"-->
-        <!--              class="text-gray-400 flex gap-1 hover:text-gray-500"-->
-        <!--              (click)="activeGridIcon = false"-->
-        <!--              [style.background-color]="!activeGridIcon ? 'var(--app-theme)' : 'var(--in-active)'"-->
-        <!--      >-->
-        <!--        <div *ngFor="let i of getRange(4)" class="h-1.5 w-1.5 p-1.5 m-0 border bg-transparent"></div>-->
-        <!--      </button>-->
-      </div>
-
-      <!--  Sort Container  -->
-      <div [style]="{ 'margin-left' : 'auto' }" class="flex items-center">
-        <div class="inline-block text-left">
-          <button type="button"
-                  class="group relative inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900"
-                  id="menu-button"
-                  aria-expanded="false"
-                  aria-haspopup="true"
-          >
-            Sort
-            <svg class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-              <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
-            </svg>
-
-            <ul
-              class="hidden group-hover:block absolute right-0 top-3 z-2 mt-2 w-40 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
-              role="menu"
-              aria-orientation="vertical"
-              aria-labelledby="menu-button"
-              tabindex="-1"
-            >
-              <li class="py-1">
-                <a
-                  (click)="onclickFilterByPrice(true)"
-                  [style]="{ 'background-color': filterByPrice ? 'var(--app-theme)' : 'transparent'}"
-                  class="text-left text-gray-500 block px-4 py-2 text-sm hover:bg-[var(--app-theme)]"
-                  role="menuitem"
-                  tabindex="-1"
-                  id="menu-item-3"
-                >Price: Low to High</a>
-              </li>
-              <li class="py-1">
-                <a
-                  (click)="onclickFilterByPrice(false)"
-                  [style]="{ 'background-color': !filterByPrice ? 'var(--app-theme)' : 'transparent'}"
-                  class="text-left text-gray-500 block px-4 py-2 text-sm hover:bg-[var(--app-theme)]"
-                  role="menuitem"
-                  tabindex="-1"
-                  id="menu-item-4"
-                >Price: High to Low</a>
-              </li>
-            </ul>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Content -->
-    <div class="max-h-full" *ngIf="combine.products">
-      <div class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8" *ngIf="products$ | async as products">
-        <div class="group relative cursor-pointer" *ngFor="let product of products">
-          <a routerLink="product/{{ product.id }}">
-            <app-card
-              [url]="product.image"
-              [name]="product.name"
-              [currency]="product.currency"
-              [price]="product.price"
-            ></app-card>
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <!-- Button to Filter container -->
-    <div class="sticky w-fit bottom-2/4 bg-transparent">
-      <button class="p-3 rounded-full bg-[var(--app-theme)]" (click)="displayFilter = !displayFilter">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
-        </svg>
+  <!-- Grid and Sort div -->
+  <div class="pb-1.5 flex items-baseline">
+    <!--  View div  -->
+    <div class="hidden min-[1000px]:flex">
+      <button type="button"
+              class="mr-3 flex gap-1 text-gray-400 hover:bg-gray-500"
+              (click)="activeGridIcon = true"
+              [style.background-color]="activeGridIcon ? 'var(--app-theme)' : 'var(--in-active)'"
+      >
+        <span *ngFor="let i of iteration(4)" class="h-1.5 w-1.5 p-1.5 m-0 border bg-transparent"></span>
       </button>
     </div>
 
-    <!-- Filter container -->
-    <div class="filter-btn bg-transparent hidden fixed top-0 right-0 bottom-0 left-0 z-15"
-         *ngIf="combine.filter" [style]="{ 'display': displayFilter ? 'block' : 'none' }">
-      <app-filter
-        [title]="'shop by category'"
-        [filters]="combine.filter"
-        (emitter)="setEmitter($event)"
-      ></app-filter>
+    <!--  Sort Container  -->
+    <div [style]="{ 'margin-left' : 'auto' }" class="flex items-center">
+      <div class="inline-block text-left">
+        <button type="button"
+                class="group relative inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900"
+                aria-expanded="false"
+                aria-haspopup="true"
+        >
+          Sort
+          <svg class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+          </svg>
+
+          <ul
+            class="hidden group-hover:block absolute right-0 top-3 z-2 mt-2 w-40 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
+            role="menu"
+            aria-orientation="vertical"
+            aria-labelledby="menu-button"
+            tabindex="-1"
+          >
+            <li class="py-1">
+              <a
+                (click)="filterByPrice = true"
+                [style]="{ 'background-color': filterByPrice ? 'var(--app-theme)' : 'transparent' }"
+                class="text-left text-gray-500 block px-4 py-2 text-sm hover:bg-[var(--app-theme)]"
+                role="menuitem"
+                tabindex="-1"
+              >Price: Low to High</a>
+            </li>
+            <li class="py-1">
+              <a
+                (click)="filterByPrice = !filterByPrice"
+                [style]="{ 'background-color': !filterByPrice ? 'var(--app-theme)' : 'transparent'}"
+                class="text-left text-gray-500 block px-4 py-2 text-sm hover:bg-[var(--app-theme)]"
+                role="menuitem"
+                tabindex="-1"
+              >Price: High to Low</a>
+            </li>
+          </ul>
+        </button>
+      </div>
     </div>
+  </div>
+
+  <!-- Products -->
+  <ng-container *ngIf="products$ | async as products" [ngSwitch]="products.state">
+
+    <ng-container *ngSwitchCase="'LOADING'">
+      <div class="lg-scr h-full p-20 flex justify-center items-center">
+        <h1 class="capitalize text-[var(--app-theme-hover)]">
+          loading...
+        </h1>
+      </div>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'ERROR'">
+      <div class="lg-scr mg-top p-10 capitalize text-3xl text-red-500">
+        Error {{ products.error }}
+      </div>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'LOADED'">
+      <div class="max-h-full" *ngIf="products.data">
+        <div class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
+          <div class="group relative cursor-pointer" *ngFor="let product of ascendingOrDescending(products.data)">
+            <a routerLink="product/{{ product.product_id }}" (click)="setProductClicked(product)">
+              <app-card
+                [url]="product.image"
+                [name]="product.name"
+                [currency]="product.currency"
+                [price]="product.price"
+              ></app-card>
+            </a>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
   </ng-container>
+
+  <!-- Button to Filter container -->
+  <div class="sticky w-fit bottom-2/4 bg-transparent">
+    <button class="p-3 rounded-full bg-[var(--app-theme)]" (click)="displayFilter = !displayFilter">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Filter container -->
+  <div class="filter-btn bg-transparent hidden fixed top-0 right-0 bottom-0 left-0 z-15"
+       [style]="{ 'display': displayFilter ? 'block' : 'none' }"
+  >
+    <app-filter
+      [title]="'shop by category'"
+      [filters]="categories"
+      (emitter)="filterProductsByCategory($event)"
+    ></app-filter>
+  </div>
+
 </div>

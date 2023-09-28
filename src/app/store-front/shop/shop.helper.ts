@@ -9,10 +9,12 @@ export interface Filter<T> {
 
 export interface Category {
   category: string;
+  category_id: string;
 }
 
 export interface Collection {
   collection: string;
+  collection_id: string;
 }
 
 export interface ProductDetail {
@@ -25,4 +27,6 @@ export interface ProductDetail {
   variants: Variant[];
 }
 
-
+export enum SESSION_STORAGE_KEY {
+  PRODUCT = 'PRODUCT'
+}

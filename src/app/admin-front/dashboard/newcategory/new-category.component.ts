@@ -10,6 +10,7 @@ import {DirectiveModule} from "../../../directive/directive.module";
 import {CategoryService} from "../category/category.service";
 import {HttpErrorResponse} from "@angular/common/http";
 import {ToastService} from "../../../service/toast/toast.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-new-category',
@@ -19,15 +20,21 @@ import {ToastService} from "../../../service/toast/toast.service";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NewCategoryComponent {
+
   private readonly newCategoryService: NewCategoryService = inject(NewCategoryService);
   private readonly categoryService: CategoryService = inject(CategoryService);
   private readonly toastService: ToastService = inject(ToastService);
+  private readonly router: Router = inject(Router);
 
   reactiveForm: FormGroup = new FormGroup({
     name: new FormControl('', [Validators.required, Validators.max(80)]),
     parent: new FormControl(''),
     visible: new FormControl(false, Validators.required)
   });
+
+  routeToCategoryComponent = (): void => {
+    this.router.navigate(['/admin/dashboard/category']);
+  }
 
   /** Clears reactiveForm */
   clear(): void {

@@ -1,8 +1,11 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Output} from '@angular/core';
-import {CommonModule} from '@angular/common';
+import {ChangeDetectionStrategy, Component, EventEmitter, Inject, Output} from '@angular/core';
+import {CommonModule, DOCUMENT} from '@angular/common';
 import {SizeInventory} from "../../shared-util";
 import {MatButtonModule} from "@angular/material/button";
 import {CustomQueue} from "./custom-queue";
+import {SizeInventoryService} from "./size-inventory.service";
+import {tap} from "rxjs";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'app-size-inventory',
@@ -16,6 +19,24 @@ export class SizeInventoryComponent {
   indexOfError = -1;
 
   @Output() eventEmitter = new EventEmitter<SizeInventory[]>();
+
+  constructor(private sizeInventoryService: SizeInventoryService, @Inject(DOCUMENT) private _document: Document) {
+    this.sizeInventoryService.clearQueue
+      .pipe(
+        tap((bool: boolean): void => {
+          if (bool) {
+            // Remove elements from dom
+            const elements = this._document.querySelectorAll('.dom');
+            elements.forEach(element => element.remove());
+
+            // clear queue
+            this.queue.clear();
+          }
+        }),
+        takeUntilDestroyed()
+      )
+      .subscribe();
+  }
 
   // https://stackoverflow.com/questions/175739/how-can-i-check-if-a-string-is-a-valid-number
   private isNumeric = (num: any) =>
@@ -31,8 +52,8 @@ export class SizeInventoryComponent {
     }
 
     for (let i = 0; i < this.queue.toArray().length; i++) {
-      const obj = this.queue.toArray()[i]
-      if (!this.isNumeric(obj.qty)|| obj.size === '' || obj.qty < 0) {
+      const obj: SizeInventory = this.queue.toArray()[i]
+      if (!this.isNumeric(obj.qty) || obj.size === '' || obj.qty < 0) {
         this.indexOfError = i;
         return true;
       }
@@ -43,7 +64,7 @@ export class SizeInventoryComponent {
   }
 
   addInputRow(): void {
-    this.queue.addToQueue({size: '', qty: -1});
+    this.queue.addToQueue({ size: '', qty: -1 });
   }
 
   /**

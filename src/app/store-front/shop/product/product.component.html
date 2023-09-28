@@ -123,7 +123,7 @@
                       formControlName="qty"
                     >
                       <option value="" disabled selected>QUANTITY</option>
-                      <option *ngFor="let range of utilService.getRange(inventory); let i = index">
+                      <option *ngFor="let range of range(inventory); let i = index">
                         {{ i + 1 }}
                       </option>
                     </select>
@@ -151,7 +151,8 @@
               class="text-sm h-20 pt-3.5 break-words overflow-hidden"
               [innerHTML]="details[0].desc" [class.show]="showMore"
             ></p>
-            <button *ngIf="details[0].desc.length > 0" class="outline-none border-none bg-transparent"
+            <!-- *ngIf="details[0].desc.length > 0" -->
+            <button class="outline-none border-none bg-transparent"
                     (click)="showMore = !showMore">
               <span class="lowercase text-[var(--app-theme-hover)]">
                 {{ showMore ? 'Show less' : 'Show More' }}

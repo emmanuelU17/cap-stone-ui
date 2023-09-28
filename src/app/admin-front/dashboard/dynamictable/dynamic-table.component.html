@@ -4,24 +4,21 @@
     <table>
       <thead>
       <tr>
-        <th *ngFor="let col of tHead">
+        <th *ngFor="let col of tHead" [ngSwitch]="col">
           <!-- Do not show Description and ID -->
-          <ng-container *ngIf="col === 'desc' || col === 'id'; else other"></ng-container>
-          <ng-template #other>
-            <!-- Button -->
-            <ng-container *ngIf="col === 'action'; else yes">delete</ng-container>
-
-            <!-- None button -->
-            <ng-template #yes> {{ col }}</ng-template>
-          </ng-template>
+          <ng-container *ngSwitchCase="'product_id'">No.</ng-container>
+          <ng-container *ngSwitchCase="'action'">Delete</ng-container>
+          <ng-container *ngSwitchDefault>{{ col }}</ng-container>
         </th>
       </tr>
       </thead>
 
       <tbody>
-      <tr *ngFor="let data of pageData.content">
+      <tr *ngFor="let data of pageData.content; let i = index">
         <td *ngFor="let head of tHead">
           <ng-container [ngSwitch]="head">
+
+            <ng-container *ngSwitchCase="'product_id'">{{ i + 1 }}</ng-container>
 
             <!-- Image -->
             <div class="rounded overflow-hidden min-w-[2.75rem] min-h-[2.75rem] max-w-[7rem] max-h-[4rem]"
@@ -53,7 +50,6 @@
 
             <!-- Do not show Description and ID -->
             <div *ngSwitchCase="'desc'"></div>
-            <div *ngSwitchCase="'id'"></div>
 
             <!-- Visible -->
             <div *ngSwitchCase="'is_visible'" [style]="{ 'color': data[head] === true ? 'green' : 'red' }">
@@ -87,9 +83,11 @@
     <tr>
       <th *ngFor="let col of tHead" [ngSwitch]="col">
         <!-- Do not show Description and ID -->
-        <ng-container *ngSwitchCase="'id'"></ng-container>
+        <ng-container *ngSwitchCase="'category_id'">No.</ng-container>
+        <ng-container *ngSwitchCase="'collection_id'">No.</ng-container>
+        <ng-container *ngSwitchCase="'index'">No.</ng-container>
         <ng-container *ngSwitchCase="'collection'">Name</ng-container>
-        <ng-container *ngSwitchCase="'category'">name</ng-container>
+        <ng-container *ngSwitchCase="'category'">Name</ng-container>
         <ng-container *ngSwitchCase="'created_at'">Created Date</ng-container>
         <ng-container *ngSwitchCase="'modified_at'">Modified Date</ng-container>
         <ng-container *ngSwitchCase="'action'">Delete</ng-container>
@@ -101,7 +99,7 @@
     </thead>
 
     <tbody>
-    <tr *ngFor="let d of data">
+    <tr *ngFor="let d of data; let i = index">
       <td class="cursor-pointer" *ngFor="let head of tHead" (click)="onClick(d,'view')">
         <ng-container [ngSwitch]="head">
 
@@ -122,6 +120,10 @@
               </svg>
             </button>
           </div>
+
+          <ng-container *ngSwitchCase="'category_id'">{{ i + 1 }}</ng-container>
+          <ng-container *ngSwitchCase="'collection_id'">{{ i + 1 }}</ng-container>
+          <ng-container *ngSwitchCase="'index'">{{ i + 1 }}</ng-container>
 
           <!-- Created and Modified At -->
           <ng-container *ngSwitchCase="'created_at'">{{ date(d[head]) }}</ng-container>

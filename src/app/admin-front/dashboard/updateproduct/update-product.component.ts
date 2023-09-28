@@ -62,13 +62,13 @@ export class UpdateProductComponent implements OnInit {
 
   // Custom object
   private product: ProductResponse | undefined = this.productService.products
-    .find((value: ProductResponse) => value.id === this.uuid)
+    .find((value: ProductResponse) => value.product_id === this.uuid)
 
   data: { categoryId?: string, collectionId?: string, product?: ProductResponse } = {
     categoryId: this.categoryService.categories
-      .find(c => c.category === this.product?.category)?.id,
+      .find(c => c.category === this.product?.category)?.category_id,
     collectionId: this.collectionService.collections
-      .find(c => c.collection === this.product?.collection)?.id,
+      .find(c => c.collection === this.product?.collection)?.collection_id,
     product: this.product
   }
 
@@ -77,7 +77,7 @@ export class UpdateProductComponent implements OnInit {
   collections$: Observable<CollectionResponse[]> = this.collectionService._collections$;
 
   // Table
-  thead: Array<keyof CustomRowMapper> = ['url', 'colour', 'is_visible', 'sku', 'inventory', 'size', 'action'];
+  thead: Array<keyof CustomRowMapper> = ['index', 'url', 'colour', 'is_visible', 'sku', 'inventory', 'size', 'action'];
   productVariants$: Observable<{
     state: string,
     error?: string,
@@ -131,6 +131,7 @@ export class UpdateProductComponent implements OnInit {
       // Based on the amount of Variants, append to CustomMapper
       res.variants.forEach((variant: Variant, index: number): void => {
         const obj: CustomRowMapper = {
+          index: index,
           url: res.url[0],
           urls: res.url,
           colour: res.colour,
@@ -207,7 +208,7 @@ export class UpdateProductComponent implements OnInit {
 
     if (cat) {
       this.onChangeCategoryOrCollection = true;
-      this.data.categoryId = cat.id
+      this.data.categoryId = cat.category_id
     }
 
   }
@@ -226,7 +227,7 @@ export class UpdateProductComponent implements OnInit {
 
     if (col) {
       this.onChangeCategoryOrCollection = true;
-      this.data.collectionId = col.id;
+      this.data.collectionId = col.collection_id;
     }
 
   }
@@ -253,7 +254,7 @@ export class UpdateProductComponent implements OnInit {
     const json: UpdateProduct = {
       category_id: cat,
       collection_id: col,
-      id: this.uuid,
+      product_id: this.uuid,
       name: name,
       price: price,
       desc: desc,

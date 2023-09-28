@@ -5,26 +5,16 @@ import {AppComponent} from './app.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {CsrfInterceptor} from "./service/csrf-interceptor.service";
-import {StoreFrontNavigationComponent} from "./store-front/utils/navigation/store-front-navigation.component";
-import {PageNotFoundComponent} from "./store-front/utils/pagenotfound/page-not-found.component";
-import {StoreComponent} from './store-front/store.component';
-import {AdminComponent} from './admin-front/admin.component';
 import {MatSnackBarModule} from "@angular/material/snack-bar";
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    StoreComponent,
-    AdminComponent
-  ],
+  declarations: [AppComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     HttpClientModule,
     MatSnackBarModule, // For toast
-    StoreFrontNavigationComponent,
-    PageNotFoundComponent,
   ],
   providers: [
     {

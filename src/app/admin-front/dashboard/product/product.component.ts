@@ -20,6 +20,7 @@ import {CategoryService} from "../category/category.service";
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductComponent {
+
   private productService: ProductService = inject(ProductService);
   private categoryService: CategoryService = inject(CategoryService);
   private collectionService: CollectionService = inject(CollectionService);
@@ -27,7 +28,7 @@ export class ProductComponent {
   private dialog: MatDialog = inject(MatDialog);
 
   // Table details
-  thead: Array<keyof ProductResponse> = ['image', 'id', 'name', 'desc', 'currency', 'price', 'action'];
+  thead: Array<keyof ProductResponse> = ['product_id', 'image', 'name', 'desc', 'currency', 'price', 'action'];
   data$: Observable<{
     state: string,
     error?: string,
@@ -38,6 +39,10 @@ export class ProductComponent {
     catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error.message }))
   );
 
+  routeToNewProduct = (): void => {
+    this.router.navigate(['/admin/dashboard/new-product']);
+  }
+
   /**
    * Displays UpdateProduct component based on the product clicked from DynamicTable
    * @param content of custom interface TableContent
@@ -45,12 +50,14 @@ export class ProductComponent {
    * */
   infoFromTableComponent(content: TableContent<ProductResponse>): void {
     switch (content.key) {
-      case 'product':
-        this.router.navigate([`/admin/dashboard/product/${content.data.id}`]);
+      case 'product':{
+        this.router.navigate([`/admin/dashboard/product/${content.data.product_id}`]);
         break;
-      case 'delete':
+      }
+
+      case 'delete': {
         const obs: Observable<{ status: number, message: string }> = this.productService
-          .deleteProduct(content.data.id)
+          .deleteProduct(content.data.product_id)
           .pipe(
             switchMap((status: number) => {
               // Refresh Product, Category and Collection array
@@ -80,6 +87,8 @@ export class ProductComponent {
         });
 
         break;
+      }
+
       default :
         console.error('Invalid key chosen');
     }

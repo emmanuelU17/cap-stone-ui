@@ -3,12 +3,13 @@ import {ProductDetail} from "../shop.helper";
 import {State, Variant} from "../../../global-utils";
 import {catchError, map, Observable, of, startWith} from "rxjs";
 import {ActivatedRoute, RouterLink} from "@angular/router";
-import {ProductService} from "../service/product.service";
+import {ProductService} from "./product.service";
 import {HttpErrorResponse} from "@angular/common/http";
 import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
 import {CommonModule} from "@angular/common";
 import {CartComponent} from "../cart/cart.component";
-import {UtilService} from "../service/util.service";
+import {ShopService} from "../shop.service";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'app-product',
@@ -19,10 +20,13 @@ import {UtilService} from "../service/util.service";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductComponent {
-  private productService: ProductService = inject(ProductService);
-  utilService: UtilService = inject(UtilService);
-  private route: ActivatedRoute = inject(ActivatedRoute);
-  private fb: FormBuilder = inject(FormBuilder);
+
+  private readonly productService: ProductService = inject(ProductService);
+  private readonly utilService: ShopService = inject(ShopService);
+  private readonly route: ActivatedRoute = inject(ActivatedRoute);
+  private readonly fb: FormBuilder = inject(FormBuilder);
+
+  range = (num: number): number[] => this.utilService.getRange(num);
 
   // ProductDetail array and Current ProductDetail
   private productDetailArray: ProductDetail[] = [];
@@ -36,7 +40,7 @@ export class ProductComponent {
   private uuid: string = this.id === null ? '' : this.id;
 
   productDetails$: Observable<State<ProductDetail[]>> = this.productService
-    .fetchProductDetails(this.uuid)
+    .productDetailsByProductUUID(this.uuid)
     .pipe(
       map((arr: ProductDetail[]): State<ProductDetail[]> => {
         // Add all product detail to product array
@@ -48,9 +52,9 @@ export class ProductComponent {
         // Current ProductDetail with the first item in arr
         this.currentProductDetail = { currImage: curr.url[0], detail: curr };
 
-        return {state: 'LOADED', data: arr};
+        return { state: 'LOADED', data: arr };
       }),
-      startWith({state: 'LOADING'}),
+      startWith({ state: 'LOADING' }),
       catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.message }))
     );
 

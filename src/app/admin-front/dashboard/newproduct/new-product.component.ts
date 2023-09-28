@@ -16,6 +16,8 @@ import {ProductService} from "../product/product.service";
 import {HttpErrorResponse} from "@angular/common/http";
 import {ToastService} from "../../../service/toast/toast.service";
 import {HelperService} from "../../helper.service";
+import {SizeInventoryService} from "../sizeinventory/size-inventory.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-new-product',
@@ -36,8 +38,6 @@ import {HelperService} from "../../helper.service";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NewProductComponent {
-  // prototype: URL, createObjectURL(obj: (Blob | MediaSource)): string
-  protected readonly URL = URL;
 
   private readonly newProductService: NewProductService = inject(NewProductService);
   private readonly categoryService: CategoryService = inject(CategoryService);
@@ -46,14 +46,19 @@ export class NewProductComponent {
   private readonly toastService: ToastService = inject(ToastService);
   private readonly fb: FormBuilder = inject(FormBuilder);
   private readonly helperService: HelperService = inject(HelperService);
+  private readonly sizeInventoryService: SizeInventoryService = inject(SizeInventoryService);
+  private readonly router: Router = inject(Router);
 
-  categories$: Observable<CategoryResponse[]> = this.categoryService._categories$;
-  collections$: Observable<CollectionResponse[]> = this.collectionService._collections$;
+  // Converts from file to string
+  toString = (file: File): string => URL.createObjectURL(file);
 
   config = CKEDITOR4CONFIG;
   content: string = '';
   files: File[] = []; // Images
   rows: SizeInventory[] = [];
+
+  categories$: Observable<CategoryResponse[]> = this.categoryService._categories$;
+  collections$: Observable<CollectionResponse[]> = this.collectionService._collections$;
 
   reactiveForm = this.fb.group({
     category: new FormControl('', [Validators.required]),
@@ -65,6 +70,10 @@ export class NewProductComponent {
     visible: new FormControl(false, Validators.required),
     colour: new FormControl('', Validators.required),
   });
+
+  routeToProductComponent = (): void => {
+    this.router.navigate(['/admin/dashboard/product']);
+  }
 
   /**
    * Responsible for verifying file uploaded is in image and then updating file FormGroup.
@@ -110,7 +119,7 @@ export class NewProductComponent {
 
     return this.newProductService.create(data).pipe(
       switchMap((status: number) => {
-        // TODO clear sizeInventory
+        this.sizeInventoryService.setSubject(true);
         this.clear();
         this.reactiveForm.controls['collection'].setValue('');
         this.reactiveForm.controls['category'].setValue('');

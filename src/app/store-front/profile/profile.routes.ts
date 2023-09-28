@@ -1,8 +1,7 @@
-import {NgModule} from '@angular/core';
-import {RouterModule, Routes} from '@angular/router';
+import {Routes} from '@angular/router';
 import {userDashBoardGuard} from "./userguard";
 
-const routes: Routes = [
+export const PROFILE_ROUTES: Routes = [
   {
     path: '',
     loadComponent: () => import('./dashboard/dashboard.component').then(m => m.DashboardComponent),
@@ -13,10 +12,3 @@ const routes: Routes = [
     loadComponent: () => import('./auth/store-front-auth.component').then(m => m.StoreFrontAuthComponent),
   }
 ];
-
-@NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
-})
-export class ProfileRoutingModule {
-}
