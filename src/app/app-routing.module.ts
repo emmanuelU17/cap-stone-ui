@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
-import {adminFrontAuthGuard} from "./admin-front/admin-front-auth-guard";
+import {ADMINFRONTGUARD} from "./admin-front/a-d-m-i-n-f-r-o-n-t-g-u-a-r-d";
 import {ADMIN_DASHBOARD_ROUTES} from "./admin-front/dashboard/admin-dashboard.routes";
 
 const routes: Routes = [
@@ -40,8 +40,7 @@ const routes: Routes = [
         loadComponent: () => import('./admin-front/dashboard/admin-dashboard.component')
           .then(m => m.AdminDashboardComponent),
         children: ADMIN_DASHBOARD_ROUTES,
-        canActivate: [adminFrontAuthGuard],
-        // canActivateChild: [adminFrontAuthGuard],
+        canActivateChild: [ADMINFRONTGUARD],
       }
     ]
   },
