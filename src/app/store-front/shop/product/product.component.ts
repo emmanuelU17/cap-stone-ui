@@ -57,7 +57,6 @@ export class ProductComponent {
     );
 
   showMore: boolean = false; // Show more paragraph
-  showCartComponent: boolean = false;
 
   reactiveForm = this.fb.group({
     sku: new FormControl({ value: '', disabled: true }, [Validators.required]),
@@ -120,8 +119,7 @@ export class ProductComponent {
 
   /** Stores product in users cart */
   addToCart(): void {
-    this.showCartComponent = !this.showCartComponent
-    const s = this.reactiveForm.get('size')?.value;
+    const s = this.reactiveForm.controls['size'].value;
   }
 
 }
