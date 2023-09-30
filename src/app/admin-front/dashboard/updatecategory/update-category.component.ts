@@ -33,6 +33,7 @@ import {MatDialogModule} from "@angular/material/dialog";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UpdateCategoryComponent implements OnInit {
+
   private readonly updateCategoryService: UpdateCategoryService = inject(UpdateCategoryService);
   private readonly productService: ProductService = inject(ProductService);
   private readonly categoryService: CategoryService = inject(CategoryService);

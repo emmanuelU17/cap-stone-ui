@@ -1,15 +1,21 @@
-import {ChangeDetectionStrategy, Component, HostListener} from '@angular/core';
+import {ChangeDetectionStrategy, Component, HostListener, inject} from '@angular/core';
 import {CommonModule} from "@angular/common";
 import {RouterLink, RouterLinkActive} from "@angular/router";
+import {CollectionService} from "../../shop/collection/collection.service";
+import {CartIconComponent} from "../carticon/cart-icon.component";
 
 @Component({
   selector: 'app-store-front-navigation-navigation',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterLink, RouterLinkActive, CartIconComponent],
   templateUrl: './store-front-navigation.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class StoreFrontNavigationComponent {
+
+  private readonly collectionService: CollectionService = inject(CollectionService);
+
+  collectionNotEmpty$ = this.collectionService.collectionNotEmpty$;
 
   links: Link[] = [{ name: 'home', value: '', bool: false }, { name: 'shop',  value: '',  bool: true, }];
   openNavMobile: boolean = false;

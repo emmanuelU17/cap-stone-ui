@@ -1,10 +1,8 @@
 <div class="min-h-screen w-full">
-  <div class="trans relative flex flex-col min-h-screen bg-center bg-no-repeat bg-cover"
-    *ngIf="image$ | async as image" [style.background-image]="'url(' + image + ')'"
+  <div class="trans relative flex justify-center items-center min-h-screen bg-center bg-no-repeat bg-cover"
+       *ngIf="image$ | async as image" [style.background-image]="'url(' + image + ')'"
   >
-    <div class="flex-1 flex justify-center items-center">
-      TODO Render dynamic contents using type effect
-    </div>
+    <h1 class="capitalize text-white bg-font">apparel for confident women</h1>
   </div>
 
   <div class="lg-scr py-4">

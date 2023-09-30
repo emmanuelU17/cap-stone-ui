@@ -1,22 +1,33 @@
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {BehaviorSubject, map, Observable, tap} from "rxjs";
 import {Collection} from "../shop.helper";
 import {environment} from "../../../../environments/environment";
 import {Page} from "../../../global-utils";
 import {Product} from "../../store-front-utils";
+import {Router} from "@angular/router";
 
 @Injectable({
   providedIn: 'root'
 })
 export class CollectionService {
-  HOST: string | undefined;
+  HOST: string | undefined = environment.domain;
+
+  private readonly http: HttpClient = inject(HttpClient);
+  private readonly router: Router = inject(Router);
 
   private collections$ = new BehaviorSubject<Collection[]>([]);
   _collections$ = this.collections$.asObservable();
 
-  constructor(private http: HttpClient) {
-    this.HOST = environment.domain;
+  get collectionNotEmpty$(): Observable<boolean> {
+    return this._collections$.pipe(
+      map((arr) => arr.length > 0),
+      tap((bool) => {
+        if (!bool) {
+          this.router.navigate(['/shop/category']);
+        }
+      })
+    );
   }
 
   get collections(): Collection[] {

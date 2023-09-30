@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {catchError, map, Observable, of, startWith, switchMap, take} from "rxjs";
-import {Category, Filter, SESSION_STORAGE_KEY} from "../shop.helper";
+import {Category, Filter, SHOP_CONSTANT} from "../shop.helper";
 import {CategoryService} from "./category.service";
 import {ShopService} from "../shop.service";
 import {Product} from "../../store-front-utils";
@@ -56,7 +56,7 @@ export class CategoryComponent {
 
   /** Passes needed detail for ProductDetail. e.g description */
   setProductClicked = (p: Product): void => {
-    sessionStorage.setItem(SESSION_STORAGE_KEY.PRODUCT, JSON.stringify(p));
+    sessionStorage.setItem(SHOP_CONSTANT.PRODUCT, JSON.stringify(p));
   }
 
   /** Filters products array in ascending or descending order based on price */

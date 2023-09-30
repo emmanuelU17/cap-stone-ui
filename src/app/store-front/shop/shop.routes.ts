@@ -1,4 +1,5 @@
 import {Routes} from '@angular/router';
+import {COLLECTIONNOTEMPTY} from "../store-front-guard";
 
 export const SHOP_ROUTES: Routes = [
   {
@@ -7,7 +8,8 @@ export const SHOP_ROUTES: Routes = [
   },
   {
     path: 'collection',
-    loadComponent: () => import('./collection/collection.component').then(m => m.CollectionComponent)
+    loadComponent: () => import('./collection/collection.component').then(m => m.CollectionComponent),
+    canActivate: [COLLECTIONNOTEMPTY]
   },
   {
     path: ':path/product/:id',

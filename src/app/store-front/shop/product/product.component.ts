@@ -7,14 +7,13 @@ import {ProductService} from "./product.service";
 import {HttpErrorResponse} from "@angular/common/http";
 import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
 import {CommonModule} from "@angular/common";
-import {CartComponent} from "../cart/cart.component";
 import {ShopService} from "../shop.service";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {CartIconService} from "../../utils/carticon/cart-icon.service";
 
 @Component({
   selector: 'app-product',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, CartComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './product.component.html',
   styleUrls: ['./product.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -25,6 +24,7 @@ export class ProductComponent {
   private readonly utilService: ShopService = inject(ShopService);
   private readonly route: ActivatedRoute = inject(ActivatedRoute);
   private readonly fb: FormBuilder = inject(FormBuilder);
+  private readonly cartIconService: CartIconService = inject(CartIconService);
 
   range = (num: number): number[] => this.utilService.getRange(num);
 
@@ -59,10 +59,8 @@ export class ProductComponent {
     );
 
   showMore: boolean = false; // Show more paragraph
-  showCartComponent: boolean = false;
 
   reactiveForm = this.fb.group({
-    sku: new FormControl({ value: '', disabled: true }, [Validators.required]),
     colour: new FormControl('', [Validators.required]),
     size: new FormControl({ value: '', disabled: true }, [Validators.required]),
     qty: new FormControl({ value: '', disabled: true }, [Validators.required]),
@@ -93,7 +91,12 @@ export class ProductComponent {
     this.currentProductDetail = { currImage: findProductDetail.url[0], detail: findProductDetail };
   }
 
-  /**  */
+  /**
+   * Updates reactive form on the size clicked.
+   *
+   * @param event is of type HTMLInputElement value is size
+   * @return void
+   * */
   onselectSize(event: Event): void {
     const size: string = (event.target as HTMLInputElement).value;
 
@@ -120,10 +123,11 @@ export class ProductComponent {
     this.reactiveForm.controls['qty'].reset({ value: '', disabled: false });
   }
 
+  // TODO validate if user is logged in.
+  // TODO if !user save sku in session storage that way we can use SseEmitter to key when product isn't in stock
   /** Stores product in users cart */
   addToCart(): void {
-    this.showCartComponent = !this.showCartComponent
-    const s = this.reactiveForm.get('size')?.value;
+    this.cartIconService.addItem = this.sku;
   }
 
 }
