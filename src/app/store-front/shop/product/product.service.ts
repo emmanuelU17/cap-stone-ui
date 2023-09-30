@@ -1,6 +1,6 @@
 import {inject, Injectable, NgZone} from '@angular/core';
 import {map, Observable, Subscriber} from "rxjs";
-import {ProductDetail, SESSION_STORAGE_KEY} from "../shop.helper";
+import {ProductDetail, SHOP_CONSTANT} from "../shop.helper";
 import {environment} from "../../../../environments/environment";
 import {Product} from "../../store-front-utils";
 
@@ -24,7 +24,7 @@ export class ProductService {
   productDetailsByProductUUID(uuid: string): Observable<ProductDetail[]> {
     const url: string = `${this.HOST}api/v1/client/product/detail?product_id=${uuid}`;
 
-    const json: string | null = sessionStorage.getItem(SESSION_STORAGE_KEY.PRODUCT);
+    const json: string | null = sessionStorage.getItem(SHOP_CONSTANT.PRODUCT);
 
     let product: Product | null = null;
 

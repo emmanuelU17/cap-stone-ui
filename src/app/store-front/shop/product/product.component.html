@@ -59,11 +59,6 @@
 
             <!-- Form Contents -->
             <div class="flex gap-1.5 flex-col md:flex-row">
-              <!-- SKU -->
-              <div class="hidden">
-                <input name="sku" type="text" id="sku" formControlName="sku">
-              </div>
-
               <!-- Colour -->
               <div>
                 <select
@@ -96,7 +91,7 @@
                   </select>
                 </div>
 
-                  <!-- Qty -->
+                <!-- Qty -->
                 <div class="flex-1">
                   <ng-container *ngIf="inventory < 0">
                     <select
@@ -135,8 +130,9 @@
 
             <div>
               <button
-                class="w-full p-5 uppercase border border-black hover:bg-black hover:text-white"
+                class="w-full p-3 uppercase border border-black hover:bg-black hover:text-white"
                 type="submit"
+                [disabled]="reactiveForm.invalid"
                 (click)="addToCart()"
               >
                 add to cart

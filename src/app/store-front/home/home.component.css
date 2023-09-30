@@ -6,3 +6,14 @@
 .img-slider::-webkit-scrollbar {
   display: none;
 }
+
+.bg-font {
+  font-size: 30px;
+}
+
+
+@media only screen and (max-width: 600px) {
+  .bg-font {
+    font-size: calc(1vw + 18px);
+  }
+}
