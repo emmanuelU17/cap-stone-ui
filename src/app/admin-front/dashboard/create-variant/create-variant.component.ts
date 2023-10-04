@@ -12,10 +12,8 @@ import {CreateVariantService} from "./create-variant.service";
 import {ToastService} from "../../../service/toast/toast.service";
 import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from "@angular/material/dialog";
 import {CreateVariantData} from "./createVariantData";
-import {HelperService} from "../../helper.service";
 import {HttpErrorResponse} from "@angular/common/http";
 import {UpdateProductService} from "../updateproduct/update-product.service";
-import {CustomQueue} from "../sizeinventory/custom-queue";
 import {SizeInventoryService} from "../sizeinventory/size-inventory.service";
 
 @Component({
@@ -39,7 +37,6 @@ export class CreateVariantComponent {
   private readonly createVariantService: CreateVariantService = inject(CreateVariantService);
   private readonly fb: FormBuilder = inject(FormBuilder);
   private readonly toastService: ToastService = inject(ToastService);
-  private readonly helperService: HelperService = inject(HelperService);
   private readonly updateProductService: UpdateProductService = inject(UpdateProductService);
   private readonly sizeInventoryService: SizeInventoryService = inject(SizeInventoryService);
 
@@ -115,11 +112,24 @@ export class CreateVariantComponent {
   }
 
   create(): Observable<number> {
-    const data: FormData = this.helperService
-      .toFormData(this.reactiveForm, this.files, this.rows);
-    data.append('uuid', this.data.id);
+    const formData: FormData = new FormData();
 
-    return this.createVariantService.create(data)
+    const payload = {
+      product_id: this.data.id,
+      visible: this.reactiveForm.controls['visible'].value,
+      colour: this.reactiveForm.controls['colour'].value,
+      sizeInventory: this.rows
+    }
+
+    const blob = new Blob([JSON.stringify(payload)], {
+      type: 'application/json'
+    });
+    formData.append('dto', blob);
+
+    // append files
+    this.files.forEach((file: File) => formData.append('files', file));
+
+    return this.createVariantService.create(formData)
       .pipe(
         switchMap((status: number) => {
           return this.updateProductService
