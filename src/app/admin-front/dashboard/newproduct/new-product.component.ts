@@ -15,7 +15,6 @@ import {DirectiveModule} from "../../../directive/directive.module";
 import {ProductService} from "../product/product.service";
 import {HttpErrorResponse} from "@angular/common/http";
 import {ToastService} from "../../../service/toast/toast.service";
-import {HelperService} from "../../helper.service";
 import {SizeInventoryService} from "../sizeinventory/size-inventory.service";
 import {Router} from "@angular/router";
 
@@ -45,7 +44,6 @@ export class NewProductComponent {
   private readonly productService: ProductService = inject(ProductService);
   private readonly toastService: ToastService = inject(ToastService);
   private readonly fb: FormBuilder = inject(FormBuilder);
-  private readonly helperService: HelperService = inject(HelperService);
   private readonly sizeInventoryService: SizeInventoryService = inject(SizeInventoryService);
   private readonly router: Router = inject(Router);
 
@@ -78,6 +76,7 @@ export class NewProductComponent {
   /**
    * Responsible for verifying file uploaded is in image and then updating file FormGroup.
    * For better understanding https://blog.angular-university.io/angular-file-upload/
+   *
    * @param event of any
    * @return void
    * */
@@ -96,6 +95,7 @@ export class NewProductComponent {
 
   /**
    * Removes image clicked
+   *
    * @param file
    * @return void
    * */
@@ -111,12 +111,37 @@ export class NewProductComponent {
 
   /**
    * Method responsible for creating a new product
+   *
    * @return void
    * */
   submit(): Observable<number> {
-    const data: FormData = this.helperService
-      .toFormData(this.reactiveForm, this.files, this.rows);
+    const formData: FormData = new FormData();
 
+    const dto = {
+      category: this.reactiveForm.controls['category'].value,
+      collection: this.reactiveForm.controls['collection'].value,
+      name: this.reactiveForm.controls['name'].value,
+      price: this.reactiveForm.controls['price'].value,
+      desc: this.reactiveForm.controls['desc'].value,
+      currency: this.reactiveForm.controls['currency'].value,
+      visible: this.reactiveForm.controls['visible'].value,
+      colour: this.reactiveForm.controls['colour'].value,
+      sizeInventory: this.rows,
+    }
+
+    const blob = new Blob([JSON.stringify(dto)], {
+      type: 'application/json'
+    });
+    formData.append('dto', blob);
+
+    // append files
+    this.files.forEach((file: File) => formData.append('files', file));
+
+    return this.create(formData);
+  }
+
+  /** Creates a new Product and fetches new products to updates product table */
+  private create(data: FormData): Observable<number> {
     return this.newProductService.create(data).pipe(
       switchMap((status: number) => {
         this.sizeInventoryService.setSubject(true);
@@ -124,7 +149,8 @@ export class NewProductComponent {
         this.reactiveForm.controls['collection'].setValue('');
         this.reactiveForm.controls['category'].setValue('');
 
-        return this.productService.fetchAllProducts()
+        return this.productService
+          .fetchAllProducts()
           .pipe(switchMap(() => of(status)));
       }),
       catchError((err: HttpErrorResponse) => {
@@ -133,6 +159,5 @@ export class NewProductComponent {
       })
     );
   }
-
 
 }
