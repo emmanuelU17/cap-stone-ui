@@ -8,6 +8,7 @@
           <!-- Do not show Description and ID -->
           <ng-container *ngSwitchCase="'product_id'">No.</ng-container>
           <ng-container *ngSwitchCase="'action'">Delete</ng-container>
+          <ng-container *ngSwitchCase="'desc'"></ng-container>
           <ng-container *ngSwitchDefault>{{ col }}</ng-container>
         </th>
       </tr>
@@ -48,8 +49,8 @@
               </button>
             </div>
 
-            <!-- Do not show Description and ID -->
-            <div *ngSwitchCase="'desc'"></div>
+            <!-- Do not show Description -->
+            <ng-container *ngSwitchCase="'desc'"></ng-container>
 
             <!-- Visible -->
             <div *ngSwitchCase="'is_visible'" [style]="{ 'color': data[head] === true ? 'green' : 'red' }">

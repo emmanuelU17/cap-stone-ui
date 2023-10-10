@@ -123,11 +123,29 @@ export class ProductComponent {
     this.reactiveForm.controls['qty'].reset({ value: '', disabled: false });
   }
 
-  // TODO validate if user is logged in.
-  // TODO if !user save sku in session storage that way we can use SseEmitter to key when product isn't in stock
   /** Stores product in users cart */
   addToCart(): void {
-    this.cartIconService.addItem = this.sku;
+    const detail = this.productDetailArray
+      .find(d => d.variants.find(v => v.sku === this.sku));
+
+    const colour = this.reactiveForm.controls['colour'].value
+    const qty = this.reactiveForm.controls['qty'].value
+    const size = this.reactiveForm.controls['size'].value
+
+    if (!detail || !colour || !qty || !size) {
+      return;
+    }
+
+    this.cartIconService.addToCart = {
+      url: detail.url[0],
+      name: detail.name,
+      price: detail.price,
+      currency: detail.currency,
+      colour: colour,
+      qty: Number(qty),
+      size: size,
+      sku: this.sku
+    };
   }
 
 }

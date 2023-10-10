@@ -16,33 +16,30 @@
   <ng-container *ngSwitchCase="'LOADED'">
 
     <!-- Product Details  -->
-    <div class="lg-scr mg-top w-full h-full flex flex-col" *ngIf="detail.data as details">
+    <div class="lg-scr mg-top w-full h-full" *ngIf="detail.data as details">
 
-      <div class="w-full grid sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2">
+      <div class="grid grid-cols-1 md:grid-cols-2">
 
-        <!-- Images -->
-        <div class="p-2.5 flex max-[1028px]:flex-col-reverse lg:flex xl:flex gap-1.5 justify-center"
-             *ngIf="currentProductDetail">
+        <!-- Images container -->
+        <div *ngIf="currentProductDetail" class="p-2.5 flex flex-col gap-1.5">
+
+          <!-- image -->
+          <div class="h-40 max-h-auto rounded-sm flex-1">
+            <img [src]="currentProductDetail.currImage"
+                 alt="image"
+                 class="h-full w-full object-cover object-center">
+          </div>
 
           <!-- image carousel -->
-          <div class="flex gap-1.5 overflow-y-auto sm:flex-row md:flex-row lg:flex-col xl:flex-col">
-            <button
-              class="border-none outline-none bg-transparent min-h-[64px] min-w-[64px] max-h-[75px] max-w-[75px]"
+          <ul class="p-2 flex gap-1.5 overflow-auto">
+            <li
+              class="border-none outline-none cursor-pointer bg-transparent min-h-[64px] min-w-[64px] max-h-[75px] max-w-[75px]"
               *ngFor="let img of currentProductDetail.detail.url"
               (click)="currentProductDetail.currImage = img"
             >
-              <img
-                class="w-full h-full object-cover object-center"
-                [src]="img"
-                alt="image"
-              >
-            </button>
-          </div>
-
-          <!-- Main display for image -->
-          <div class="overflow-hidden rounded-sm flex-1">
-            <img [src]="currentProductDetail.currImage" alt="image" class="h-full w-full object-cover object-center">
-          </div>
+              <img class="w-full h-full object-cover object-center" [src]="img" alt="image">
+            </li>
+          </ul>
 
         </div>
 
@@ -128,27 +125,24 @@
 
             </div>
 
-            <div>
-              <button
-                class="w-full p-3 uppercase border border-black hover:bg-black hover:text-white"
-                type="submit"
-                [disabled]="reactiveForm.invalid"
-                (click)="addToCart()"
-              >
-                add to cart
-              </button>
-            </div>
+            <button
+              class="w-full p-3 uppercase border border-black hover:bg-black hover:text-white"
+              type="submit"
+              [disabled]="reactiveForm.invalid"
+              (click)="addToCart()"
+            >add to cart</button>
           </form>
 
           <!-- Description -->
-          <div>
+          <div class="w-full break-words">
             <h2 class="w-fit capitalize border-b border-[var(--app-theme)]">description</h2>
-            <p
-              class="text-sm h-20 pt-3.5 break-words overflow-hidden"
+            <div
+              class="w-full pt-3.5 inline-flex break-all text-sm"
               [innerHTML]="details[0].desc" [class.show]="showMore"
-            ></p>
+            ></div>
+
             <!-- *ngIf="details[0].desc.length > 0" -->
-            <button class="outline-none border-none bg-transparent"
+            <button class="mt-2 outline-none border-none bg-transparent"
                     (click)="showMore = !showMore">
               <span class="lowercase text-[var(--app-theme-hover)]">
                 {{ showMore ? 'Show less' : 'Show More' }}
@@ -157,35 +151,10 @@
           </div>
 
         </div>
-        <!-- end of product detail -->
+
       </div>
 
-      <div class="w-full flex-1 p-2.5 text-center">
-        <h1><strong>TODO:</strong> You may also like </h1>
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci aspernatur consequatur dolore, error fuga
-          inventore, iste maxime molestias nostrum, numquam tempora totam voluptatem voluptatibus? At blanditiis
-          consequatur delectus et laudantium obcaecati quos recusandae saepe sint ut? Ab adipisci consequuntur est fuga,
-          incidunt molestias nihil omnis perspiciatis sunt! Amet eveniet excepturi fugiat iure omnis, sequi. Ad delectus
-          eius excepturi magnam officia possimus. Deleniti quod, vero. Culpa cumque, esse exercitationem fugiat iure non
-          porro? Animi assumenda consequatur cumque cupiditate distinctio, eligendi explicabo magni modi necessitatibus,
-          nisi porro, quisquam sit tenetur? Consequatur deserunt dolore dolorem dolores facere illo labore odit optio,
-          perspiciatis, quae quasi quia quidem, repellendus reprehenderit sit totam ullam voluptatibus. Animi architecto
-          autem consequatur dolores, eaque ex ipsam minus nostrum provident, quod reiciendis sapiente sed vitae.
-          Adipisci, amet aut, consectetur, corporis enim esse maiores maxime nulla reiciendis repellat similique
-          tempore. Accusantium ad alias atque blanditiis, consectetur cum distinctio dolore ea exercitationem facilis
-          iusto laboriosam laudantium modi nam nesciunt officia omnis pariatur placeat quidem quod reprehenderit sed
-          tempora veritatis voluptatem voluptatum! Accusamus asperiores at corporis earum eius eligendi excepturi,
-          fugiat in libero magni minus, molestiae nam neque non nostrum nulla pariatur porro provident quaerat qui
-          quis reprehenderit sequi suscipit ullam veritatis voluptatibus.
-        </p>
-      </div>
     </div>
-
-    <!-- Cart component  -->
-<!--    <div class="z-15 fixed top-0 right-0 bottom-0 left-0" [style]="{ 'display': showCartComponent ? 'block' : 'none' }">-->
-<!--      <app-cart></app-cart>-->
-<!--    </div>-->
 
   </ng-container>
 </ng-container>

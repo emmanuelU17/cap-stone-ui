@@ -3,6 +3,7 @@ import {CommonModule} from "@angular/common";
 import {RouterLink, RouterLinkActive} from "@angular/router";
 import {CollectionService} from "../../shop/collection/collection.service";
 import {CartIconComponent} from "../carticon/cart-icon.component";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-store-front-navigation-navigation',
@@ -15,7 +16,7 @@ export class StoreFrontNavigationComponent {
 
   private readonly collectionService: CollectionService = inject(CollectionService);
 
-  collectionNotEmpty$ = this.collectionService.collectionNotEmpty$;
+  collectionNotEmpty$: Observable<boolean> = this.collectionService.isEmpty$();
 
   links: Link[] = [{ name: 'home', value: '', bool: false }, { name: 'shop',  value: '',  bool: true, }];
   openNavMobile: boolean = false;

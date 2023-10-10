@@ -12,6 +12,7 @@ export class ShopService {
   /**
    * Method allows displays a set of squares. These squares display the amount of products to be displayed on the page.
    * Can either be grid-cols-3 or grid-cols-4
+   *
    * @param length is the size of the array
    * @return Array of number
    * */
@@ -36,6 +37,7 @@ export class ShopService {
   /**
    * Onload of the page use combineLatest to combine api calls. Also fork join can be used
    * https://www.learnrxjs.io/learn-rxjs/operators/combination/forkjoin
+   *
    * @param products$ is an Observable of Product array
    * @param generic$ is an Observable of Category or Collection array
    * @param str is what filtering we are applying

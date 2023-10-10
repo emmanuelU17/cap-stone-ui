@@ -5,7 +5,6 @@ import {Collection} from "../shop.helper";
 import {environment} from "../../../../environments/environment";
 import {Page} from "../../../global-utils";
 import {Product} from "../../store-front-utils";
-import {Router} from "@angular/router";
 
 @Injectable({
   providedIn: 'root'
@@ -14,39 +13,31 @@ export class CollectionService {
   HOST: string | undefined = environment.domain;
 
   private readonly http: HttpClient = inject(HttpClient);
-  private readonly router: Router = inject(Router);
 
-  private collections$ = new BehaviorSubject<Collection[]>([]);
-  _collections$ = this.collections$.asObservable();
+  private subject$ = new BehaviorSubject<Collection[]>([]);
+  cols$ = this.subject$.asObservable();
 
-  get collectionNotEmpty$(): Observable<boolean> {
-    return this._collections$.pipe(
-      map((arr) => arr.length > 0),
-      tap((bool) => {
-        if (!bool) {
-          this.router.navigate(['/shop/category']);
-        }
-      })
-    );
-  }
+  isEmpty$ = (): Observable<boolean> => this.cols$.pipe(map((arr: Collection[]) => arr.length > 0));
 
   get collections(): Collection[] {
-    return this.collections$.getValue();
+    return this.subject$.getValue();
   }
 
   /**
    * Returns all collections from server that are marked as visible
+   *
    * @return Observable of Category array
    * */
   fetchCollections(): Observable<Collection[]> {
     const url: string = `${this.HOST}api/v1/client/collection`;
     return this.http.get<Collection[]>(url, {
       withCredentials: true
-    }).pipe(tap((cols: Collection[]) => this.collections$.next(cols)));
+    }).pipe(tap((arr: Collection[]) => this.subject$.next(arr)));
   }
 
   /**
    * Fetches products based on collection id
+   *
    * @param id is the product id
    * @param page is the page number
    * @param size is the amount of items to be displayed on a page
@@ -62,7 +53,8 @@ export class CollectionService {
       withCredentials: true
     }).pipe(
       map((page: Page<Product>): Product[] =>
-        page.content === undefined || page.content === null ? [] : page.content)
+        page.content === undefined || page.content === null ? [] : page.content
+      )
     );
   }
 

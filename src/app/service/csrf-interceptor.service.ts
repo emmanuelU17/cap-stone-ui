@@ -8,7 +8,7 @@ import {Observable} from "rxjs";
 })
 export class CsrfInterceptor implements HttpInterceptor {
 
-  tokenExtractor: HttpXsrfTokenExtractor = inject(HttpXsrfTokenExtractor);
+  private readonly tokenExtractor: HttpXsrfTokenExtractor = inject(HttpXsrfTokenExtractor);
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const headerName: string = 'X-XSRF-TOKEN';

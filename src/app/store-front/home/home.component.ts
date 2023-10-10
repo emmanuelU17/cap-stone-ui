@@ -15,21 +15,23 @@ import {CardComponent} from "../utils/card/card.component";
 export class HomeComponent {
 
   private readonly homeService: HomeService = inject(HomeService);
+  private readonly render: Renderer2 = inject(Renderer2);
 
   // Get bg images from HomeService on load of home page
-  bgImages$: Observable<string[]> = this.homeService._bgImage$;
-  private render: Renderer2 = inject(Renderer2);
+  images: string[] = this.homeService.getImages;
+
   /**
    * Function achieves an infinite typing effect only difference is
    * this is done with images.
    * */
-  private imageArr: string[] = this.homeService.getImages;
-  image$: Observable<string> = of(this.imageArr).pipe(
-    switchMap((photos: string[]) => from(photos).pipe(
-      concatMap((photo: string) => of(photo).pipe(delay(5000))), repeat()
+  image$: Observable<string> = of(this.images).pipe(
+    switchMap((photos: string[]) => from(photos)
+      .pipe(
+        concatMap((photo: string) => of(photo).pipe(delay(5000))),
+        repeat()
       )
     ),
-    startWith(this.imageArr[0])
+    startWith(this.images[0])
   );
 
   /** Displays the next item in products. */

@@ -39,6 +39,8 @@ export interface Cart {
   currency: string;
   colour: string;
   qty: number;
+  size: string;
+  sku: string;
 }
 
 export const DUMMY_CART_DETAILS: Cart[] = [
@@ -48,7 +50,9 @@ export const DUMMY_CART_DETAILS: Cart[] = [
     price: 90.00,
     currency: 'USD',
     colour: 'salmon',
-    qty: 2
+    qty: 2,
+    size: '',
+    sku: ''
   },
   {
     url: 'https://tailwindui.com/img/ecommerce-images/shopping-cart-page-04-product-02.jpg',
@@ -56,6 +60,8 @@ export const DUMMY_CART_DETAILS: Cart[] = [
     price: 32.00,
     currency: 'USD',
     colour: 'blue',
-    qty: 10
+    qty: 10,
+    size: '',
+    sku: ''
   },
 ];

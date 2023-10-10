@@ -45,6 +45,7 @@ import {DeleteComponent} from "../delete/delete.component";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UpdateProductComponent implements OnInit {
+
   private readonly router: Router = inject(Router);
   private readonly activeRoute: ActivatedRoute = inject(ActivatedRoute);
   private readonly fb: FormBuilder = inject(FormBuilder);
@@ -73,7 +74,7 @@ export class UpdateProductComponent implements OnInit {
   }
 
   // Categories and Collections
-  categories$: Observable<CategoryResponse[]> = this.categoryService._categories$;
+  categories$: Observable<CategoryResponse[]> = this.categoryService.categories$;
   collections$: Observable<CollectionResponse[]> = this.collectionService._collections$;
 
   // Table
@@ -259,7 +260,7 @@ export class UpdateProductComponent implements OnInit {
       price: price,
       desc: desc,
       category: product.category,
-      collection: product.collection
+      collection: !product.collection ? '' : product.collection
     };
 
     // Make call to server

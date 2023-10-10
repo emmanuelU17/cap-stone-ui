@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {map, Observable, of} from "rxjs";
+import {BehaviorSubject, map, Observable} from "rxjs";
 import {CollectionResponse} from "../../shared-util";
 import {HttpClient, HttpResponse} from "@angular/common/http";
 import {environment} from "../../../../environments/environment";
@@ -10,7 +10,8 @@ import {environment} from "../../../../environments/environment";
 export class CollectionService {
   HOST: string | undefined;
 
-  _collections$: Observable<CollectionResponse[]> = of();
+  private subject = new BehaviorSubject<CollectionResponse[]>([]);
+  _collections$ = this.subject.asObservable();
   collections: CollectionResponse[] = [];
 
   constructor(private http: HttpClient) {
@@ -38,10 +39,12 @@ export class CollectionService {
       map((res: HttpResponse<CollectionResponse[]>) => {
         const body: CollectionResponse[] | null = res.body;
         if (!body) {
-          return [];
+          const arr: CollectionResponse[] = [];
+          return arr;
         }
+
         this.collections = body;
-        this._collections$ = of(body);
+        this.subject.next(body);
         return body;
       })
     );
