@@ -20,8 +20,11 @@ export class SizeInventoryComponent {
 
   @Output() eventEmitter = new EventEmitter<SizeInventory[]>();
 
-  constructor(private sizeInventoryService: SizeInventoryService, @Inject(DOCUMENT) private _document: Document) {
-    this.sizeInventoryService.clearQueue
+  constructor(
+    private readonly service: SizeInventoryService,
+    @Inject(DOCUMENT) private _document: Document
+  ) {
+    this.service.clearQueue
       .pipe(
         tap((bool: boolean): void => {
           if (bool) {
@@ -44,6 +47,7 @@ export class SizeInventoryComponent {
 
   /**
    * Validates if size and quantity pair are in the right format
+   *
    * @return boolean
    * */
   invalidInputImpl = (): boolean => {
@@ -92,6 +96,7 @@ export class SizeInventoryComponent {
 
   /**
    * Delete row from inputRow
+   *
    * @param index is the row to delete on the UI
    * @return void
    * */

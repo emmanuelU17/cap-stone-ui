@@ -55,7 +55,7 @@ export class NewProductComponent {
   files: File[] = []; // Images
   rows: SizeInventory[] = [];
 
-  categories$: Observable<CategoryResponse[]> = this.categoryService._categories$;
+  categories$: Observable<CategoryResponse[]> = this.categoryService.categories$;
   collections$: Observable<CollectionResponse[]> = this.collectionService._collections$;
 
   reactiveForm = this.fb.group({

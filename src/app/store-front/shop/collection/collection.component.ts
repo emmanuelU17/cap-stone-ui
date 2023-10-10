@@ -29,7 +29,7 @@ export class CollectionComponent {
   displayFilter: boolean = false; // Displays filter button
 
   // Fetch Collections
-  collections$ = this.collectionService._collections$.pipe(
+  collections$ = this.collectionService.cols$.pipe(
     map((arr: Collection[]) => {
       const collection: string[] = arr.map(m => m.collection);
       const filter: Filter<string>[] = [{isOpen: false, parent: 'collections', children: collection}];
@@ -37,7 +37,7 @@ export class CollectionComponent {
     })
   );
 
-  private readonly firstCollection$: Observable<Collection> = this.collectionService._collections$
+  private readonly firstCollection$: Observable<Collection> = this.collectionService.cols$
     .pipe(map((collections: Collection[]) => collections[0]), take(1));
 
   // On load of shop/collection, fetch products based on the first collection

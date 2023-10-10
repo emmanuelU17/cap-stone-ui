@@ -24,7 +24,7 @@ export class CategoryComponent {
   private readonly router: Router = inject(Router);
   private readonly dialog: MatDialog = inject(MatDialog);
 
-  data$: Observable<CategoryResponse[]> = this.categoryService._categories$;
+  data$: Observable<CategoryResponse[]> = this.categoryService.categories$;
   tHead: Array<keyof CategoryResponse> = ['category_id', 'category', 'created_at', 'modified_at', 'visible', 'action'];
 
   routeToNewCategory = (): void => {
@@ -45,11 +45,11 @@ export class CategoryComponent {
             switchMap((status: number) => {
               // Refresh Category and Product Array
               const products$ = this.productService.fetchAllProducts();
-              const collections$ = this.categoryService.fetchCategories();
+              const categories$ = this.categoryService.fetchCategories();
 
               return of(status).pipe(
                 switchMap((num: number) =>
-                  combineLatest([products$, collections$])
+                  combineLatest([products$, categories$])
                     .pipe(
                       map(() => ({ status: num, message: 'deleted!' }))
                     )

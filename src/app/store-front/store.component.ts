@@ -1,5 +1,4 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
-import {HomeService} from "./home/home.service";
 import {CategoryService} from "./shop/category/category.service";
 import {CollectionService} from "./shop/collection/collection.service";
 import {catchError, combineLatest, map, Observable, of, startWith} from "rxjs";
@@ -18,11 +17,9 @@ import {RouterOutlet} from "@angular/router";
 })
 export class StoreComponent {
 
-  private readonly homeService: HomeService = inject(HomeService);
   private readonly categoryService: CategoryService = inject(CategoryService);
   private readonly collectionService: CollectionService = inject(CollectionService);
 
-  private bgImages$: Observable<string[]> = this.homeService.fetchHomeBackground();
   private categories$: Observable<Category[]> = this.categoryService.fetchCategories();
   private collections$: Observable<Collection[]> = this.collectionService.fetchCollections();
 
@@ -30,10 +27,9 @@ export class StoreComponent {
   combine$: Observable<{
     state: string,
     error?: string,
-    bgImages?: string[],
     categories?: Category[],
     collections?: Collection[]
-  }> = combineLatest([this.bgImages$, this.categories$, this.collections$])
+  }> = combineLatest([this.categories$, this.collections$])
     .pipe(
       map((): { state: string } => ({ state: 'LOADED' })),
       startWith({ state: 'LOADING' }),
