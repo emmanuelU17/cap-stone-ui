@@ -53,12 +53,7 @@ export const ADMIN_DASHBOARD_ROUTES: Routes = [
   {
     path: 'customer',
     loadComponent: () => import('./customer/customer.component').then(m => m.CustomerComponent),
-    children: [
-      {
-        path: 'register',
-        loadComponent: () => import('./register/register.component').then(m => m.RegisterComponent),
-      },
-    ]
+    loadChildren: () => import('./customer/customer.routes').then(m => m.CUSTOMER_ROUTES)
   },
 
   // Path matcher

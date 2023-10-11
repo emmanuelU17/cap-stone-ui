@@ -2,7 +2,7 @@ import {inject, Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpResponse} from "@angular/common/http";
 import {environment} from "../../../environments/environment";
 import {catchError, map, Observable, of} from "rxjs";
-import {LoginDTO, RegisterDTO} from "./util";
+import {LoginDTO} from "./util";
 import {AuthResponse} from "../../global-utils";
 import {Router} from "@angular/router";
 import {ToastService} from "../../service/toast/toast.service";
@@ -17,20 +17,6 @@ export class AdminAuthService {
   private readonly toastService: ToastService = inject(ToastService);
   private readonly http: HttpClient = inject(HttpClient);
   private readonly router: Router = inject(Router);
-
-  /**
-   * Registers a new Admin
-   *
-   * @param obj
-   * @return Observable of status
-   * */
-  register(obj: RegisterDTO): Observable<number> {
-    const url: string = `${this.HOST}api/v1/worker/auth/register`;
-    return this.http.post<HttpResponse<RegisterDTO>>(url, obj, {
-      headers: {'content-type': 'application/json'},
-      withCredentials: true
-    }).pipe(map((res: HttpResponse<RegisterDTO>) => res.status));
-  }
 
   /**
    * Logs in an Admin

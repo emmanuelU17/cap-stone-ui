@@ -9,6 +9,4 @@ import {RouterLink, RouterOutlet} from "@angular/router";
   templateUrl: './customer.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CustomerComponent {
-
-}
+export class CustomerComponent {}

@@ -20,6 +20,13 @@ export interface Variant {
   size: string;
 }
 
+export interface SarreUser {
+  firstname: string;
+  lastname: string;
+  email: string;
+  phone: string;
+}
+
 export interface Page<T> {
   content: T[],
   pageable: {
