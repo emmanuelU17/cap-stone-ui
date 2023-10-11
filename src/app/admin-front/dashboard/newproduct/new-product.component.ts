@@ -58,13 +58,13 @@ export class NewProductComponent {
   categories$: Observable<CategoryResponse[]> = this.categoryService.categories$;
   collections$: Observable<CollectionResponse[]> = this.collectionService._collections$;
 
-  reactiveForm = this.fb.group({
+  form = this.fb.group({
     category: new FormControl('', [Validators.required]),
     collection: new FormControl(''),
     name: new FormControl('', [Validators.required, Validators.max(50)]),
     price: new FormControl('', Validators.required),
     desc: new FormControl('', [Validators.required, Validators.max(400)]),
-    currency: new FormControl("USD"),
+    currency: new FormControl('NGN'),
     visible: new FormControl(false, Validators.required),
     colour: new FormControl('', Validators.required),
   });
@@ -89,8 +89,18 @@ export class NewProductComponent {
 
   /** Clears reactiveForm */
   clear(): void {
+    Object.keys(this.form.controls).forEach(key => {
+      let value: string | boolean = '';
+      if (key === 'currency') {
+        value = 'NGN';
+      } else if (key === 'visible') {
+        value = false;
+      }
+      this.form.get(key)?.reset(value);
+    });
     this.files = [];
-    this.reactiveForm.reset();
+    this.sizeInventoryService.setSubject(true);
+
   }
 
   /**
@@ -118,14 +128,14 @@ export class NewProductComponent {
     const formData: FormData = new FormData();
 
     const dto = {
-      category: this.reactiveForm.controls['category'].value,
-      collection: this.reactiveForm.controls['collection'].value,
-      name: this.reactiveForm.controls['name'].value,
-      price: this.reactiveForm.controls['price'].value,
-      desc: this.reactiveForm.controls['desc'].value,
-      currency: this.reactiveForm.controls['currency'].value,
-      visible: this.reactiveForm.controls['visible'].value,
-      colour: this.reactiveForm.controls['colour'].value,
+      category: this.form.controls['category'].value,
+      collection: this.form.controls['collection'].value,
+      name: this.form.controls['name'].value,
+      price: this.form.controls['price'].value,
+      desc: this.form.controls['desc'].value,
+      currency: this.form.controls['currency'].value,
+      visible: this.form.controls['visible'].value,
+      colour: this.form.controls['colour'].value,
       sizeInventory: this.rows,
     }
 
@@ -146,8 +156,6 @@ export class NewProductComponent {
       switchMap((status: number) => {
         this.sizeInventoryService.setSubject(true);
         this.clear();
-        this.reactiveForm.controls['collection'].setValue('');
-        this.reactiveForm.controls['category'].setValue('');
 
         return this.productService
           .fetchAllProducts()

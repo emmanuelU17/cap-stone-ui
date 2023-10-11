@@ -10,9 +10,14 @@ export class CartIconService {
   private openCartSubject = new BehaviorSubject<boolean>(false);
   onOpenCartComponent$ = this.openCartSubject.asObservable();
 
-  items = (): CartExpiry | undefined => {
+  private cartExpiry = (): CartExpiry | undefined => {
     const item = localStorage.getItem(SHOP_CONSTANT.CART);
     return item ? JSON.parse(item) as CartExpiry : undefined;
+  };
+
+  items = (): Cart[] => {
+    const e = this.cartExpiry();
+    return !e ? [] : e.cart;
   };
 
   private cartSubject = new ReplaySubject<Cart[]>();
@@ -22,9 +27,9 @@ export class CartIconService {
   count$ = this.cartCountSubject.asObservable();
 
   constructor() {
-    const exp = this.items();
+    const exp = this.cartExpiry();
 
-    if (!exp) {
+    if (!exp || !exp.cart) {
       return;
     }
 
@@ -33,7 +38,7 @@ export class CartIconService {
   }
 
   clearCart(): void {
-    const exp = this.items();
+    const exp = this.cartExpiry();
 
     if (!exp) {
       return;
@@ -46,7 +51,7 @@ export class CartIconService {
   }
 
   removeItem(sku: string): void {
-    const expiry: CartExpiry | undefined = this.items();
+    const expiry: CartExpiry | undefined = this.cartExpiry();
 
     if (!expiry) {
       return;
@@ -72,7 +77,7 @@ export class CartIconService {
   }
 
   set addToCart(item: Cart) {
-    const cartE: CartExpiry | undefined = this.items();
+    const cartE: CartExpiry | undefined = this.cartExpiry();
     const date: number = Date.now();
 
     // Cart is empty

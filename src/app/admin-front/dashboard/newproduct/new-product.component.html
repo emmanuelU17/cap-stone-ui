@@ -1,4 +1,4 @@
-<form class="h-full flex flex-col px-0" [formGroup]="reactiveForm">
+<form class="h-full flex flex-col px-0" [formGroup]="form">
   <!-- Title-container -->
   <div class="flex py-2.5 px-0 mb-4">
     <button type="button"
@@ -163,8 +163,8 @@
     <button
       class="text-white font-bold py-2 px-4 rounded bg-[var(--app-theme)]"
       type="submit"
-      [disabled]="!reactiveForm.valid || files.length === 0 || rows.length === 0"
-      [style]="{ 'background-color': reactiveForm.valid && files.length > 0 && rows.length > 0 ? 'var(--app-theme-hover)' : 'var(--app-theme)' }"
+      [disabled]="!form.valid || files.length === 0 || rows.length === 0"
+      [style]="{ 'background-color': form.valid && files.length > 0 && rows.length > 0 ? 'var(--app-theme-hover)' : 'var(--app-theme)' }"
       [asyncButton]="submit()"
     >create
     </button>

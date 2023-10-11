@@ -24,7 +24,7 @@ export class SizeInventoryComponent {
     private readonly service: SizeInventoryService,
     @Inject(DOCUMENT) private _document: Document
   ) {
-    this.service.clearQueue
+    this.service.clearQueue$
       .pipe(
         tap((bool: boolean): void => {
           if (bool) {
