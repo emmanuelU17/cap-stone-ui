@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject} from "rxjs";
-import {Cart, SHOP_CONSTANT} from "../../shop/shop.helper";
+import {BehaviorSubject, ReplaySubject} from "rxjs";
+import {Cart, CartExpiry, SHOP_CONSTANT} from "../../shop/shop.helper";
 
 @Injectable({
   providedIn: 'root'
@@ -10,31 +10,60 @@ export class CartIconService {
   private openCartSubject = new BehaviorSubject<boolean>(false);
   onOpenCartComponent$ = this.openCartSubject.asObservable();
 
-  items = (): Cart[] => {
+  items = (): CartExpiry | undefined => {
     const item = localStorage.getItem(SHOP_CONSTANT.CART);
-    return item ? JSON.parse(item) as Cart[] : [];
+    return item ? JSON.parse(item) as CartExpiry : undefined;
   };
 
-  private cartSubject = new BehaviorSubject<Cart[]>(this.items());
+  private cartSubject = new ReplaySubject<Cart[]>();
   carts$ = this.cartSubject.asObservable();
 
-  private cartCountSubject = new BehaviorSubject<number>(this.items().length);
+  private cartCountSubject = new BehaviorSubject<number>(0);
   count$ = this.cartCountSubject.asObservable();
 
+  constructor() {
+    const exp = this.items();
+
+    if (!exp) {
+      return;
+    }
+
+    this.cartSubject.next(exp.cart);
+    this.cartCountSubject.next(exp.cart.length);
+  }
+
+  clearCart(): void {
+    const exp = this.items();
+
+    if (!exp) {
+      return;
+    }
+
+    if (new Date().getDate() > exp.expire) {
+      localStorage.removeItem(SHOP_CONSTANT.CART);
+    }
+
+  }
+
   removeItem(sku: string): void {
-    const carts: Cart[] = this.items();
-    const index = carts.findIndex(c => c.sku === sku);
+    const expiry: CartExpiry | undefined = this.items();
+
+    if (!expiry) {
+      return;
+    }
+    const cart = expiry.cart;
+    const index = cart.findIndex(c => c.sku === sku);
 
     if (index < 0) {
       return;
     }
 
-    carts[index] = carts[carts.length - 1];
-    carts.pop();
+    cart[index] = cart[cart.length - 1];
+    cart.pop();
 
-    this.cartCountSubject.next(carts.length);
-    this.cartSubject.next(carts);
-    localStorage.setItem(SHOP_CONSTANT.CART, JSON.stringify(carts))
+    this.cartCountSubject.next(cart.length);
+    this.cartSubject.next(cart);
+    localStorage.setItem(SHOP_CONSTANT.CART, JSON.stringify(expiry))
   }
 
   /** Close cart component */
@@ -43,18 +72,40 @@ export class CartIconService {
   }
 
   set addToCart(item: Cart) {
-    const carts: Cart[] = this.items();
-    const cart = carts.find(c => c.sku === item.sku);
+    const cartE: CartExpiry | undefined = this.items();
+    const date: number = Date.now();
 
-    if (cart) {
-      cart.qty = item.qty;
-    } else {
-      carts.push(item);
+    // Cart is empty
+    if (!cartE) {
+      const cart: Cart[] = [];
+      cart.push(item);
+
+      const expiry: CartExpiry = {
+        created: date,
+        expire: new Date(date).setHours(24),
+        cart: cart
+      }
+      localStorage.setItem(SHOP_CONSTANT.CART, JSON.stringify(expiry));
+      return;
     }
 
-    this.cartCountSubject.next(carts.length);
-    this.cartSubject.next(carts);
-    localStorage.setItem(SHOP_CONSTANT.CART, JSON.stringify(carts))
+    // update expiry time by 12 hrs
+    cartE.expire = new Date(date).setHours(12);
+
+    // Cart is not empty
+    const cart: Cart[] = cartE.cart;
+    const find = cart.find(c => c.sku === item.sku);
+
+    // If item is found, increment replace the quantity
+    if (find) {
+      find.qty = item.qty;
+    } else {
+      cart.push(item);
+    }
+
+    this.cartCountSubject.next(cart.length);
+    this.cartSubject.next(cart);
+    localStorage.setItem(SHOP_CONSTANT.CART, JSON.stringify(cartE))
   }
 
 }

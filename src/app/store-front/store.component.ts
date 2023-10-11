@@ -7,6 +7,7 @@ import {Category, Collection} from "./shop/shop.helper";
 import {CommonModule} from "@angular/common";
 import {StoreFrontNavigationComponent} from "./utils/navigation/store-front-navigation.component";
 import {RouterOutlet} from "@angular/router";
+import {CartIconService} from "./utils/carticon/cart-icon.service";
 
 @Component({
   selector: 'app-store',
@@ -35,5 +36,9 @@ export class StoreComponent {
       startWith({ state: 'LOADING' }),
       catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error.message }))
     );
+
+  constructor(private readonly cartService: CartIconService) {
+    this.cartService.clearCart();
+  }
 
 }

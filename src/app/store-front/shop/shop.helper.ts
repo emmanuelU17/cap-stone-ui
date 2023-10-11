@@ -32,6 +32,12 @@ export enum SHOP_CONSTANT {
   CART = 'CART'
 }
 
+export interface CartExpiry {
+  created: number;
+  expire: number;
+  cart: Cart[];
+}
+
 export interface Cart {
   url: string;
   name: string;
