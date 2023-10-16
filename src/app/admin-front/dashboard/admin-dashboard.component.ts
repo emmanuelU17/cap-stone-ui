@@ -30,7 +30,97 @@ import {RouterLink, RouterLinkActive, RouterOutlet} from "@angular/router";
     RouterLink,
     RouterOutlet
   ],
-  templateUrl: './admin-dashboard.component.html',
+  template: `
+    <ng-container *ngIf="combine$ | async as combine" [ngSwitch]="combine.state">
+
+      <ng-container *ngSwitchCase="'LOADING'">
+        <div class="lg-scr h-full p-20 flex justify-center items-center">
+          <h1 class="capitalize text-[var(--app-theme-hover)]">
+            loading...
+          </h1>
+        </div>
+      </ng-container>
+      <ng-container *ngSwitchCase="'ERROR'">
+        <div class="lg-scr p-10 capitalize text-3xl text-red-500">
+          Error {{ combine.error }}
+        </div>
+      </ng-container>
+      <ng-container *ngSwitchCase="'LOADED'">
+        <div class="lg-scr h-full flex flex-col overflow-x-hidden lg:m-auto">
+          <!-- Navigation -->
+          <div>
+            <app-navigation></app-navigation>
+          </div>
+
+          <!--  Main body  -->
+          <div class="flex flex-1">
+            <!--  Left Column  -->
+            <div
+              [style]="{ 'display': leftColumn ? 'block' : 'none' }"
+              class="l-col hidden py-3.5 border-r-2 border-solid border-[var(--active)]"
+            >
+              <div class="w-52 py-0 px-2.5 max-[768px]:w-[calc(200px + 1vw)]" *ngFor="let link of dashBoardLinks">
+                <div class="uppercase">
+                  <h3 class="cx-font-size w-fit capitalize border-b border-[var(--app-theme)]">{{ link.title }}</h3>
+                </div>
+                <!--    End of title    -->
+                <div class="py-2.5 px-0">
+                  <ul class="list-none" *ngFor="let a of link.array; let i = index">
+                    <li
+                      (click)="leftColumn = !leftColumn"
+                      class="my-1.5 rounded-md"
+                      routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }"
+                    >
+                      <a
+                        [routerLink]="a.route"
+                        class="w-full h-full flex p-2.5 gap-1.5 capitalize cursor-pointer rounded-md"
+                      >
+                        <span><mat-icon>{{ a.icon }}</mat-icon></span>
+                        <span class="flex h-full items-center">{{ a.name }}</span>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+                <!--    End of action container    -->
+              </div>
+              <!--    End of content    -->
+
+              <div class="hidden max-[768px]:block">
+                <ul class="list-none">
+                  <li class="link flex p-2.5 capitalize cursor-pointer">
+                    <app-auth-menu [principal]="combine.principal || ''"></app-auth-menu>
+                  </li>
+                </ul>
+              </div>
+              <!--  End of Auth Icon  -->
+            </div>
+
+            <!--  Right Column  -->
+            <div class="p-2.5 flex flex-col flex-1 overflow-x-auto">
+              <div class="flex-1">
+                <router-outlet></router-outlet>
+              </div>
+
+              <!-- Button to display Left column -->
+              <div class="sticky rounded-full w-fit bottom-2/4 bg-[var(--app-theme)] opacity-50 hover:opacity-100">
+                <button class="p-3 bg-[var(--in-active)]" (click)="leftColumn = !leftColumn">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!--  Footer  -->
+          <div class="p-3.5 items-end border-t-2 border-solid border-[var(--active)]">
+            <app-footer></app-footer>
+          </div>
+        </div>
+      </ng-container>
+
+    </ng-container>
+  `,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AdminDashboardComponent {

@@ -6,7 +6,7 @@ import {RouterLink, RouterOutlet} from "@angular/router";
   selector: 'app-customer',
   standalone: true,
   imports: [CommonModule, RouterOutlet, RouterLink],
-  templateUrl: './customer.component.html',
+  template: `<router-outlet></router-outlet>`,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CustomerComponent {}

@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../environments/environment";
 import {Observable} from "rxjs";
@@ -8,11 +8,9 @@ import {CSRF} from "../global-utils";
   providedIn: 'root'
 })
 export class AppService {
-  HOST: string | undefined;
 
-  constructor(private http: HttpClient) {
-    this.HOST = environment.domain;
-  }
+  private readonly HOST: string | undefined = environment.domain;
+  private readonly http: HttpClient = inject(HttpClient);
 
   /** Retrieve CSRF token on load of application */
   csrf(): Observable<CSRF> {

@@ -6,7 +6,7 @@ import {MAT_SNACK_BAR_DATA, MatSnackBarModule} from "@angular/material/snack-bar
   selector: 'app-toast',
   standalone: true,
   imports: [CommonModule, MatSnackBarModule],
-  templateUrl: './toast.component.html',
+  template: `<p>{{ message }}</p>`,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ToastComponent {

@@ -15,7 +15,14 @@ import {CartIconService} from "../../utils/carticon/cart-icon.service";
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './product.component.html',
-  styleUrls: ['./product.component.css'],
+  styles: [
+    `
+        .show {
+            overflow: visible;
+            height: auto;
+        }
+    `
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductComponent {

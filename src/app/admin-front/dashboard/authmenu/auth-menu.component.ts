@@ -10,7 +10,19 @@ import {DirectiveModule} from "../../../directive/directive.module";
   selector: 'app-auth-menu',
   standalone: true,
   imports: [CommonModule, MatMenuModule, DirectiveModule],
-  templateUrl: './auth-menu.component.html',
+  template: `
+    <button
+      type="button"
+      class="h-8 w-8 rounded-full cursor-pointer border-none outline-none m-auto bg-[var(--app-theme)]"
+      [matMenuTriggerFor]="menu">
+      <span class="text-center capitalize m-0">{{ principal.substring(0, 1) }}</span>
+    </button>
+
+    <mat-menu #menu="matMenu">
+      <h1 mat-menu-item>Hello <span>{{ principal }}!</span></h1>
+      <button mat-menu-item type="button" [asyncButton]="logout()">logout</button>
+    </mat-menu>
+  `,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AuthMenuComponent {

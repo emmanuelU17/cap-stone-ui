@@ -12,8 +12,7 @@ import {ToastService} from "../../service/toast/toast.service";
 })
 export class AdminAuthService {
 
-  HOST: string | undefined = environment.domain;
-
+  private readonly HOST: string | undefined = environment.domain;
   private readonly toastService: ToastService = inject(ToastService);
   private readonly http: HttpClient = inject(HttpClient);
   private readonly router: Router = inject(Router);
@@ -25,7 +24,8 @@ export class AdminAuthService {
    * @return Observable of http status
    * */
   login(obj: LoginDTO): Observable<number> {
-    return this.http.post<AuthResponse>(this.HOST + 'api/v1/worker/auth/login', obj, {
+    const url = `${this.HOST}api/v1/worker/auth/login`;
+    return this.http.post<AuthResponse>(url, obj, {
       headers: {'content-type': 'application/json'},
       observe: 'response',
       responseType: 'json',

@@ -10,8 +10,78 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 @Component({
   selector: 'app-size-inventory',
   standalone: true,
+  template: `
+    <div class="flex gap-1.5 mb-2 justify-between">
+      <h4 class="cx-font-size capitalize"><span class="text-red-500">*</span>size & stock</h4>
+      <button type="button" [disabled]="invalidInputImpl()" (click)="addInputRow()">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="w-6 h-6 text-[var(--app-theme)]"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="mb-1.5" *ngFor="let row of queue.toArray(); let i = index">
+      <div class="dom block">
+        <!-- Error message -->
+        <p
+          class="m-0 hidden"
+          [ngStyle]="{
+        'display': invalidInputImpl() && i === indexOfError ? 'block' : 'none',
+        'color': 'red',
+        'font-size': '10px'
+      }"
+        >Please enter correctly</p>
+
+        <div class="w-full flex gap-1.5">
+          <!-- Size -->
+          <input
+            type="text"
+            class="p-2.5 w-full flex-1 inline rounded-sm border border-solid border-[var(--border-outline)]"
+            placeholder="size"
+            [value]="row.size"
+            (keyup)="onKeySize($event, i)"
+          >
+
+          <!-- Size -->
+          <input
+            type="number"
+            class="p-2.5 w-full flex-1 inline rounded-sm border border-solid border-[var(--border-outline)]"
+            placeholder="quantity"
+            [value]="row.qty"
+            (keyup)="onKeyQty($event, i)"
+          >
+
+          <!-- Delete row -->
+          <button type="button" (click)="deleteRow(i)">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                 class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Preview and final state -->
+    <div class="pt-2.5 flex justify-end" *ngIf="queue.toArray().length > 0">
+      <button
+        class="capitalize text-white font-bold py-2 px-4 rounded"
+        type="button"
+        [disabled]="invalidInputImpl()"
+        [style]="{ 'background-color': invalidInputImpl() ? 'var(--app-theme)' : 'var(--app-theme-hover)' }"
+        (click)="informParent()"
+      >save</button>
+    </div>
+
+  `,
   imports: [CommonModule, MatButtonModule],
-  templateUrl: './size-inventory.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SizeInventoryComponent {

@@ -5,9 +5,11 @@ import {CommonModule} from '@angular/common';
   selector: 'app-footer',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './footer.component.html',
+  template: `
+      <div class="p-3 flex">
+        <p class="p-2 bg-red-500">footer works!</p>
+      </div>
+  `,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FooterComponent {
-
-}
+export class FooterComponent { }

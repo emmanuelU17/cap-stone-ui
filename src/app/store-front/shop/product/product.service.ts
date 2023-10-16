@@ -1,8 +1,7 @@
-import {inject, Injectable, NgZone} from '@angular/core';
-import {map, Observable, Subscriber} from "rxjs";
-import {ProductDetail, SHOP_CONSTANT} from "../shop.helper";
+import {inject, Injectable} from '@angular/core';
+import {Observable} from "rxjs";
+import {ProductDetail} from "../shop.helper";
 import {environment} from "../../../../environments/environment";
-import {Product} from "../../store-front-utils";
 import {HttpClient} from "@angular/common/http";
 
 @Injectable({

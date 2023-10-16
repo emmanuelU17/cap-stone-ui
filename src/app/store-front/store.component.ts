@@ -15,8 +15,39 @@ import {FooterComponent} from "./utils/footer/footer.component";
 @Component({
   selector: 'app-store',
   standalone: true,
+  template: `
+    <ng-container *ngIf="combine$ | async as combine" [ngSwitch]="combine.state">
+
+      <ng-container *ngSwitchCase="'LOADING'">
+        <div class="lg-scr h-full p-20 flex justify-center items-center">
+          <h1 class="capitalize text-[var(--app-theme-hover)]">
+            loading...
+          </h1>
+        </div>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'ERROR'">
+        <div class="lg-scr p-10 capitalize text-3xl text-red-500">
+          Error {{ combine.error }}
+        </div>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'LOADED'">
+        <div>
+          <div class="lg-scr z-10 border-b border-transparent fixed left-0 top-0 right-0">
+            <app-store-front-navigation-navigation></app-store-front-navigation-navigation>
+          </div>
+        </div>
+
+        <router-outlet></router-outlet>
+
+        <div class="lg-scr mg-top w-full">
+          <app-footer></app-footer>
+        </div>
+      </ng-container>
+    </ng-container>
+  `,
   imports: [CommonModule, StoreFrontNavigationComponent, RouterOutlet, FooterComponent],
-  templateUrl: './store.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class StoreComponent {
