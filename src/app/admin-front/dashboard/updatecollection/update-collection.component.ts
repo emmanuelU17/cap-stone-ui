@@ -33,6 +33,7 @@ import {ToastService} from "../../../service/toast/toast.service";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UpdateCollectionComponent implements OnInit {
+
   private readonly updateCollectionService: UpdateCollectionService = inject(UpdateCollectionService);
   private readonly collectionService: CollectionService = inject(CollectionService);
   private readonly productService: ProductService = inject(ProductService);
@@ -53,12 +54,16 @@ export class UpdateCollectionComponent implements OnInit {
     state: string,
     error?: string,
     data?: Page<ProductResponse>
-  }> = this.updateCollectionService.allProductsByCollection(this.uuid)
-    .pipe(
-      map((arr: Page<ProductResponse>) => ({state: 'LOADED', data: arr})),
-      startWith({state: 'LOADING'}),
-      catchError((err: HttpErrorResponse) => of({state: 'ERROR', error: err.error.message}))
-    );
+  }> = this.productService.currency$.pipe(
+    switchMap((currency) => this.updateCollectionService
+      .allProductsByCollection(this.uuid, 0, 20, currency)
+      .pipe(
+        map((arr: Page<ProductResponse>) => ({state: 'LOADED', data: arr})),
+        startWith({state: 'LOADING'}),
+        catchError((err: HttpErrorResponse) => of({state: 'ERROR', error: err.error.message}))
+      )
+    )
+  );
 
   reactiveForm = this.fb.group({
     name: new FormControl('', [Validators.required, Validators.max(50)]),
@@ -108,7 +113,10 @@ export class UpdateCollectionComponent implements OnInit {
           const res = of(status);
 
           // Update ProductResponse and CollectionResponse array
-          const product$ = this.productService.fetchAllProducts();
+          const product$ = this.productService.currency$
+            .pipe(switchMap((currency) =>
+              this.productService.fetchAllProducts(0, 20, currency))
+            );
           const collections$ = this.collectionService.fetchCollections();
 
           // combineLatest as we need both responses

@@ -17,6 +17,7 @@ import {HttpErrorResponse} from "@angular/common/http";
 import {ToastService} from "../../../service/toast/toast.service";
 import {SizeInventoryService} from "../sizeinventory/size-inventory.service";
 import {Router} from "@angular/router";
+import {SarreCurrency} from "../../../global-utils";
 
 @Component({
   selector: 'app-new-product',
@@ -62,9 +63,9 @@ export class NewProductComponent {
     category: new FormControl('', [Validators.required]),
     collection: new FormControl(''),
     name: new FormControl('', [Validators.required, Validators.max(50)]),
-    price: new FormControl('', Validators.required),
+    ngn: new FormControl('', Validators.required),
+    usd: new FormControl('', Validators.required),
     desc: new FormControl('', [Validators.required, Validators.max(400)]),
-    currency: new FormControl('NGN'),
     visible: new FormControl(false, Validators.required),
     colour: new FormControl('', Validators.required),
   });
@@ -91,9 +92,7 @@ export class NewProductComponent {
   clear(): void {
     Object.keys(this.form.controls).forEach(key => {
       let value: string | boolean = '';
-      if (key === 'currency') {
-        value = 'NGN';
-      } else if (key === 'visible') {
+      if (key === 'visible') {
         value = false;
       }
       this.form.get(key)?.reset(value);
@@ -131,9 +130,11 @@ export class NewProductComponent {
       category: this.form.controls['category'].value,
       collection: this.form.controls['collection'].value,
       name: this.form.controls['name'].value,
-      price: this.form.controls['price'].value,
+      priceCurrency: [
+        { currency: SarreCurrency.NGN, price: this.form.controls['ngn'].value },
+        { currency: SarreCurrency.USD , price: this.form.controls['usd'].value }
+      ],
       desc: this.form.controls['desc'].value,
-      currency: this.form.controls['currency'].value,
       visible: this.form.controls['visible'].value,
       colour: this.form.controls['colour'].value,
       sizeInventory: this.rows,
@@ -157,9 +158,13 @@ export class NewProductComponent {
         this.sizeInventoryService.setSubject(true);
         this.clear();
 
-        return this.productService
-          .fetchAllProducts()
-          .pipe(switchMap(() => of(status)));
+        return this.productService.currency$
+          .pipe(
+            switchMap((currency) => this.productService
+              .fetchAllProducts(0, 20, currency)
+              .pipe(switchMap(() => of(status)))
+            )
+          );
       }),
       catchError((err: HttpErrorResponse) => {
         this.toastService.toastMessage(err.error.message);

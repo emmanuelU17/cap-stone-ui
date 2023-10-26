@@ -81,7 +81,7 @@ import {Page} from "../../../global-utils";
           [pageSize]="pageData.size"
           [pageIndex]="pageData.number"
           (page)="changePage($event)"
-          [pageSizeOptions]="[15, 25, 30]"
+          [pageSizeOptions]="[15, 20]"
           showFirstLastButtons
           aria-label="Select page">
         </mat-paginator>
@@ -235,6 +235,7 @@ export class DynamicTableComponent<T> {
 
   /**
    * Informs Parent component. Note the table clicked on is the table that does not require pagination
+   *
    * @param data represents the row details
    * @param key can either be detail, edit or delete
    * @return void

@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ProductResponse, TableContent} from "../../shared-util";
-import {Page} from "../../../global-utils";
+import {Page, SarreCurrency} from "../../../global-utils";
 import {catchError, combineLatest, map, Observable, of, startWith, switchMap} from "rxjs";
 import {ProductService} from "./product.service";
 import {DynamicTableComponent} from "../dynamictable/dynamic-table.component";
@@ -65,11 +65,11 @@ import {CategoryService} from "../category/category.service";
 })
 export class ProductComponent {
 
-  private productService: ProductService = inject(ProductService);
-  private categoryService: CategoryService = inject(CategoryService);
-  private collectionService: CollectionService = inject(CollectionService);
-  private router: Router = inject(Router);
-  private dialog: MatDialog = inject(MatDialog);
+  private readonly productService: ProductService = inject(ProductService);
+  private readonly categoryService: CategoryService = inject(CategoryService);
+  private readonly collectionService: CollectionService = inject(CollectionService);
+  private readonly router: Router = inject(Router);
+  private readonly dialog: MatDialog = inject(MatDialog);
 
   // Table details
   thead: Array<keyof ProductResponse> = ['product_id', 'image', 'name', 'desc', 'currency', 'price', 'action'];
@@ -77,10 +77,12 @@ export class ProductComponent {
     state: string,
     error?: string,
     data?: Page<ProductResponse>
-  }> = this.productService._products$.pipe(
-    map((res: Page<ProductResponse>) => ({ state: 'LOADED', data: res })),
-    startWith({ state: 'LOADING' }),
-    catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error.message }))
+  }> = this.productService.currency$.pipe(
+    switchMap(() => this.productService.products$.pipe(
+      map((res: Page<ProductResponse>) => ({ state: 'LOADED', data: res })),
+      startWith({ state: 'LOADING' }),
+      catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error.message }))
+    ))
   );
 
   routeToNewProduct = (): void => {
@@ -105,7 +107,10 @@ export class ProductComponent {
           .pipe(
             switchMap((status: number) => {
               // Refresh Product, Category and Collection array
-              const products$ = this.productService.fetchAllProducts();
+              const products$ = this.productService.currency$
+                .pipe(switchMap((currency) =>
+                  this.productService.fetchAllProducts(0, 20, currency))
+                );
               const categories$ = this.categoryService.fetchCategories();
               const collections$ = this.collectionService.fetchCollections();
 

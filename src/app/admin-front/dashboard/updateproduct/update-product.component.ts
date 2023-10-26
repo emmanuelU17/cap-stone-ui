@@ -154,20 +154,17 @@ export class UpdateProductComponent implements OnInit {
     });
   }
 
-  private afterComponentClose<T extends { arr: ProductDetailResponse[] }>(obs: Observable<T>): void {
-    obs
-      .pipe(
-        tap((arr: { arr: ProductDetailResponse[] }): void => {
-          if (!arr || !(arr.arr && arr.arr.length > 0)) {
-            return;
-          }
-
-          const mapper = this.toCustomRowMapperArray(arr.arr);
-          this.productVariants$ = of({state: 'LOADED', data: mapper});
-        }),
-        takeUntilDestroyed(this.destroyRef)
-      )
-      .subscribe();
+  private afterComponentClose<T extends { arr: ProductDetailResponse[] }>(obj: Observable<T>): void {
+    obj.pipe(
+      tap((arr: { arr: ProductDetailResponse[] }): void => {
+        if (!arr || !(arr.arr && arr.arr.length > 0)) {
+          return;
+        }
+        const mapper = this.toCustomRowMapperArray(arr.arr);
+        this.productVariants$ = of({state: 'LOADED', data: mapper});
+      }),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe();
   }
 
   /**
@@ -247,24 +244,28 @@ export class UpdateProductComponent implements OnInit {
 
     // Validation
     if (!name || !price || !desc || !product || !cat) {
-      // TODO display error via toast
       return of();
     }
 
-    // Create payload
-    const json: UpdateProduct = {
-      category_id: cat,
-      collection_id: col,
-      product_id: this.uuid,
-      name: name,
-      price: price,
-      desc: desc,
-      category: product.category,
-      collection: !product.collection ? '' : product.collection
-    };
-
     // Make call to server
-    return this.updateProduct(json);
+    return this.productService.currency$.pipe(
+      switchMap((currency) => {
+        // Create payload
+        const payload: UpdateProduct = {
+          category_id: cat,
+          collection_id: col,
+          product_id: this.uuid,
+          name: name,
+          currency: currency,
+          price: price,
+          desc: desc,
+          category: product.category,
+          collection: !product.collection ? '' : product.collection
+        };
+
+        return this.updateProduct(payload);
+      })
+    );
   }
 
   /** Makes a call to our server to update a Product */
@@ -273,7 +274,10 @@ export class UpdateProductComponent implements OnInit {
       switchMap((status: number) => {
         const res = of(status);
 
-        const products$ = this.productService.fetchAllProducts();
+        const products$ = this.productService.currency$
+          .pipe(switchMap((currency) =>
+            this.productService.fetchAllProducts(0, 20, currency))
+          );
         const categories$ = this.categoryService.fetchCategories();
         const collections$ = this.collectionService.fetchCollections();
         const combine$ = combineLatest([products$, categories$, collections$])

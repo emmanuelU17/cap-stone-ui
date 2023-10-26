@@ -32,16 +32,28 @@
             />
           </div>
 
-          <!-- Price -->
+          <!-- NGN Price -->
           <div class="mb-2">
-            <h4 class="cx-font-size capitalize"><span class="text-red-500">*</span>price</h4>
+            <h4 class="cx-font-size capitalize"><span class="text-red-500">*</span> NGN price</h4>
             <input
-              placeholder="USD"
-              formControlName="price"
+              placeholder="NGN"
+              formControlName="ngn"
               type="number"
               class="p-2.5 flex-1 w-full rounded-sm border border-solid border-[var(--border-outline)]"
             />
           </div>
+
+          <!-- USD Price -->
+          <div class="mb-2">
+            <h4 class="cx-font-size capitalize"><span class="text-red-500">*</span> USD price</h4>
+            <input
+              placeholder="USD"
+              formControlName="usd"
+              type="number"
+              class="p-2.5 flex-1 w-full rounded-sm border border-solid border-[var(--border-outline)]"
+            />
+          </div>
+
         </div>
 
         <!-- Description -->
@@ -166,8 +178,7 @@
       [disabled]="!form.valid || files.length === 0 || rows.length === 0"
       [style]="{ 'background-color': form.valid && files.length > 0 && rows.length > 0 ? 'var(--app-theme-hover)' : 'var(--app-theme)' }"
       [asyncButton]="submit()"
-    >create
-    </button>
+    >create</button>
   </div>
 
 </form>

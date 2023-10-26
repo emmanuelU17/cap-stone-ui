@@ -1,3 +1,7 @@
+export enum SarreCurrency {
+  NGN = 'NGN' , USD = 'USD'
+}
+
 export interface CSRF {
   token: string;
   parameterName: string;

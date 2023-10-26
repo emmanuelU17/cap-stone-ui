@@ -77,7 +77,10 @@ export class CollectionComponent {
           .pipe(
             switchMap((status: number) => {
               // Refresh Collection and Product Array
-              const products$ = this.productService.fetchAllProducts();
+              const products$ = this.productService.currency$
+                .pipe(switchMap((currency) =>
+                  this.productService.fetchAllProducts(0, 20, currency))
+                );
               const collections$ = this.collectionService.fetchCollections();
 
               return of(status).pipe(

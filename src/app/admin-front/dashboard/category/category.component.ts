@@ -71,7 +71,10 @@ export class CategoryComponent {
           .pipe(
             switchMap((status: number) => {
               // Refresh Category and Product Array
-              const products$ = this.productService.fetchAllProducts();
+              const products$ = this.productService.currency$
+                .pipe(switchMap((currency) =>
+                  this.productService.fetchAllProducts(0, 20, currency))
+                );
               const categories$ = this.categoryService.fetchCategories();
 
               return of(status).pipe(
