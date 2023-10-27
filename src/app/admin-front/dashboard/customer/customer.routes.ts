@@ -10,12 +10,3 @@ export const CUSTOMER_ROUTES: Routes = [
     loadComponent: () => import('./register/register.component').then(m => m.RegisterComponent),
   },
 ];
-
-export interface RegisterDTO {
-  firstname: string;
-  lastname: string;
-  email: string;
-  username: string;
-  phone: string;
-  password: string;
-}

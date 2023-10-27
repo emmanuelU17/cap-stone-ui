@@ -6,8 +6,8 @@ import {Router} from "@angular/router";
 import {DirectiveModule} from "../../../../directive/directive.module";
 import {Observable, of, tap} from "rxjs";
 import {MatButtonModule} from "@angular/material/button";
-import {CustomerService} from "../customer.service";
-import {RegisterDTO} from "../customer.routes";
+import {AuthService} from "../../../../service/auth.service";
+import {RegisterDTO} from 'src/app/global-utils';
 
 @Component({
   selector: 'app-register',
@@ -169,7 +169,7 @@ import {RegisterDTO} from "../customer.routes";
 })
 export class RegisterComponent {
 
-  private readonly service = inject(CustomerService);
+  private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
 
@@ -204,7 +204,7 @@ export class RegisterComponent {
     const cPassword = this.form.controls['cPassword'].value;
 
     if (!firstname || !lastname || !email || !username || !phone || !password || !cPassword) {
-      return of(0);
+      return of();
     }
 
     const payload: RegisterDTO = {
@@ -216,8 +216,7 @@ export class RegisterComponent {
       password: password
     }
 
-    return this.service.registerUser(payload)
-      .pipe(
+    return this.authService.register(payload, 'api/v1/worker/auth/register').pipe(
         tap((status): void => {
           if (status >= 200 && status < 300) {
             this.form.reset({

@@ -1,10 +1,10 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
-import {AdminAuthService} from "./admin-auth.service";
 import {Observable, of} from "rxjs";
 import {CommonModule} from "@angular/common";
 import {DirectiveModule} from "../../directive/directive.module";
 import {MatDialogModule} from "@angular/material/dialog";
+import {AuthService} from "../../service/auth.service";
 
 @Component({
   selector: 'app-admin-authentication',
@@ -65,7 +65,7 @@ import {MatDialogModule} from "@angular/material/dialog";
 })
 export class AdminAuthenticationComponent {
 
-  private readonly authService: AdminAuthService = inject(AdminAuthService);
+  private readonly authService = inject(AuthService);
   private readonly fb: FormBuilder = inject(FormBuilder);
 
   viewPassword = false;
@@ -84,12 +84,13 @@ export class AdminAuthenticationComponent {
   loginMethod(): Observable<number> {
     const principal: string | null = this.loginForm.controls['principal'].value;
     const password: string | null = this.loginForm.controls['password'].value;
-
-    if (!principal || !password) {
-      return of();
-    }
-
-    return this.authService.login({ principal: principal, password: password });
+    return (!principal || !password)
+    ? of()
+    : this.authService.login(
+        { principal: principal, password: password },
+        'api/v1/worker/auth/login',
+        '/admin/dashboard'
+    );
   }
 
 }
