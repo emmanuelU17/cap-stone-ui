@@ -234,7 +234,7 @@ export class UpdateCategoryComponent implements OnInit {
           // Update ProductResponse and CategoryResponse array
           const product$ = this.productService.currency$
             .pipe(switchMap((currency) =>
-              this.productService.fetchAllProducts(0, 20, currency))
+              this.productService.allProducts(0, 20, currency))
             );
           const categories$ = this.categoryService.fetchCategories();
 

@@ -1,5 +1,6 @@
 export enum SarreCurrency {
-  NGN = 'NGN' , USD = 'USD'
+  NGN = 'NGN', USD = 'USD',
+  NGN_SYMBOL = '₦', USD_SYMBOL = '$'
 }
 
 export interface CSRF {

@@ -161,7 +161,7 @@ export class NewProductComponent {
         return this.productService.currency$
           .pipe(
             switchMap((currency) => this.productService
-              .fetchAllProducts(0, 20, currency)
+              .allProducts(0, 20, currency)
               .pipe(switchMap(() => of(status)))
             )
           );

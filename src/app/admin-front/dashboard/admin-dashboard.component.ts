@@ -170,7 +170,7 @@ export class AdminDashboardComponent {
   // Products
   private products$: Observable<Page<ProductResponse>> = this.productService.currency$
     .pipe(switchMap((currency) =>
-      this.productService.fetchAllProducts(0, 20, currency))
+      this.productService.allProducts(0, 20, currency))
     );
 
   // Categories

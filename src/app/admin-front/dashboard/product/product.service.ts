@@ -55,8 +55,10 @@ export class ProductService {
     }).pipe(map((res: HttpResponse<any>) => res.status));
   }
 
-  /** Called on load of application */
-  fetchAllProducts(
+  /**
+   * Returns a Page of ProductResponse
+   * */
+  allProducts(
     page: number = 0,
     size: number = 20,
     currency: SarreCurrency

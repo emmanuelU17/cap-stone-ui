@@ -1,13 +1,13 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {CartIconService} from "../../utils/carticon/cart-icon.service";
-import {Cart} from "../shop.helper";
 import {map, Observable, of} from "rxjs";
+import {CartService} from "./cart.service";
+import {DirectiveModule} from "../../../directive/directive.module";
 
 @Component({
   selector: 'app-cart',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, DirectiveModule],
   template: `
     <div class="w-full h-full bg-white">
 
@@ -30,7 +30,7 @@ import {map, Observable, of} from "rxjs";
         <div class="mt-8">
           <div class="flow-root">
             <ul role="list" class="-my-6 divide-y divide-gray-200">
-              <li class="flex py-6" *ngFor="let detail of details$ | async; let i = index">
+              <li class="flex py-6" *ngFor="let detail of carts$ | async; let i = index">
                 <div class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
                   <img [src]="detail.url"
                        alt="product image{{ i }}"
@@ -40,8 +40,8 @@ import {map, Observable, of} from "rxjs";
                 <div class="ml-4 flex flex-1 flex-col">
                   <div>
                     <div class="flex justify-between text-base font-medium text-gray-900">
-                      <h3>{{ detail.name }}</h3>
-                      <p class="ml-4">{{ detail.price }}{{ detail.currency }}</p>
+                      <h3>{{ detail.product_name }}</h3>
+                      <p class="ml-4">{{ currency(detail.currency) }}{{ detail.price }}</p>
                     </div>
                     <p class="mt-1 text-sm text-gray-500">{{ detail.colour }}</p>
                   </div>
@@ -54,7 +54,7 @@ import {map, Observable, of} from "rxjs";
                     <div class="flex">
                       <button type="button"
                               class="font-medium text-[var(--app-theme-hover)]"
-                              (click)="remove(detail.sku)"
+                              [asyncButton]="remove(detail.sku)"
                       >Remove
                       </button>
                     </div>
@@ -71,7 +71,7 @@ import {map, Observable, of} from "rxjs";
       <div class="border-t border-gray-200 px-4 py-6 sm:px-6">
         <div class="flex justify-between text-base font-medium text-gray-900">
           <p>Subtotal</p>
-          <p *ngIf="total() | async as total">{{ total }}{{ currency }}</p>
+          <p *ngIf="total() | async as total">{{ currency('ngn') }}{{ total }}</p>
         </div>
         <p class="mt-0.5 text-sm text-gray-500">Shipping and taxes calculated at checkout.</p>
         <div class="mt-6">
@@ -104,36 +104,34 @@ import {map, Observable, of} from "rxjs";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CartComponent {
+  // TODO fix total currency
+  private readonly cartService = inject(CartService);
 
-  private readonly service: CartIconService = inject(CartIconService);
+  carts$ = this.cartService.cart$;
 
-  // details: Cart[] = DUMMY_CART_DETAILS;
-  private cart: Cart[] = this.service.items();
-  details$ = this.service.carts$;
-  currency = this.cart && (this.cart.length > 0) ? this.cart[0].currency : '';
+  currency = (str: string): string => this.cartService.currency(str)
 
   /** Closes component */
   closeComponent = (): void => {
-    this.service.close = false;
+    this.cartService.close = false;
   }
 
-  remove(sku: string): void {
-    this.service.removeItem(sku);
+  remove(sku: string): Observable<number> {
+    return this.cartService.removeFromCart(sku);
   }
 
   total = (): Observable<number> => {
-    return this.details$.pipe(
-      map((carts) => {
+    return this.carts$.pipe(
+      map((arr) => {
         let sum = 0;
-        carts.forEach(cart => sum += (cart.qty * cart.price));
-
+        for (let cart of arr) {
+          sum += (cart.qty * cart.price);
+        }
         return sum;
       })
     );
   }
 
-  checkout(): void {
-    console.log('Checkout clicked ')
-  }
+  checkout(): void { }
 
 }

@@ -8,32 +8,37 @@ import {HttpErrorResponse} from "@angular/common/http";
 import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
 import {CommonModule} from "@angular/common";
 import {ShopService} from "../shop.service";
-import {CartIconService} from "../../utils/carticon/cart-icon.service";
+import {CartService} from "../cart/cart.service";
+import {DirectiveModule} from "../../../directive/directive.module";
 
 @Component({
   selector: 'app-product',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, DirectiveModule],
   templateUrl: './product.component.html',
   styles: [
     `
-        .show {
-            overflow: visible;
-            height: auto;
-        }
+      .show {
+        overflow: visible;
+        height: auto;
+      }
     `
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductComponent {
 
-  private readonly productService: ProductService = inject(ProductService);
-  private readonly utilService: ShopService = inject(ShopService);
-  private readonly route: ActivatedRoute = inject(ActivatedRoute);
-  private readonly fb: FormBuilder = inject(FormBuilder);
-  private readonly cartIconService: CartIconService = inject(CartIconService);
+  private readonly productService = inject(ProductService);
+  private readonly utilService = inject(ShopService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly fb = inject(FormBuilder);
+  private readonly cartService = inject(CartService);
 
+  // Displays number of items available in stock
   range = (num: number): number[] => this.utilService.getRange(num);
+
+  // Displays currency symbol
+  currency = (str: string): string => this.cartService.currency(str)
 
   // ProductDetail array and Current ProductDetail
   private productDetailArray: ProductDetail[] = [];
@@ -101,7 +106,7 @@ export class ProductComponent {
   /**
    * Updates reactive form on the size clicked.
    *
-   * @param event is of type HTMLInputElement value is size
+   * @param event is of type Event value is size
    * @return void
    * */
   onselectSize(event: Event): void {
@@ -131,28 +136,18 @@ export class ProductComponent {
   }
 
   /** Stores product in users cart */
-  addToCart(): void {
+  addToCart(): Observable<number> {
     const detail = this.productDetailArray
       .find(d => d.variants.find(v => v.sku === this.sku));
 
-    const colour = this.reactiveForm.controls['colour'].value
     const qty = this.reactiveForm.controls['qty'].value
-    const size = this.reactiveForm.controls['size'].value
 
-    if (!detail || !colour || !qty || !size) {
-      return;
+    if (!detail || qty === null || qty.length === 0) {
+      return of();
     }
 
-    this.cartIconService.addToCart = {
-      url: detail.url[0],
-      name: detail.name,
-      price: detail.price,
-      currency: detail.currency,
-      colour: colour,
-      qty: Number(qty),
-      size: size,
-      sku: this.sku
-    };
+    // Api call to add to cart
+    return this.cartService.createCart({ sku: this.sku, qty: Number(qty) });
   }
 
 }

@@ -3,14 +3,15 @@ import {CategoryService} from "./shop/category/category.service";
 import {CollectionService} from "./shop/collection/collection.service";
 import {catchError, combineLatest, map, Observable, of, startWith} from "rxjs";
 import {HttpErrorResponse} from "@angular/common/http";
-import {Category, Collection} from "./shop/shop.helper";
+import {Cart, Category, Collection} from "./shop/shop.helper";
 import {CommonModule} from "@angular/common";
 import {StoreFrontNavigationComponent} from "./utils/navigation/store-front-navigation.component";
 import {RouterOutlet} from "@angular/router";
-import {CartIconService} from "./utils/carticon/cart-icon.service";
 import {HomeService} from "./home/home.service";
 import {Product} from "./store-front-utils";
 import {FooterComponent} from "./utils/footer/footer.component";
+import {CartService} from "./shop/cart/cart.service";
+import {SarreCurrency} from "../global-utils";
 
 @Component({
   selector: 'app-store',
@@ -52,11 +53,14 @@ import {FooterComponent} from "./utils/footer/footer.component";
 })
 export class StoreComponent {
 
-  private readonly categoryService: CategoryService = inject(CategoryService);
-  private readonly collectionService: CollectionService = inject(CollectionService);
+  private readonly categoryService = inject(CategoryService);
+  private readonly collectionService = inject(CollectionService);
   private readonly homeService = inject(HomeService);
+  private readonly cartService = inject(CartService);
 
-  private homeProducts: Observable<Product[]> = this.homeService.homeProducts();
+  // TODO pass currency based on users choice
+  private cartItems$ = this.cartService.cartItems(SarreCurrency.NGN);
+  private homeProducts$: Observable<Product[]> = this.homeService.homeProducts();
   private categories$: Observable<Category[]> = this.categoryService.fetchCategories();
   private collections$: Observable<Collection[]> = this.collectionService.fetchCollections();
 
@@ -64,19 +68,15 @@ export class StoreComponent {
   combine$: Observable<{
     state: string,
     error?: string,
+    cart?: Cart[],
     products?: Product[]
     categories?: Category[],
     collections?: Collection[]
-  }> = combineLatest([this.homeProducts, this.categories$, this.collections$])
+  }> = combineLatest([this.cartItems$, this.homeProducts$, this.categories$, this.collections$])
     .pipe(
       map((): { state: string } => ({ state: 'LOADED' })),
       startWith({ state: 'LOADING' }),
       catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error.message }))
     );
-
-  constructor(private readonly cartService: CartIconService) {
-    // clear cart if expiry has time has been hit
-    this.cartService.clearCart();
-  }
 
 }
