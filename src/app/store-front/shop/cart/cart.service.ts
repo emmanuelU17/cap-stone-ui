@@ -42,7 +42,7 @@ export class CartService {
   count$ = (): Observable<number> => this.cart$.pipe(map((arr) => arr.length));
 
   /**
-   * Returns a List of Cart
+   * Returns an Observable of list of Cart
    * */
   cartItems(currency: SarreCurrency): Observable<Cart[]> {
     const url = `${this.HOST}api/v1/client/cart?currency=${currency}`

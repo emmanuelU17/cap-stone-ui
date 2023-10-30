@@ -83,9 +83,10 @@
                    multiple
                    class="hidden"
                    (change)="onFileSelected($event)"
-                   accept="image/gif, image/jpeg, image/png" #fileUpload>
+                   accept="image/*" #fileUpload>
 
-            <button class="flex outline-none border-0 text-center cursor-pointer bg-transparent" type="button"
+            <button class="flex outline-none border-0 text-center cursor-pointer bg-transparent"
+                    type="button"
                     (click)="fileUpload.click()">
               <p *ngIf="files.length < 1">No file uploaded yet.</p>
               <mat-icon>attach_file</mat-icon>

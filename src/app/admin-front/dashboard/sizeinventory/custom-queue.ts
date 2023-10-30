@@ -1,13 +1,25 @@
+import {BehaviorSubject} from "rxjs";
+
 export class CustomQueue<T> {
-  private arr: T[];
+  private readonly arr: T[];
+  private subject = new BehaviorSubject<boolean>(false);
+  queue$ = this.subject.asObservable();
 
   constructor() {
     this.arr = [];
   }
 
-  /** Adds to the end of the array */
+  /**
+   * Adds to the end of the array
+   * */
   addToQueue(data: T): void {
     this.arr.push(data);
+    this.subject.next(true);
+  }
+
+  removeFromQueue(index: number): void {
+    this.arr.splice(index, 1);
+    this.subject.next(!this.isEmpty());
   }
 
   endOfQueue(): T {
@@ -18,7 +30,7 @@ export class CustomQueue<T> {
     return this.arr.length;
   }
 
-  empty(): boolean {
+  isEmpty(): boolean {
     return this.arr.length === 0;
   }
 
@@ -27,7 +39,8 @@ export class CustomQueue<T> {
   }
 
   clear(): void {
-    this.arr = [];
+    this.arr.length = 0;
+    this.subject.next(false);
   }
 
 }

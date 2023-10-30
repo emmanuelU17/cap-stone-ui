@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {map, Observable, of} from "rxjs";
+import {map, Observable} from "rxjs";
 import {CartService} from "./cart.service";
 import {DirectiveModule} from "../../../directive/directive.module";
 

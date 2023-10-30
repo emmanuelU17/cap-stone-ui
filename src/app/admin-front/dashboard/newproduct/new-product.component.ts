@@ -82,24 +82,23 @@ export class NewProductComponent {
    * @return void
    * */
   onFileSelected(event: any): void {
-    const file: File = event.target.files[0];
-    if (file) {
+    for (let i = 0; i < event.target.files.length; i++) {
+      const file: File = event.target.files[i];
       this.files.push(file);
     }
   }
 
-  /** Clears reactiveForm */
+  /**
+   * Clears reactiveForm
+   * */
   clear(): void {
     Object.keys(this.form.controls).forEach(key => {
-      let value: string | boolean = '';
-      if (key === 'visible') {
-        value = false;
+      if (key !== 'visible') {
+        this.form.get(key)?.reset('');
       }
-      this.form.get(key)?.reset(value);
     });
     this.files = [];
     this.sizeInventoryService.setSubject(true);
-
   }
 
   /**
@@ -151,13 +150,14 @@ export class NewProductComponent {
     return this.create(formData);
   }
 
-  /** Creates a new Product and fetches new products to updates product table */
+  /**
+   * Creates a new Product and fetches new products to updates product table
+   * */
   private create(data: FormData): Observable<number> {
     return this.newProductService.create(data).pipe(
       switchMap((status: number) => {
         this.sizeInventoryService.setSubject(true);
         this.clear();
-
         return this.productService.currency$
           .pipe(
             switchMap((currency) => this.productService
