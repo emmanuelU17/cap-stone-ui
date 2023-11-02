@@ -5,6 +5,7 @@ import {BehaviorSubject, catchError, map, Observable, of, switchMap, tap} from "
 import {Cart, CartDTO} from "../shop.helper";
 import {ToastService} from "../../../service/toast/toast.service";
 import {SarreCurrency} from "../../../global-utils";
+import {FooterService} from "../../utils/footer/footer.service";
 
 @Injectable({
   providedIn: 'root'
@@ -14,6 +15,7 @@ export class CartService {
   HOST: string | undefined = environment.domain;
 
   private readonly http = inject(HttpClient);
+  private readonly footerService = inject(FooterService);
   private readonly toastService = inject(ToastService);
 
   private subject = new BehaviorSubject<Cart[]>([]);
@@ -67,8 +69,11 @@ export class CartService {
       observe: 'response',
       withCredentials: true
     }).pipe(
-      switchMap((res: HttpResponse<CartDTO>) => this.cartItems(SarreCurrency.NGN)
-        .pipe(map(() => (res.status)))
+      switchMap((res: HttpResponse<CartDTO>) => this.footerService.currency$
+        .pipe(
+          switchMap((currency) => this.cartItems(currency)
+            .pipe(map(() => (res.status))))
+        )
       ),
       catchError((err) => {
         const message = err.error ? err.error.message : err.message;
@@ -89,8 +94,12 @@ export class CartService {
       observe: 'response',
       withCredentials: true
     }).pipe(
-      switchMap((res) => this.cartItems(SarreCurrency.NGN)
-        .pipe(map(() => (res.status)))
+      switchMap((res) => this.footerService.currency$
+        .pipe(
+          switchMap((currency) => this.cartItems(currency)
+            .pipe(map(() => (res.status)))
+          )
+        )
       )
     );
   }

@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {ProductDetail} from "../shop.helper";
 import {State, Variant} from "../../../global-utils";
-import {catchError, map, Observable, of, startWith} from "rxjs";
+import {catchError, map, Observable, of, startWith, switchMap} from "rxjs";
 import {ActivatedRoute, RouterLink} from "@angular/router";
 import {ProductService} from "./product.service";
 import {HttpErrorResponse} from "@angular/common/http";
@@ -10,6 +10,7 @@ import {CommonModule} from "@angular/common";
 import {ShopService} from "../shop.service";
 import {CartService} from "../cart/cart.service";
 import {DirectiveModule} from "../../../directive/directive.module";
+import {FooterService} from "../../utils/footer/footer.service";
 
 @Component({
   selector: 'app-product',
@@ -28,6 +29,7 @@ import {DirectiveModule} from "../../../directive/directive.module";
 })
 export class ProductComponent {
 
+  private readonly footerService = inject(FooterService);
   private readonly productService = inject(ProductService);
   private readonly utilService = inject(ShopService);
   private readonly route = inject(ActivatedRoute);
@@ -38,7 +40,7 @@ export class ProductComponent {
   range = (num: number): number[] => this.utilService.getRange(num);
 
   // Displays currency symbol
-  currency = (str: string): string => this.cartService.currency(str)
+  currency = (str: string): string => this.cartService.currency(str);
 
   // ProductDetail array and Current ProductDetail
   private productDetailArray: ProductDetail[] = [];
@@ -51,23 +53,27 @@ export class ProductComponent {
   private id: string | null = this.route.snapshot.paramMap.get('id');
   private uuid: string = this.id === null ? '' : this.id;
 
-  productDetails$: Observable<State<ProductDetail[]>> = this.productService
-    .productDetailsByProductUUID(this.uuid)
+  productDetails$: Observable<State<ProductDetail[]>> = this.footerService.currency$
     .pipe(
-      map((arr: ProductDetail[]): State<ProductDetail[]> => {
-        // Add all product detail to product array
-        this.productDetailArray = arr;
+      switchMap((currency) => this.productService
+        .productDetailsByProductUUID(this.uuid, currency)
+        .pipe(
+          map((arr: ProductDetail[]): State<ProductDetail[]> => {
+            // Add all product detail to product array
+            this.productDetailArray = arr;
 
-        // First item in array
-        const curr: ProductDetail = arr[0];
+            // First item in array
+            const curr: ProductDetail = arr[0];
 
-        // Current ProductDetail with the first item in arr
-        this.currentProductDetail = { currImage: curr.url[0], detail: curr };
+            // Current ProductDetail with the first item in arr
+            this.currentProductDetail = { currImage: curr.url[0], detail: curr };
 
-        return { state: 'LOADED', data: arr };
-      }),
-      startWith({ state: 'LOADING' }),
-      catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.message }))
+            return { state: 'LOADED', data: arr };
+          }),
+          startWith({ state: 'LOADING' }),
+          catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.message }))
+        )
+      )
     );
 
   showMore: boolean = false; // Show more paragraph

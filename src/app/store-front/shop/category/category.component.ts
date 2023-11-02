@@ -9,6 +9,8 @@ import {CardComponent} from "../../utils/card/card.component";
 import {FilterComponent} from "../../utils/filter/filter.component";
 import {RouterLink} from "@angular/router";
 import {HttpErrorResponse} from "@angular/common/http";
+import {FooterService} from "../../utils/footer/footer.service";
+import {CartService} from "../cart/cart.service";
 
 @Component({
   selector: 'app-category',
@@ -19,10 +21,13 @@ import {HttpErrorResponse} from "@angular/common/http";
 })
 export class CategoryComponent {
 
+  private readonly footService = inject(FooterService);
+  private readonly cartService = inject(CartService);
   private readonly categoryService: CategoryService = inject(CategoryService);
   private readonly utilService: ShopService = inject(ShopService);
 
   iteration = (num: number): number[] => this.utilService.getRange(num);
+  currency = (str: string): string => this.cartService.currency(str);
 
   activeGridIcon: boolean = true; // Approves if products should be displayed x3 or x4 in the x-axis
   filterByPrice: boolean = true; // A variable need to keep the state of price filter for future filtering
@@ -46,9 +51,13 @@ export class CategoryComponent {
     error?: string,
     data?: Product[]
   }> = this.firstCategory$.pipe(
-    switchMap((category: Category) =>
-      this.categoryService.productsBasedOnCategory(category.category_id)
-        .pipe(map((arr: Product[]) => ({ state: 'LOADED', data: arr })))
+    switchMap((category: Category) => this.footService.currency$
+      .pipe(
+        switchMap((currency) => this.categoryService
+          .productsBasedOnCategory(category.category_id, currency)
+          .pipe(map((arr: Product[]) => ({ state: 'LOADED', data: arr })))
+        )
+      )
     ),
     startWith({ state: 'LOADING' }),
     catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error.message }))
@@ -77,12 +86,13 @@ export class CategoryComponent {
     }
 
     // Make call to server
-    this.products$ = this.categoryService.productsBasedOnCategory(category.category_id)
+    this.products$ = this.footService.currency$
       .pipe(
-        map((arr: Product[]) => ({ state: 'LOADED', data: arr })),
-        startWith({ state: 'LOADING' }),
-        catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error.message }))
-      );
+        switchMap((currency) => this.categoryService
+          .productsBasedOnCategory(category.category_id, currency)
+          .pipe(map((arr: Product[]) => ({ state: 'LOADED', data: arr })))
+        )
+      )
   }
 
 }

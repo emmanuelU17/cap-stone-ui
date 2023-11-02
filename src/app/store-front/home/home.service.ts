@@ -1,9 +1,9 @@
 import {inject, Injectable} from '@angular/core';
 import {environment} from "../../../environments/environment";
 import {HttpClient} from "@angular/common/http";
-import {BehaviorSubject, map, Observable, tap} from "rxjs";
+import {BehaviorSubject, map, Observable} from "rxjs";
 import {Product} from "../store-front-utils";
-import {Page} from "../../global-utils";
+import {Page, SarreCurrency} from "../../global-utils";
 
 @Injectable({
   providedIn: 'root'
@@ -24,12 +24,14 @@ export class HomeService {
     ]
   }
 
-  homeProducts(): Observable<Product[]> {
-    const url = `${this.HOST}api/v1/client/product?page=0&size=6`;
+  homeProducts(currency: SarreCurrency): Observable<Product[]> {
+    const url = `${this.HOST}api/v1/client/product?page=0&size=6&currency=${currency}`;
     return this.http.get<Page<Product>>(url, { withCredentials: true})
       .pipe(
-        map((page) => page.content),
-        tap((arr) => this.subject.next(arr))
+        map((page) => {
+          this.subject.next(page.content)
+          return page.content;
+        }),
       );
   }
 

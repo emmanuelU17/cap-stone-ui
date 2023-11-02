@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CategoryService} from "./shop/category/category.service";
 import {CollectionService} from "./shop/collection/collection.service";
-import {catchError, combineLatest, map, Observable, of, startWith} from "rxjs";
+import {catchError, combineLatest, map, Observable, of, startWith, switchMap} from "rxjs";
 import {HttpErrorResponse} from "@angular/common/http";
 import {Cart, Category, Collection} from "./shop/shop.helper";
 import {CommonModule} from "@angular/common";
@@ -11,7 +11,7 @@ import {HomeService} from "./home/home.service";
 import {Product} from "./store-front-utils";
 import {FooterComponent} from "./utils/footer/footer.component";
 import {CartService} from "./shop/cart/cart.service";
-import {SarreCurrency} from "../global-utils";
+import {FooterService} from "./utils/footer/footer.service";
 
 @Component({
   selector: 'app-store',
@@ -53,14 +53,18 @@ import {SarreCurrency} from "../global-utils";
 })
 export class StoreComponent {
 
+  private readonly footerService = inject(FooterService);
   private readonly categoryService = inject(CategoryService);
   private readonly collectionService = inject(CollectionService);
   private readonly homeService = inject(HomeService);
   private readonly cartService = inject(CartService);
 
-  // TODO pass currency based on users choice
-  private cartItems$ = this.cartService.cartItems(SarreCurrency.NGN);
-  private homeProducts$: Observable<Product[]> = this.homeService.homeProducts();
+  private cartItems$ = this.footerService.currency$.pipe(
+    switchMap((currency) => this.cartService.cartItems(currency))
+  );
+  private homeProducts$: Observable<Product[]> = this.footerService.currency$.pipe(
+    switchMap((currency) => this.homeService.homeProducts(currency))
+  );
   private categories$: Observable<Category[]> = this.categoryService.fetchCategories();
   private collections$: Observable<Collection[]> = this.collectionService.fetchCollections();
 

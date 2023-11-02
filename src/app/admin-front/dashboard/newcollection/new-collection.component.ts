@@ -113,7 +113,7 @@ export class NewCollectionComponent {
 
   /** Clears reactiveForm */
   clear(): void {
-    this.reactiveForm.reset();
+    this.reactiveForm.controls['name'].setValue('');
   }
 
   /**
@@ -123,19 +123,15 @@ export class NewCollectionComponent {
    * */
   submit(): Observable<number> {
     const obj: CollectionRequest = {
-      name: this.reactiveForm.get('name')?.value,
-      visible: this.reactiveForm.get('visible')?.value
+      name: this.reactiveForm.controls['name'].value,
+      visible: this.reactiveForm.controls['visible'].value
     };
 
     return this.newCollectionService.create(obj).pipe(
       switchMap((status: number): Observable<number> => {
-        const res = of(status);
-        if (!(status >= 200 && status < 300)) {
-          return of(status);
-        }
-
         this.clear();
-        return this.collectionService.fetchCollections().pipe(switchMap(() => res));
+        return this.collectionService.fetchCollections()
+          .pipe(switchMap(() => of(status)));
       }),
       catchError((err: HttpErrorResponse) => {
         this.toastService.toastMessage(err.error.message);

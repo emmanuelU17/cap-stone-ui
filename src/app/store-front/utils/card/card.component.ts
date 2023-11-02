@@ -18,7 +18,7 @@ import {CommonModule} from "@angular/common";
           </h3>
           <!--      <p class="mt-1 text-sm text-gray-500">Black</p>-->
         </div>
-        <p class="font-app-card font-medium text-gray-900">{{ price }} {{ currency }}</p>
+        <p class="font-app-card font-medium text-gray-900">{{ currency }}{{ price }}</p>
       </div>
     </div>
   `,

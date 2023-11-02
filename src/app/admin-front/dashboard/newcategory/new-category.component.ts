@@ -110,7 +110,8 @@ export class NewCategoryComponent {
 
   /** Clears reactiveForm */
   clear(): void {
-    this.reactiveForm.reset();
+    this.reactiveForm.controls['name'].setValue('');
+    this.reactiveForm.controls['parent'].setValue('');
   }
 
   /**
@@ -129,10 +130,10 @@ export class NewCategoryComponent {
       switchMap((status: number): Observable<number> => {
         // Clear Input field
         this.clear();
-        this.reactiveForm.controls['parent'].setValue('');
 
         // Make call to server to update CategoryResponse[]
-        return this.categoryService.fetchCategories().pipe(switchMap(() => of(status)));
+        return this.categoryService.fetchCategories()
+          .pipe(switchMap(() => of(status)));
       }),
       catchError((err: HttpErrorResponse) => {
         this.toastService.toastMessage(err.error.message);

@@ -3,6 +3,7 @@ import {CommonModule} from '@angular/common';
 import {map, Observable} from "rxjs";
 import {CartService} from "./cart.service";
 import {DirectiveModule} from "../../../directive/directive.module";
+import {Cart} from "../shop.helper";
 
 @Component({
   selector: 'app-cart',
@@ -104,14 +105,15 @@ import {DirectiveModule} from "../../../directive/directive.module";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CartComponent {
-  // TODO fix total currency
   private readonly cartService = inject(CartService);
 
   carts$ = this.cartService.cart$;
 
   currency = (str: string): string => this.cartService.currency(str)
 
-  /** Closes component */
+  /**
+   * Closes CartComponent
+   * */
   closeComponent = (): void => {
     this.cartService.close = false;
   }
@@ -122,7 +124,7 @@ export class CartComponent {
 
   total = (): Observable<number> => {
     return this.carts$.pipe(
-      map((arr) => {
+      map((arr: Cart[]) => {
         let sum = 0;
         for (let cart of arr) {
           sum += (cart.qty * cart.price);

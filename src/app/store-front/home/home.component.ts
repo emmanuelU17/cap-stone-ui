@@ -1,10 +1,11 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from "@angular/common";
-import {concatMap, delay, from, map, Observable, of, repeat, startWith, switchMap} from "rxjs";
+import {concatMap, delay, from, Observable, of, repeat, startWith, switchMap} from "rxjs";
 import {HomeService} from "./home.service";
 import {CardComponent} from "../utils/card/card.component";
 import {Product} from "../store-front-utils";
 import {Router} from "@angular/router";
+import {CartService} from "../shop/cart/cart.service";
 
 @Component({
   selector: 'app-home',
@@ -33,7 +34,7 @@ import {Router} from "@angular/router";
               <app-card
                 [url]="product.image"
                 [name]="product.name"
-                [currency]="product.currency"
+                [currency]="currency(product.currency)"
                 [price]="product.price"
               ></app-card>
             </button>
@@ -66,15 +67,13 @@ import {Router} from "@angular/router";
 })
 export class HomeComponent {
 
+  private readonly cartService = inject(CartService);
   private readonly homeService: HomeService = inject(HomeService);
   private readonly router = inject(Router);
 
-  readonly products$ = this.homeService.products$.pipe(
-    map((arr) => {
-      arr.forEach(e => e.image = 'assets/image/sarre1.jpg')
-      return arr;
-    })
-  );
+  currency = (str: string): string => this.cartService.currency(str);
+
+  readonly products$ = this.homeService.products$;
 
   /**
    * Function achieves an infinite typing effect only difference is
@@ -82,7 +81,8 @@ export class HomeComponent {
    * */
   private readonly images: string[] = this.homeService.bgImages;
   image$: Observable<string> = of(this.images).pipe(
-    switchMap((photos: string[]) => from(photos).pipe(
+    switchMap((photos: string[]) => from(photos)
+      .pipe(
         concatMap((photo: string) => of(photo).pipe(delay(5000))),
         repeat()
       )

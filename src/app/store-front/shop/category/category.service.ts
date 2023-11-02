@@ -3,7 +3,7 @@ import {HttpClient} from "@angular/common/http";
 import {BehaviorSubject, map, Observable, tap} from "rxjs";
 import {Category} from "../shop.helper";
 import {environment} from "../../../../environments/environment";
-import {Page} from "../../../global-utils";
+import {Page, SarreCurrency} from "../../../global-utils";
 import {Product} from "../../store-front-utils";
 
 @Injectable({
@@ -41,14 +41,21 @@ export class CategoryService {
    * @param id is the category uuid
    * @param page is the page number
    * @param size is the amount of items to be displayed on a page
+   * @param currency
    * */
-  productsBasedOnCategory(id: string, page: number = 0, size: number = 20): Observable<Product[]> {
+  productsBasedOnCategory(
+    id: string,
+    currency: SarreCurrency,
+    page: number = 0,
+    size: number = 20,
+  ): Observable<Product[]> {
     const url: string = `${this.HOST}api/v1/client/category/products`;
     return this.http.get<Page<Product>>(url, {
       params: {
         category_id: id,
         page: page,
-        size: size
+        size: size,
+        currency: currency
       },
       withCredentials: true
     }).pipe(
