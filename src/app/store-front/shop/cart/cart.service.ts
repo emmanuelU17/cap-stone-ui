@@ -1,6 +1,6 @@
 import {inject, Injectable} from '@angular/core';
 import {environment} from "../../../../environments/environment";
-import {HttpClient, HttpResponse} from "@angular/common/http";
+import {HttpClient, HttpErrorResponse, HttpResponse} from "@angular/common/http";
 import {BehaviorSubject, catchError, map, Observable, of, switchMap, tap} from "rxjs";
 import {Cart, CartDTO} from "../shop.helper";
 import {ToastService} from "../../../service/toast/toast.service";
@@ -72,13 +72,14 @@ export class CartService {
       switchMap((res: HttpResponse<CartDTO>) => this.footerService.currency$
         .pipe(
           switchMap((currency) => this.cartItems(currency)
-            .pipe(map(() => (res.status))))
+            .pipe(map(() => (res.status)))
+          )
         )
       ),
-      catchError((err) => {
+      catchError((err: HttpErrorResponse) => {
         const message = err.error ? err.error.message : err.message;
         this.toastService.toastMessage(message);
-        return of(err);
+        return of(err.status);
       })
     );
   }
