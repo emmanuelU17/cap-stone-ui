@@ -3,7 +3,7 @@ import {HttpClient} from "@angular/common/http";
 import {BehaviorSubject, map, Observable, tap} from "rxjs";
 import {Collection} from "../shop.helper";
 import {environment} from "../../../../environments/environment";
-import {Page} from "../../../global-utils";
+import {Page, SarreCurrency} from "../../../global-utils";
 import {Product} from "../../store-front-utils";
 
 @Injectable({
@@ -39,16 +39,23 @@ export class CollectionService {
    * Fetches products based on collection id
    *
    * @param id is the product id
+   * @param currency
    * @param page is the page number
    * @param size is the amount of items to be displayed on a page
    * */
-  productsBasedOnCollection(id: string, page: number = 0, size: number = 20): Observable<Product[]> {
+  productsBasedOnCollection(
+    id: string,
+    currency: SarreCurrency,
+    page: number = 0,
+    size: number = 20
+  ): Observable<Product[]> {
     const url: string = `${this.HOST}api/v1/client/collection/products`;
     return this.http.get<Page<Product>>(url, {
       params: {
         collection_id: id,
         page: page,
-        size: size
+        size: size,
+        currency: currency
       },
       withCredentials: true
     }).pipe(

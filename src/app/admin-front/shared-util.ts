@@ -6,6 +6,7 @@ export interface UpdateProduct {
   product_id: string;
   name: string;
   desc: string;
+  currency: string;
   price: number;
   category: string;
   collection: string;
@@ -91,12 +92,6 @@ export interface TableContent<T> {
 export interface PageChange {
   page: number;
   size: number;
-}
-
-/** Needed in new product */
-export interface ImageFilter {
-  url: string;
-  name: string;
 }
 
 export interface SizeInventory {

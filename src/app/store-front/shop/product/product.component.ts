@@ -1,32 +1,46 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {ProductDetail} from "../shop.helper";
 import {State, Variant} from "../../../global-utils";
-import {catchError, map, Observable, of, startWith} from "rxjs";
+import {catchError, map, Observable, of, startWith, switchMap} from "rxjs";
 import {ActivatedRoute, RouterLink} from "@angular/router";
 import {ProductService} from "./product.service";
 import {HttpErrorResponse} from "@angular/common/http";
 import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
 import {CommonModule} from "@angular/common";
 import {ShopService} from "../shop.service";
-import {CartIconService} from "../../utils/carticon/cart-icon.service";
+import {CartService} from "../cart/cart.service";
+import {DirectiveModule} from "../../../directive/directive.module";
+import {FooterService} from "../../utils/footer/footer.service";
 
 @Component({
   selector: 'app-product',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, DirectiveModule],
   templateUrl: './product.component.html',
-  styleUrls: ['./product.component.css'],
+  styles: [
+    `
+      .show {
+        overflow: visible;
+        height: auto;
+      }
+    `
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductComponent {
 
-  private readonly productService: ProductService = inject(ProductService);
-  private readonly utilService: ShopService = inject(ShopService);
-  private readonly route: ActivatedRoute = inject(ActivatedRoute);
-  private readonly fb: FormBuilder = inject(FormBuilder);
-  private readonly cartIconService: CartIconService = inject(CartIconService);
+  private readonly footerService = inject(FooterService);
+  private readonly productService = inject(ProductService);
+  private readonly utilService = inject(ShopService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly fb = inject(FormBuilder);
+  private readonly cartService = inject(CartService);
 
+  // Displays number of items available in stock
   range = (num: number): number[] => this.utilService.getRange(num);
+
+  // Displays currency symbol
+  currency = (str: string): string => this.cartService.currency(str);
 
   // ProductDetail array and Current ProductDetail
   private productDetailArray: ProductDetail[] = [];
@@ -39,23 +53,27 @@ export class ProductComponent {
   private id: string | null = this.route.snapshot.paramMap.get('id');
   private uuid: string = this.id === null ? '' : this.id;
 
-  productDetails$: Observable<State<ProductDetail[]>> = this.productService
-    .productDetailsByProductUUID(this.uuid)
+  productDetails$: Observable<State<ProductDetail[]>> = this.footerService.currency$
     .pipe(
-      map((arr: ProductDetail[]): State<ProductDetail[]> => {
-        // Add all product detail to product array
-        this.productDetailArray = arr;
+      switchMap((currency) => this.productService
+        .productDetailsByProductUUID(this.uuid, currency)
+        .pipe(
+          map((arr: ProductDetail[]): State<ProductDetail[]> => {
+            // Add all product detail to product array
+            this.productDetailArray = arr;
 
-        // First item in array
-        const curr: ProductDetail = arr[0];
+            // First item in array
+            const curr: ProductDetail = arr[0];
 
-        // Current ProductDetail with the first item in arr
-        this.currentProductDetail = { currImage: curr.url[0], detail: curr };
+            // Current ProductDetail with the first item in arr
+            this.currentProductDetail = { currImage: curr.url[0], detail: curr };
 
-        return { state: 'LOADED', data: arr };
-      }),
-      startWith({ state: 'LOADING' }),
-      catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.message }))
+            return { state: 'LOADED', data: arr };
+          }),
+          startWith({ state: 'LOADING' }),
+          catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.message }))
+        )
+      )
     );
 
   showMore: boolean = false; // Show more paragraph
@@ -94,7 +112,7 @@ export class ProductComponent {
   /**
    * Updates reactive form on the size clicked.
    *
-   * @param event is of type HTMLInputElement value is size
+   * @param event is of type Event value is size
    * @return void
    * */
   onselectSize(event: Event): void {
@@ -124,28 +142,18 @@ export class ProductComponent {
   }
 
   /** Stores product in users cart */
-  addToCart(): void {
+  addToCart(): Observable<number> {
     const detail = this.productDetailArray
       .find(d => d.variants.find(v => v.sku === this.sku));
 
-    const colour = this.reactiveForm.controls['colour'].value
     const qty = this.reactiveForm.controls['qty'].value
-    const size = this.reactiveForm.controls['size'].value
 
-    if (!detail || !colour || !qty || !size) {
-      return;
+    if (!detail || qty === null || qty.length === 0) {
+      return of();
     }
 
-    this.cartIconService.addToCart = {
-      url: detail.url[0],
-      name: detail.name,
-      price: detail.price,
-      currency: detail.currency,
-      colour: colour,
-      qty: Number(qty),
-      size: size,
-      sku: this.sku
-    };
+    // Api call to add to cart
+    return this.cartService.createCart({ sku: this.sku, qty: Number(qty) });
   }
 
 }

@@ -1,3 +1,8 @@
+export enum SarreCurrency {
+  NGN = 'NGN', USD = 'USD',
+  NGN_SYMBOL = '₦', USD_SYMBOL = '$'
+}
+
 export interface CSRF {
   token: string;
   parameterName: string;
@@ -18,6 +23,27 @@ export interface Variant {
   sku: string;
   inventory: string;
   size: string;
+}
+
+export interface SarreUser {
+  firstname: string;
+  lastname: string;
+  email: string;
+  phone: string;
+}
+
+export interface RegisterDTO {
+  firstname: string;
+  lastname: string;
+  email: string;
+  username: string;
+  phone: string;
+  password: string;
+}
+
+export interface LoginDTO {
+  principal: string;
+  password: string;
 }
 
 export interface Page<T> {

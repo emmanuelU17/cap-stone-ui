@@ -6,7 +6,28 @@ import {CSRF} from "./global-utils";
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html',
+  template: `
+    <ng-container *ngIf="csrf$ | async as csrf" [ngSwitch]="csrf.state">
+
+      <ng-container *ngSwitchCase="'LOADING'">
+        <div class="lg-scr h-full p-20 flex justify-center items-center">
+          <h1 class="capitalize text-[var(--app-theme-hover)]">
+            loading...
+          </h1>
+        </div>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'ERROR'">
+        <div class="lg-scr p-10 text-3xl text-red-500">
+          Error {{ csrf.error }}
+        </div>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'LOADED'">
+        <router-outlet></router-outlet>
+      </ng-container>
+    </ng-container>
+  `,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppComponent {

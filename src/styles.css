@@ -68,9 +68,17 @@ body {
   font-size: 20px;
 }
 
+.font-app-card {
+  font-size: 15px;
+}
+
 @media (max-width: 768px) {
   .cx-font-size {
     font-size: calc(15px + 1vw);
+  }
+
+  .font-app-card {
+    font-size: calc(10px + 1vw);
   }
 }
 

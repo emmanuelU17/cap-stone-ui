@@ -17,6 +17,7 @@ import {HttpErrorResponse} from "@angular/common/http";
 import {ToastService} from "../../../service/toast/toast.service";
 import {SizeInventoryService} from "../sizeinventory/size-inventory.service";
 import {Router} from "@angular/router";
+import {SarreCurrency} from "../../../global-utils";
 
 @Component({
   selector: 'app-new-product',
@@ -58,13 +59,13 @@ export class NewProductComponent {
   categories$: Observable<CategoryResponse[]> = this.categoryService.categories$;
   collections$: Observable<CollectionResponse[]> = this.collectionService._collections$;
 
-  reactiveForm = this.fb.group({
+  form = this.fb.group({
     category: new FormControl('', [Validators.required]),
     collection: new FormControl(''),
     name: new FormControl('', [Validators.required, Validators.max(50)]),
-    price: new FormControl('', Validators.required),
+    ngn: new FormControl('', Validators.required),
+    usd: new FormControl('', Validators.required),
     desc: new FormControl('', [Validators.required, Validators.max(400)]),
-    currency: new FormControl("USD"),
     visible: new FormControl(false, Validators.required),
     colour: new FormControl('', Validators.required),
   });
@@ -81,16 +82,23 @@ export class NewProductComponent {
    * @return void
    * */
   onFileSelected(event: any): void {
-    const file: File = event.target.files[0];
-    if (file) {
+    for (let i = 0; i < event.target.files.length; i++) {
+      const file: File = event.target.files[i];
       this.files.push(file);
     }
   }
 
-  /** Clears reactiveForm */
+  /**
+   * Clears reactiveForm
+   * */
   clear(): void {
+    Object.keys(this.form.controls).forEach(key => {
+      if (key !== 'visible') {
+        this.form.get(key)?.reset('');
+      }
+    });
     this.files = [];
-    this.reactiveForm.reset();
+    this.sizeInventoryService.setSubject(true);
   }
 
   /**
@@ -118,14 +126,16 @@ export class NewProductComponent {
     const formData: FormData = new FormData();
 
     const dto = {
-      category: this.reactiveForm.controls['category'].value,
-      collection: this.reactiveForm.controls['collection'].value,
-      name: this.reactiveForm.controls['name'].value,
-      price: this.reactiveForm.controls['price'].value,
-      desc: this.reactiveForm.controls['desc'].value,
-      currency: this.reactiveForm.controls['currency'].value,
-      visible: this.reactiveForm.controls['visible'].value,
-      colour: this.reactiveForm.controls['colour'].value,
+      category: this.form.controls['category'].value,
+      collection: this.form.controls['collection'].value,
+      name: this.form.controls['name'].value,
+      priceCurrency: [
+        { currency: SarreCurrency.NGN, price: this.form.controls['ngn'].value },
+        { currency: SarreCurrency.USD , price: this.form.controls['usd'].value }
+      ],
+      desc: this.form.controls['desc'].value,
+      visible: this.form.controls['visible'].value,
+      colour: this.form.controls['colour'].value,
       sizeInventory: this.rows,
     }
 
@@ -140,18 +150,21 @@ export class NewProductComponent {
     return this.create(formData);
   }
 
-  /** Creates a new Product and fetches new products to updates product table */
+  /**
+   * Creates a new Product and fetches new products to updates product table
+   * */
   private create(data: FormData): Observable<number> {
     return this.newProductService.create(data).pipe(
       switchMap((status: number) => {
         this.sizeInventoryService.setSubject(true);
         this.clear();
-        this.reactiveForm.controls['collection'].setValue('');
-        this.reactiveForm.controls['category'].setValue('');
-
-        return this.productService
-          .fetchAllProducts()
-          .pipe(switchMap(() => of(status)));
+        return this.productService.currency$
+          .pipe(
+            switchMap((currency) => this.productService
+              .allProducts(0, 20, currency)
+              .pipe(switchMap(() => of(status)))
+            )
+          );
       }),
       catchError((err: HttpErrorResponse) => {
         this.toastService.toastMessage(err.error.message);

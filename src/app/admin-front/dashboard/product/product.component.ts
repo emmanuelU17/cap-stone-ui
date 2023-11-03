@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ProductResponse, TableContent} from "../../shared-util";
-import {Page} from "../../../global-utils";
+import {Page, SarreCurrency} from "../../../global-utils";
 import {catchError, combineLatest, map, Observable, of, startWith, switchMap} from "rxjs";
 import {ProductService} from "./product.service";
 import {DynamicTableComponent} from "../dynamictable/dynamic-table.component";
@@ -16,16 +16,60 @@ import {CategoryService} from "../category/category.service";
   selector: 'app-product',
   standalone: true,
   imports: [CommonModule, DynamicTableComponent, MatDialogModule],
-  templateUrl: './product.component.html',
+  template: `
+    <div class="flex flex-col h-full py-0">
+      <div class="px-0 py-2.5 flex items-center">
+        <h1 class="cx-font-size w-fit capitalize border-b border-[var(--app-theme)]">products</h1>
+        <button type="button" class="ml-1" (click)="routeToNewProduct()">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-6 h-6 text-[var(--app-theme)]"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="flex-1" *ngIf="data$ | async as data" [ngSwitch]="data.state">
+        <ng-container *ngSwitchCase="'LOADING'">
+          <div class="lg-scr h-full p-20 flex justify-center items-center">
+            <h1 class="cx-font-size capitalize text-[var(--app-theme-hover)]">
+              loading...
+            </h1>
+          </div>
+        </ng-container>
+        <ng-container *ngSwitchCase="'ERROR'">
+          <div class="lg-scr mg-top p-10 capitalize text-3xl text-red-500">
+            Error {{ data.error }}
+          </div>
+        </ng-container >
+        <ng-container *ngSwitchCase="'LOADED'">
+          <ng-container *ngIf="data.data">
+            <app-dynamic-table
+              [paginationTable]="true"
+              [detail]="true"
+              [pageData]="data.data"
+              [tHead]="thead"
+              (eventEmitter)="infoFromTableComponent($event)"
+            ></app-dynamic-table>
+          </ng-container>
+        </ng-container>
+      </div>
+    </div>
+  `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductComponent {
 
-  private productService: ProductService = inject(ProductService);
-  private categoryService: CategoryService = inject(CategoryService);
-  private collectionService: CollectionService = inject(CollectionService);
-  private router: Router = inject(Router);
-  private dialog: MatDialog = inject(MatDialog);
+  private readonly productService: ProductService = inject(ProductService);
+  private readonly categoryService: CategoryService = inject(CategoryService);
+  private readonly collectionService: CollectionService = inject(CollectionService);
+  private readonly router: Router = inject(Router);
+  private readonly dialog: MatDialog = inject(MatDialog);
 
   // Table details
   thead: Array<keyof ProductResponse> = ['product_id', 'image', 'name', 'desc', 'currency', 'price', 'action'];
@@ -33,10 +77,12 @@ export class ProductComponent {
     state: string,
     error?: string,
     data?: Page<ProductResponse>
-  }> = this.productService._products$.pipe(
-    map((res: Page<ProductResponse>) => ({ state: 'LOADED', data: res })),
-    startWith({ state: 'LOADING' }),
-    catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error.message }))
+  }> = this.productService.currency$.pipe(
+    switchMap(() => this.productService.products$.pipe(
+      map((res: Page<ProductResponse>) => ({ state: 'LOADED', data: res })),
+      startWith({ state: 'LOADING' }),
+      catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error.message }))
+    ))
   );
 
   routeToNewProduct = (): void => {
@@ -61,7 +107,10 @@ export class ProductComponent {
           .pipe(
             switchMap((status: number) => {
               // Refresh Product, Category and Collection array
-              const products$ = this.productService.fetchAllProducts();
+              const products$ = this.productService.currency$
+                .pipe(switchMap((currency) =>
+                  this.productService.allProducts(0, 20, currency))
+                );
               const categories$ = this.categoryService.fetchCategories();
               const collections$ = this.collectionService.fetchCollections();
 

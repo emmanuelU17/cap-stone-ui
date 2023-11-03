@@ -5,7 +5,9 @@ import {CommonModule} from '@angular/common';
   selector: 'app-statistics',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './statistics.component.html',
+  template: `
+    <p>statistics works!</p>
+  `,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class StatisticsComponent { }

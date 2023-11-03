@@ -77,14 +77,14 @@
     </ng-container>
 
     <ng-container *ngSwitchCase="'LOADED'">
-      <div class="max-h-full" *ngIf="products.data">
-        <div class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
+      <div class="max-h-full mt-3" *ngIf="products.data">
+        <div class="grid gap-x-6 gap-y-10 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:gap-x-8">
           <div class="group relative cursor-pointer" *ngFor="let product of ascendingOrDescending(products.data)">
             <a routerLink="product/{{ product.product_id }}" (click)="setProductClicked(product)">
               <app-card
                 [url]="product.image"
                 [name]="product.name"
-                [currency]="product.currency"
+                [currency]="currency(product.currency)"
                 [price]="product.price"
               ></app-card>
             </a>

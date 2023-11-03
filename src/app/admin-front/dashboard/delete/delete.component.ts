@@ -11,8 +11,23 @@ import {HttpErrorResponse} from "@angular/common/http";
 @Component({
   selector: 'app-delete',
   standalone: true,
+  template: `
+    <div class="w-full mb-2 px-2.5 text-center">
+      <h1 class="cx-font-size">Are you sure you want to delete {{ data.name }}?</h1>
+    </div>
+
+    <div class="p-2.5 px-1.5 flex justify-between">
+      <button mat-stroked-button color="warn" [style.border-color]="'red'" type="button" (click)="cancel()">
+        Cancel
+      </button>
+      <button
+        type="button"
+        class="capitalize text-white font-bold py-2 px-4 rounded bg-[var(--app-theme-hover)]"
+        [asyncButton]="delete()"
+      >delete</button>
+    </div>
+  `,
   imports: [CommonModule, MatDialogModule, MatButtonModule, DirectiveModule],
-  templateUrl: './delete.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DeleteComponent {

@@ -1,12 +1,12 @@
-import {Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {CommonModule} from "@angular/common";
 import {RouterOutlet} from "@angular/router";
 
-// Component where Admin profile will be displayed
 @Component({
   selector: 'app-admin',
   standalone: true,
   imports: [CommonModule, RouterOutlet],
-  templateUrl: './admin.component.html',
+  template: `<router-outlet></router-outlet>`,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AdminComponent { }

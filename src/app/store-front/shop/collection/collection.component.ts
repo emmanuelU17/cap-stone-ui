@@ -9,6 +9,8 @@ import {CardComponent} from "../../utils/card/card.component";
 import {FilterComponent} from "../../utils/filter/filter.component";
 import {RouterLink} from "@angular/router";
 import {HttpErrorResponse} from "@angular/common/http";
+import {FooterService} from "../../utils/footer/footer.service";
+import {CartService} from "../cart/cart.service";
 
 @Component({
   selector: 'app-collection',
@@ -19,10 +21,13 @@ import {HttpErrorResponse} from "@angular/common/http";
 })
 export class CollectionComponent {
 
+  private readonly footerService = inject(FooterService);
+  private readonly cartService = inject(CartService);
   private readonly collectionService: CollectionService = inject(CollectionService);
   private readonly utilService: ShopService = inject(ShopService);
 
   iteration = (num: number): number[] => this.utilService.getRange(num);
+  currency = (str: string): string => this.cartService.currency(str);
 
   activeGridIcon: boolean = true; // Approves if products should be displayed x3 or x4 in the x-axis
   filterByPrice: boolean = true; // A variable need to keep the state of price filter for future filtering
@@ -46,9 +51,13 @@ export class CollectionComponent {
     error?: string,
     data?: Product[]
   }> = this.firstCollection$.pipe(
-    switchMap((col: Collection) =>
-      this.collectionService.productsBasedOnCollection(col.collection_id)
-        .pipe(map((arr: Product[]) => ({ state: 'LOADED', data: arr })))
+    switchMap((col: Collection) => this.footerService.currency$
+      .pipe(
+        switchMap((currency) => this.collectionService
+          .productsBasedOnCollection(col.collection_id, currency)
+          .pipe(map((arr: Product[]) => ({ state: 'LOADED', data: arr })))
+        )
+      )
     ),
     startWith({state: 'LOADING'}),
     catchError((err: HttpErrorResponse) => of({state: 'ERROR', error: err.error.message}))
@@ -76,12 +85,13 @@ export class CollectionComponent {
       return;
     }
 
-    this.products$ = this.collectionService.productsBasedOnCollection(collection.collection_id)
+    this.products$ = this.footerService.currency$
       .pipe(
-        map((arr: Product[]) => ({ state: 'LOADED', data: arr })),
-        startWith({ state: 'LOADING' }),
-        catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error.message }))
-      );
+        switchMap((currency) => this.collectionService
+          .productsBasedOnCollection(collection.collection_id, currency)
+          .pipe(map((arr: Product[]) => ({ state: 'LOADED', data: arr })))
+        )
+      )
   }
 
 }

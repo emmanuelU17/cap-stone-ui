@@ -5,7 +5,9 @@ import {CommonModule} from "@angular/common";
   selector: 'app-dashboard',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './dashboard.component.html',
+  template: `
+    <div class="lg-scr mg-top min-h-full bg-blue-400">Dashboard protected</div>
+  `,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardComponent {
