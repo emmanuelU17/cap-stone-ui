@@ -26,7 +26,7 @@ import {Page} from "../../../global-utils";
           </thead>
 
           <tbody>
-          <tr *ngFor="let data of pageData.content; let i = index">
+          <tr *ngFor="let data of pageData.content; let i = index;">
             <td *ngFor="let head of tHead">
               <ng-container [ngSwitch]="head">
 
@@ -81,7 +81,7 @@ import {Page} from "../../../global-utils";
           [pageSize]="pageData.size"
           [pageIndex]="pageData.number"
           (page)="changePage($event)"
-          [pageSizeOptions]="[15, 20]"
+          [pageSizeOptions]="[5, 10, 15, 20]"
           showFirstLastButtons
           aria-label="Select page">
         </mat-paginator>
@@ -227,10 +227,11 @@ export class DynamicTableComponent<T> {
     return d === 0 ? '' : new Date(d).toDateString();
   }
 
-  /** Updates datasource to be rendered on table when next button is clicked */
+  /**
+   * Updates datasource to be rendered on table when next button is clicked
+   * */
   changePage(event: PageEvent): void {
-    // TODO inform parent component of page change request
-    this.pageEmitter.emit({page: event.pageIndex, size: event.pageSize});
+    this.pageEmitter.emit({ page: event.pageIndex, size: event.pageSize });
   }
 
   /**

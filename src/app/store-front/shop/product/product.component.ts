@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {ProductDetail} from "../shop.helper";
 import {State, Variant} from "../../../global-utils";
 import {catchError, map, Observable, of, startWith, switchMap} from "rxjs";
-import {ActivatedRoute, RouterLink} from "@angular/router";
+import {ActivatedRoute, Params, RouterLink} from "@angular/router";
 import {ProductService} from "./product.service";
 import {HttpErrorResponse} from "@angular/common/http";
 import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
@@ -49,31 +49,38 @@ export class ProductComponent {
   currentProductDetail?: { currImage: string, detail: ProductDetail };
   sku = '';
 
-  // Fetch ProductDetail on load of application
-  private id: string | null = this.route.snapshot.paramMap.get('id');
-  private uuid: string = this.id === null ? '' : this.id;
-
-  productDetails$: Observable<State<ProductDetail[]>> = this.footerService.currency$
+  /**
+   * Retrieves product id from the route param and then refreshes page.
+   * https://angular.io/api/router/ActivatedRoute#snapshot
+   * */
+  productDetails$: Observable<State<ProductDetail[]>> = this.route.params
     .pipe(
-      switchMap((currency) => this.productService
-        .productDetailsByProductUUID(this.uuid, currency)
-        .pipe(
-          map((arr: ProductDetail[]): State<ProductDetail[]> => {
-            // Add all product detail to product array
-            this.productDetailArray = arr;
+      switchMap((param: Params) => {
+        const obj = param as { path: string, id: string }
 
-            // First item in array
-            const curr: ProductDetail = arr[0];
+        return this.footerService.currency$
+          .pipe(
+            switchMap((currency) => this.productService
+              .productDetailsByProductUUID(obj.id, currency)
+              .pipe(
+                map((arr: ProductDetail[]): State<ProductDetail[]> => {
+                  // Add all product detail to product array
+                  this.productDetailArray = arr;
 
-            // Current ProductDetail with the first item in arr
-            this.currentProductDetail = { currImage: curr.url[0], detail: curr };
+                  // First item in array
+                  const curr: ProductDetail = arr[0];
 
-            return { state: 'LOADED', data: arr };
-          }),
-          startWith({ state: 'LOADING' }),
-          catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.message }))
-        )
-      )
+                  // Current ProductDetail with the first item in arr
+                  this.currentProductDetail = { currImage: curr.url[0], detail: curr };
+
+                  return { state: 'LOADED', data: arr };
+                }),
+                startWith({ state: 'LOADING' }),
+                catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.message }))
+              )
+            )
+          );
+      })
     );
 
   showMore: boolean = false; // Show more paragraph
@@ -137,7 +144,7 @@ export class ProductComponent {
     this.currentColourSize.size = size;
     this.inventory = Number(findVariant.inventory);
 
-    // Reset qty element
+    // reset qty element
     this.reactiveForm.controls['qty'].reset({ value: '', disabled: false });
   }
 

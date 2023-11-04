@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {ProductResponse, TableContent} from "../../shared-util";
-import {Page, SarreCurrency} from "../../../global-utils";
+import {PageChange, ProductResponse, TableContent} from "../../shared-util";
+import {Page} from "../../../global-utils";
 import {catchError, combineLatest, map, Observable, of, startWith, switchMap} from "rxjs";
 import {ProductService} from "./product.service";
 import {DynamicTableComponent} from "../dynamictable/dynamic-table.component";
@@ -55,6 +55,7 @@ import {CategoryService} from "../category/category.service";
               [pageData]="data.data"
               [tHead]="thead"
               (eventEmitter)="infoFromTableComponent($event)"
+              (pageEmitter)="pageChange($event)"
             ></app-dynamic-table>
           </ng-container>
         </ng-container>
@@ -87,6 +88,23 @@ export class ProductComponent {
 
   routeToNewProduct = (): void => {
     this.router.navigate(['/admin/dashboard/new-product']);
+  }
+
+  /**
+   * Makes call to server on change of page or page size
+   * */
+  pageChange(page: PageChange): void {
+    console.log('Page ', page.page)
+    console.log('Size ', page.size)
+    this.data$ = this.productService.currency$
+      .pipe(
+        switchMap((currency) => this.productService
+          .allProducts(page.page, page.size, currency)
+          .pipe(map((res: Page<ProductResponse>) => ({ state: 'LOADED', data: res })))
+        ),
+        startWith({ state: 'LOADING' }),
+        catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error.message }))
+      );
   }
 
   /**

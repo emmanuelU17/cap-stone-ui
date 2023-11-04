@@ -31,11 +31,10 @@ import {CartService} from "../../shop/cart/cart.service";
          [style]="{ 'display': open ? 'flex' : 'none' }"
     >
       <div class="flex-1 bg-black opacity-50 hidden sm:block"></div>
-      <div class="w-full sm:w-1/2 lg:w-1/4">
+      <div class="w-full sm:w-3/4 xl:w-2/5">
         <app-cart></app-cart>
       </div>
     </div>
-
   `,
   changeDetection: ChangeDetectionStrategy.OnPush
 })

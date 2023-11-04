@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {catchError, map, Observable, of, startWith, switchMap, take} from "rxjs";
-import {Category, Filter, SHOP_CONSTANT} from "../shop.helper";
+import {Category, Filter} from "../shop.helper";
 import {CategoryService} from "./category.service";
 import {ShopService} from "../shop.service";
 import {Product} from "../../store-front-utils";
@@ -62,11 +62,6 @@ export class CategoryComponent {
     startWith({ state: 'LOADING' }),
     catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error.message }))
   );
-
-  /** Passes needed detail for ProductDetail. e.g description */
-  setProductClicked = (p: Product): void => {
-    sessionStorage.setItem(SHOP_CONSTANT.PRODUCT, JSON.stringify(p));
-  }
 
   /** Filters products array in ascending or descending order based on price */
   ascendingOrDescending = (arr: Product[]): Product[] => this.utilService.sortArray(this.filterByPrice, arr);
