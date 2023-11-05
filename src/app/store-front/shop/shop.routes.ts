@@ -1,5 +1,4 @@
 import {Routes} from '@angular/router';
-import {COLLECTIONNOTEMPTY} from "../store-front-guard";
 
 export const SHOP_ROUTES: Routes = [
   {

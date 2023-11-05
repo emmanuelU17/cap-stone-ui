@@ -15,7 +15,7 @@
     </div>
 
     <div class="w-full p-1.5 flex justify-center">
-      <h3 class="font-app-card w-fit uppercase border-b border-[var(--app-theme)]">20 products</h3>
+      <h3 class="font-app-card w-fit uppercase border-b border-[var(--app-theme)]">{{ totalElements }} items</h3>
     </div>
 
     <!--  Sort Container  -->
@@ -99,8 +99,10 @@
             [currentPage]="products.data.number"
             [totalPages]="products.data.totalPages"
             [totalElements]="products.data.totalElements"
+            (goTo)="pageNumberClick($event)"
           ></app-paginator>
         </div>
+
       </div>
 
     </ng-container>
