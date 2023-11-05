@@ -42,7 +42,7 @@ import {FooterService} from "./utils/footer/footer.service";
 
         <router-outlet></router-outlet>
 
-        <div class="lg-scr mg-top w-full">
+        <div class="lg-scr">
           <app-footer></app-footer>
         </div>
       </ng-container>

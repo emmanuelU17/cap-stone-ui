@@ -79,7 +79,7 @@
     <ng-container *ngSwitchCase="'LOADED'">
       <div class="max-h-full mt-3" *ngIf="products.data">
         <div class="grid gap-x-6 gap-y-10 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:gap-x-8">
-          <div class="group relative cursor-pointer" *ngFor="let product of ascendingOrDescending(products.data)">
+          <div class="group relative cursor-pointer" *ngFor="let product of ascendingOrDescending(products.data.content)">
             <a routerLink="product/{{ product.product_id }}">
               <app-card
                 [url]="product.image"

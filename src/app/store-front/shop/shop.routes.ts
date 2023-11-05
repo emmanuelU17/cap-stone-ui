@@ -9,7 +9,7 @@ export const SHOP_ROUTES: Routes = [
   {
     path: 'collection',
     loadComponent: () => import('./collection/collection.component').then(m => m.CollectionComponent),
-    canActivate: [COLLECTIONNOTEMPTY]
+    // canActivate: [COLLECTIONNOTEMPTY]
   },
   {
     path: ':path/product/:id',

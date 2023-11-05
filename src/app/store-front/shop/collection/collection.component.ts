@@ -11,11 +11,13 @@ import {RouterLink} from "@angular/router";
 import {HttpErrorResponse} from "@angular/common/http";
 import {FooterService} from "../../utils/footer/footer.service";
 import {CartService} from "../cart/cart.service";
+import {PaginatorComponent} from "../../utils/paginator/paginator.component";
+import {Page} from "../../../global-utils";
 
 @Component({
   selector: 'app-collection',
   standalone: true,
-  imports: [CommonModule, CardComponent, FilterComponent, RouterLink],
+  imports: [CommonModule, CardComponent, FilterComponent, RouterLink, PaginatorComponent],
   templateUrl: './collection.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -49,18 +51,18 @@ export class CollectionComponent {
   products$: Observable<{
     state: string,
     error?: string,
-    data?: Product[]
+    data?: Page<Product>
   }> = this.firstCollection$.pipe(
     switchMap((col: Collection) => this.footerService.currency$
       .pipe(
         switchMap((currency) => this.collectionService
           .productsBasedOnCollection(col.collection_id, currency)
-          .pipe(map((arr: Product[]) => ({ state: 'LOADED', data: arr })))
+          .pipe(map((arr: Page<Product>) => ({ state: 'LOADED', data: arr })))
         )
       )
     ),
-    startWith({state: 'LOADING'}),
-    catchError((err: HttpErrorResponse) => of({state: 'ERROR', error: err.error.message}))
+    startWith({ state: 'LOADING' }),
+    catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error.message }))
   );
 
   /** Filters products array in ascending or descending order based on price */
@@ -84,7 +86,7 @@ export class CollectionComponent {
       .pipe(
         switchMap((currency) => this.collectionService
           .productsBasedOnCollection(collection.collection_id, currency)
-          .pipe(map((arr: Product[]) => ({ state: 'LOADED', data: arr })))
+          .pipe(map((arr: Page<Product>) => ({ state: 'LOADED', data: arr })))
         )
       )
   }

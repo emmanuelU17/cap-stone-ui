@@ -11,6 +11,7 @@ import {RouterLink} from "@angular/router";
 import {HttpErrorResponse} from "@angular/common/http";
 import {FooterService} from "../../utils/footer/footer.service";
 import {CartService} from "../cart/cart.service";
+import {Page} from "../../../global-utils";
 
 @Component({
   selector: 'app-category',
@@ -49,13 +50,13 @@ export class CategoryComponent {
   products$: Observable<{
     state: string,
     error?: string,
-    data?: Product[]
+    data?: Page<Product>
   }> = this.firstCategory$.pipe(
     switchMap((category: Category) => this.footService.currency$
       .pipe(
         switchMap((currency) => this.categoryService
           .productsBasedOnCategory(category.category_id, currency)
-          .pipe(map((arr: Product[]) => ({ state: 'LOADED', data: arr })))
+          .pipe(map((arr: Page<Product>) => ({ state: 'LOADED', data: arr })))
         )
       )
     ),
@@ -85,7 +86,7 @@ export class CategoryComponent {
       .pipe(
         switchMap((currency) => this.categoryService
           .productsBasedOnCategory(category.category_id, currency)
-          .pipe(map((arr: Product[]) => ({ state: 'LOADED', data: arr })))
+          .pipe(map((arr: Page<Product>) => ({ state: 'LOADED', data: arr })))
         )
       )
   }

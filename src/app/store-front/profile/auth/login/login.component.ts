@@ -10,8 +10,9 @@ import {AuthService} from "../../../../service/auth.service";
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, DirectiveModule],
   template: `
-    <form class="w-fit max-[768px]:w-full py-3 px-4 appearance-none shadow-md
-      outline-none border-none block rounded-lg bg-[var(--white)]" [formGroup]="form">
+    <form [formGroup]="form"
+          class="w-fit max-[768px]:w-full py-3 px-4 appearance-none shadow-md
+      outline-none border-none block rounded-lg bg-[var(--white)]">
 
       <div class="mb-4 flex flex-col justify-center items-center">
 

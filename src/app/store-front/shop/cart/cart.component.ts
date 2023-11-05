@@ -32,45 +32,53 @@ import {Router} from "@angular/router";
         </div>
 
         <div class="mt-8">
-          <div class="flow-root">
-            <ul role="list" class="-my-6 divide-y divide-gray-200">
-              <li class="flex py-6" *ngFor="let detail of carts$ | async; let i = index">
-                <div class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-                  <img [src]="detail.url"
-                       alt="product image{{ i }}"
-                       class="h-full w-full object-cover object-center">
-                </div>
-
-                <div class="ml-4 flex flex-1 flex-col">
-                  <div>
-                    <div class="flex justify-between text-base font-medium text-gray-900">
-                      <h3 class="font-app-card cursor-pointer hover:border-b hover:border-black"
-                        (click)="moreInfo(detail.product_id)">{{ detail.product_name }}</h3>
-                      <p class="font-app-card ml-4">{{ currency(detail.currency) }}{{ detail.price }}</p>
-                    </div>
-                    <p class="mt-1 text-sm text-gray-500">{{ detail.colour }}</p>
-                  </div>
-                  <div class="flex flex-1 items-end justify-between text-sm">
-                    <div class="">
-                      <p class="text-gray-500">size {{ detail.size }}</p>
-                      <p class="text-gray-500">qty {{ detail.qty }}</p>
-                      <input type="number"
-                             [value]="detail.qty"
-                             (keyup)="qtyChange($event, detail.sku)"
-                             class="p-2.5 flex-1 w-full rounded-sm border border-solid border-[var(--border-outline)]">
+          <ng-container *ngIf="carts$ | async as carts">
+            <ng-container *ngIf="carts !== undefined && carts !== null && carts.length > 0; else empty">
+              <div class="flow-root">
+                <ul role="list" class="-my-6 divide-y divide-gray-200">
+                  <li class="flex py-6" *ngFor="let detail of carts; let i = index">
+                    <div class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
+                      <img [src]="detail.url"
+                           alt="product image{{ i }}"
+                           class="h-full w-full object-cover object-center">
                     </div>
 
-                    <div class="flex">
-                      <button type="button"
-                              class="font-medium text-[var(--app-theme-hover)]"
-                              [asyncButton]="remove(detail.sku)"
-                      >Remove</button>
+                    <div class="ml-4 flex flex-1 flex-col">
+                      <div>
+                        <div class="flex justify-between text-base font-medium text-gray-900">
+                          <h3 class="font-app-card cursor-pointer hover:border-b hover:border-black"
+                              (click)="moreInfo(detail.product_id)">{{ detail.product_name }}</h3>
+                          <p class="font-app-card ml-4">{{ currency(detail.currency) }}{{ detail.price }}</p>
+                        </div>
+                        <p class="mt-1 text-sm text-gray-500">{{ detail.colour }}</p>
+                      </div>
+                      <div class="flex flex-1 items-end justify-between text-sm">
+                        <div class="">
+                          <p class="text-gray-500">size {{ detail.size }}</p>
+                          <p class="text-gray-500">qty {{ detail.qty }}</p>
+                          <input type="number"
+                                 [value]="detail.qty"
+                                 (keyup)="qtyChange($event, detail.sku)"
+                                 class="p-2.5 flex-1 w-full rounded-sm border border-solid border-[var(--border-outline)]">
+                        </div>
+
+                        <div class="flex">
+                          <button type="button"
+                                  class="font-medium text-[var(--app-theme-hover)]"
+                                  [asyncButton]="remove(detail.sku)"
+                          >Remove</button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              </li>
-            </ul>
-          </div>
+                  </li>
+                </ul>
+              </div>
+            </ng-container>
+
+            <ng-template #empty>Your cart is empty</ng-template>
+
+          </ng-container>
+
         </div>
 
       </div>
