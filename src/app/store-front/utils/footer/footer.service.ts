@@ -13,4 +13,10 @@ export class FooterService {
     this.subject.next(currency);
   }
 
+  currency = (str: string): string => {
+    return str.toUpperCase() === SarreCurrency.NGN
+      ? SarreCurrency.NGN_SYMBOL
+      : SarreCurrency.USD_SYMBOL;
+  }
+
 }

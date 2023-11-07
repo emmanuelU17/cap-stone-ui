@@ -14,6 +14,10 @@
       </button>
     </div>
 
+    <div class="w-full p-1.5 flex justify-center">
+      <h3 class="font-app-card w-fit uppercase border-b border-[var(--app-theme)]">{{ totalElements }} items</h3>
+    </div>
+
     <!--  Sort Container  -->
     <div [style]="{ 'margin-left' : 'auto' }" class="flex items-center">
       <div class="inline-block text-left">
@@ -79,8 +83,8 @@
     <ng-container *ngSwitchCase="'LOADED'">
       <div class="max-h-full mt-3" *ngIf="products.data">
         <div class="grid gap-x-6 gap-y-10 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:gap-x-8">
-          <div class="group relative cursor-pointer" *ngFor="let product of ascendingOrDescending(products.data)">
-            <a routerLink="product/{{ product.product_id }}" (click)="setProductClicked(product)">
+          <div class="group relative cursor-pointer" *ngFor="let product of ascendingOrDescending(products.data.content)">
+            <a routerLink="product/{{ product.product_id }}">
               <app-card
                 [url]="product.image"
                 [name]="product.name"
@@ -90,6 +94,16 @@
             </a>
           </div>
         </div>
+
+        <div class="w-full mt-6 p-1.5">
+          <app-paginator
+            [currentPage]="products.data.number"
+            [totalPages]="products.data.totalPages"
+            [totalElements]="products.data.totalElements"
+            (goTo)="pageNumberClick($event)"
+          ></app-paginator>
+        </div>
+
       </div>
     </ng-container>
 

@@ -4,7 +4,7 @@ import {UpdateCollectionService} from "./update-collection.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {FormBuilder, FormControl, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {CollectionService} from "../collection/collection.service";
-import {CollectionResponse, ProductResponse, TableContent} from "../../shared-util";
+import {CollectionResponse, PageChange, ProductResponse, TableContent} from "../../shared-util";
 import {catchError, combineLatest, map, Observable, of, startWith, switchMap} from "rxjs";
 import {Page} from "../../../global-utils";
 import {HttpErrorResponse} from "@angular/common/http";
@@ -85,6 +85,21 @@ export class UpdateCollectionComponent implements OnInit {
   /** Onclick of product title in table, routes client to update product component */
   eventEmitter(content: TableContent<ProductResponse>): void {
     this.router.navigate([`/admin/dashboard/product/${content.data.product_id}`]);
+  }
+
+  /**
+   * Makes call to server on change of page or page size
+   * */
+  pageChange(page: PageChange): void {
+    this.data$ = this.productService.currency$
+      .pipe(
+        switchMap((currency) => this.updateCollectionService
+          .allProductsByCollection(this.uuid, page.page, page.size, currency)
+          .pipe(map((res) => ({ state: 'LOADED', data: res })))
+        ),
+        startWith({ state: 'LOADING' }),
+        catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error.message }))
+      );
   }
 
   /** Clear input field */

@@ -48,7 +48,7 @@ export class CategoryService {
     currency: SarreCurrency,
     page: number = 0,
     size: number = 20,
-  ): Observable<Product[]> {
+  ): Observable<Page<Product>> {
     const url: string = `${this.HOST}api/v1/client/category/products`;
     return this.http.get<Page<Product>>(url, {
       params: {
@@ -58,10 +58,7 @@ export class CategoryService {
         currency: currency
       },
       withCredentials: true
-    }).pipe(
-      map((page: Page<Product>): Product[] =>
-        page.content === undefined || page.content === null ? [] : page.content)
-    );
+    });
   }
 
 }

@@ -83,14 +83,16 @@ export class UpdateProductComponent implements OnInit {
     state: string,
     error?: string,
     data?: CustomRowMapper[]
-  }> = this.updateProductService.fetchProductDetails(this.uuid).pipe(
-    map((arr: ProductDetailResponse[]) => {
-      const mappers: CustomRowMapper[] = this.toCustomRowMapperArray(arr)
-      return {state: 'LOADED', data: mappers};
-    }),
-    startWith({state: 'LOADING'}),
-    catchError((err: HttpErrorResponse) => of({state: 'ERROR', error: err.error}))
-  );
+  }> = this.updateProductService
+    .fetchProductDetails(this.uuid)
+    .pipe(
+      map((arr: ProductDetailResponse[]) => {
+        const mappers: CustomRowMapper[] = this.toCustomRowMapperArray(arr)
+        return { state: 'LOADED', data: mappers };
+      }),
+      startWith({ state: 'LOADING' }),
+      catchError((err: HttpErrorResponse) => of({state: 'ERROR', error: err.error}))
+    );
 
   // Initially the product variant displayed and when user clicks on variant table
   private productSubject$ = new ReplaySubject<CustomRowMapper>();
@@ -208,7 +210,6 @@ export class UpdateProductComponent implements OnInit {
       this.onChangeCategoryOrCollection = true;
       this.data.categoryId = cat.category_id
     }
-
   }
 
   /** Updates data on change of collection */
@@ -227,7 +228,6 @@ export class UpdateProductComponent implements OnInit {
       this.onChangeCategoryOrCollection = true;
       this.data.collectionId = col.collection_id;
     }
-
   }
 
   /** Makes call to server to update product not product detail */

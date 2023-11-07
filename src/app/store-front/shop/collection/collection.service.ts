@@ -10,6 +10,7 @@ import {Product} from "../../store-front-utils";
   providedIn: 'root'
 })
 export class CollectionService {
+
   HOST: string | undefined = environment.domain;
 
   private readonly http: HttpClient = inject(HttpClient);
@@ -30,13 +31,12 @@ export class CollectionService {
    * */
   fetchCollections(): Observable<Collection[]> {
     const url: string = `${this.HOST}api/v1/client/collection`;
-    return this.http.get<Collection[]>(url, {
-      withCredentials: true
-    }).pipe(tap((arr: Collection[]) => this.subject$.next(arr)));
+    return this.http.get<Collection[]>(url, { withCredentials: true })
+      .pipe(tap((arr: Collection[]) => this.subject$.next(arr)));
   }
 
   /**
-   * Fetches products based on collection id
+   * Returns products based on collection id
    *
    * @param id is the product id
    * @param currency
@@ -48,7 +48,7 @@ export class CollectionService {
     currency: SarreCurrency,
     page: number = 0,
     size: number = 20
-  ): Observable<Product[]> {
+  ): Observable<Page<Product>> {
     const url: string = `${this.HOST}api/v1/client/collection/products`;
     return this.http.get<Page<Product>>(url, {
       params: {
@@ -58,11 +58,7 @@ export class CollectionService {
         currency: currency
       },
       withCredentials: true
-    }).pipe(
-      map((page: Page<Product>): Product[] =>
-        page.content === undefined || page.content === null ? [] : page.content
-      )
-    );
+    });
   }
 
 }

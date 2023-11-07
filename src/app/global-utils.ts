@@ -1,3 +1,6 @@
+export const VARIABLE_IS_NUMERIC = (num: any): boolean =>
+  (typeof (num) === 'number' || typeof (num) === 'string' && num.trim() !== '') && !isNaN(num as number);
+
 export enum SarreCurrency {
   NGN = 'NGN', USD = 'USD',
   NGN_SYMBOL = '₦', USD_SYMBOL = '$'
@@ -38,11 +41,6 @@ export interface RegisterDTO {
   email: string;
   username: string;
   phone: string;
-  password: string;
-}
-
-export interface LoginDTO {
-  principal: string;
   password: string;
 }
 

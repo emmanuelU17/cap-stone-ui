@@ -27,23 +27,13 @@ export interface ProductDetail {
   variants: Variant[];
 }
 
-export enum SHOP_CONSTANT {
-  PRODUCT = 'PRODUCT',
-  CART = 'CART'
-}
-
-export interface CartExpiry {
-  created: number;
-  expire: number;
-  cart: Cart[];
-}
-
 export interface CartDTO {
   sku: string;
   qty: number;
 }
 
 export interface Cart {
+  product_id: string;
   url: string;
   product_name: string;
   price: number;
@@ -53,26 +43,3 @@ export interface Cart {
   sku: string;
   qty: number;
 }
-
-export const DUMMY_CART_DETAILS: Cart[] = [
-  {
-    url: 'https://tailwindui.com/img/ecommerce-images/shopping-cart-page-04-product-01.jpg',
-    product_name: 'Throwback Hip Bag',
-    price: 90.00,
-    currency: 'USD',
-    colour: 'salmon',
-    qty: 2,
-    size: '',
-    sku: ''
-  },
-  {
-    url: 'https://tailwindui.com/img/ecommerce-images/shopping-cart-page-04-product-02.jpg',
-    product_name: 'Medium Stuff Satchel',
-    price: 32.00,
-    currency: 'USD',
-    colour: 'blue',
-    qty: 10,
-    size: '',
-    sku: ''
-  },
-];

@@ -8,7 +8,7 @@ import {RegisterComponent} from "./register/register.component";
   standalone: true,
   imports: [CommonModule, LoginComponent, RegisterComponent],
   template: `
-    <div class="lg-scr mg-top p-20 flex justify-center items-center bg-[var(--all-background)]">
+    <div class="lg-scr mg-top p-20 flex justify-center items-center">
       <ng-container [ngSwitch]="template">
 
         <!-- login template -->

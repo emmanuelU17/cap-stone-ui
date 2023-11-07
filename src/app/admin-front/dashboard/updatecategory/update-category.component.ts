@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {CategoryResponse, ProductResponse, TableContent} from "../../shared-util";
+import {CategoryResponse, PageChange, ProductResponse, TableContent} from "../../shared-util";
 import {FormBuilder, FormControl, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {MatRadioModule} from "@angular/material/radio";
 import {DynamicTableComponent} from "../dynamictable/dynamic-table.component";
@@ -126,6 +126,7 @@ import {MatDialogModule} from "@angular/material/dialog";
                     [pageData]="data.data"
                     [tHead]="thead"
                     (eventEmitter)="eventEmitter($event)"
+                    (pageEmitter)="pageChange($event)"
                   ></app-dynamic-table>
                 </ng-container>
 
@@ -181,9 +182,9 @@ export class UpdateCategoryComponent implements OnInit {
   }> = this.productService.currency$.pipe(
     switchMap((currency) => this.updateCategoryService
       .allProductsByCategory(this.uuid, 0, 20, currency).pipe(
-        map((arr: Page<ProductResponse>) => ({state: 'LOADED', data: arr})),
+        map((arr: Page<ProductResponse>) => ({ state: 'LOADED', data: arr })),
         startWith({state: 'LOADING'}),
-        catchError((err: HttpErrorResponse) => of({state: 'ERROR', error: err.error.message}))
+        catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error.message }))
       )
     )
   );
@@ -214,6 +215,21 @@ export class UpdateCategoryComponent implements OnInit {
   /** Onclick of product title in table, routes client to update product component */
   eventEmitter(content: TableContent<ProductResponse>): void {
     this.router.navigate([`/admin/dashboard/product/${content.data.product_id}`]);
+  }
+
+  /**
+   * Makes call to server on change of page or page size
+   * */
+  pageChange(page: PageChange): void {
+    this.data$ = this.productService.currency$
+      .pipe(
+        switchMap((currency) => this.updateCategoryService
+          .allProductsByCategory(this.uuid, page.page, page.size, currency)
+          .pipe(map((res) => ({ state: 'LOADED', data: res })))
+        ),
+        startWith({ state: 'LOADING' }),
+        catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error.message }))
+      );
   }
 
   /** Updates category */

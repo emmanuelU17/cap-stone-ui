@@ -35,11 +35,11 @@ export class AsyncButtonDirective {
 
     this.clickFunc.pipe(
       tap({
-        next: res => {
+        next: () => {
           this.el.nativeElement.innerHTML = prevElement;
           this.el.nativeElement.disabled = false;
         },
-        error: err => {
+        error: () => {
           this.el.nativeElement.innerHTML = prevElement;
           this.el.nativeElement.disabled = false;
         },
