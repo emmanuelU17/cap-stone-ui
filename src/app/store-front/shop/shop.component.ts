@@ -9,4 +9,4 @@ import {RouterOutlet} from "@angular/router";
   imports: [CommonModule, RouterOutlet],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ShopComponent {}
+export class ShopComponent { }

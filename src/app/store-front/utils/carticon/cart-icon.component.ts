@@ -26,9 +26,9 @@ import {CartService} from "../../shop/cart/cart.service";
     </button>
 
     <!-- Cart component -->
-    <div class="z-15 flex fixed top-0 right-0 bottom-0 left-0"
-         *ngIf="openComponent$ | async as open"
+    <div *ngIf="openComponent$ | async as open"
          [style]="{ 'display': open ? 'flex' : 'none' }"
+         class="z-15 flex fixed top-0 right-0 bottom-0 left-0"
     >
       <div class="flex-1 bg-black opacity-50 hidden sm:block"></div>
       <div class="w-full sm:w-3/4 xl:w-2/5">

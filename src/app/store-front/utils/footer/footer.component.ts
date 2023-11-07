@@ -30,7 +30,6 @@ import {FooterService} from "./footer.service";
 <!--            >E.U</a>-->
 <!--          </h1>-->
 <!--        </div>-->
-
       </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush

@@ -27,17 +27,6 @@ export interface ProductDetail {
   variants: Variant[];
 }
 
-export enum SHOP_CONSTANT {
-  PRODUCT = 'PRODUCT',
-  CART = 'CART'
-}
-
-export interface CartExpiry {
-  created: number;
-  expire: number;
-  cart: Cart[];
-}
-
 export interface CartDTO {
   sku: string;
   qty: number;

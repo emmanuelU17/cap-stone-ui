@@ -4,11 +4,13 @@ import {RouterLink, RouterLinkActive} from "@angular/router";
 import {CollectionService} from "../../shop/collection/collection.service";
 import {CartIconComponent} from "../carticon/cart-icon.component";
 import {Observable} from "rxjs";
+import {SearchService} from "../search/search.service";
+import {SearchComponent} from "../search/search.component";
 
 @Component({
   selector: 'app-store-front-navigation-navigation',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, CartIconComponent],
+    imports: [CommonModule, RouterLink, RouterLinkActive, CartIconComponent, SearchComponent],
   template: `
     <nav class="w-full p-2.5 grid grid-cols-3 bg-transparent" [ngStyle]="navBg">
 
@@ -31,12 +33,8 @@ import {Observable} from "rxjs";
             [style]="{ 'display': openNavMobile ? 'block' : 'none' }"
           >
             <div class="ctn flex flex-col gap-6">
-              <div class="rounded-md">
-                <input type="text" name="search"
-                       class="form-element w-full appearance-none outline-none align-super block p-3 rounded-md"
-                       placeholder="search">
-              </div>
 
+              <!-- Other links -->
               <ul class="flex-col list-none flex gap-8">
                 <li class="mob-li p-2.5" *ngFor="let link of links">
 
@@ -131,19 +129,17 @@ import {Observable} from "rxjs";
       <!-- Right -->
       <div class="flex items-center ml-auto">
         <ul class="flex gap-2 lg:gap-8 justify-end list-none">
-          <li class="max-[990px]:hidden">
-            <a class="uppercase flex">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                   stroke="currentColor" class="w-6 h-6 cursor-pointer" style="color: var(--app-theme)">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                      d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
-              </svg>
-            </a>
+
+          <!--    Search    -->
+          <li>
+              <app-search></app-search>
           </li>
+
           <!--    Shopping cart    -->
           <li>
             <app-cart-icon></app-cart-icon>
           </li>
+
           <!--    Person icon    -->
           <li>
             <a class="uppercase flex" routerLink="/profile">
@@ -163,16 +159,18 @@ import {Observable} from "rxjs";
 })
 export class StoreFrontNavigationComponent {
 
-  private readonly collectionService: CollectionService = inject(CollectionService);
+  private readonly collectionService = inject(CollectionService);
 
   collectionNotEmpty$: Observable<boolean> = this.collectionService.isEmpty$();
 
-  links: Link[] = [{ name: 'home', value: '', bool: false }, { name: 'shop',  value: '',  bool: true, }];
+  links: Link[] = [{ name: 'home', value: '', bool: false }, { name: 'shop', value: '', bool: true, }];
   openNavMobile: boolean = false;
 
   navBg: any;
 
-  /** Applies bg white on nav container when scrolled down */
+  /**
+   * Applies bg white on nav container when scrolled down
+   * */
   @HostListener('document:scroll') scroll(): void {
     let bool: boolean = document.body.scrollTop > 0 || document.documentElement.scrollTop > 0;
     const css = {
