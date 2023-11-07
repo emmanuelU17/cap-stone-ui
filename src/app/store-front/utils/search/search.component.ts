@@ -1,13 +1,28 @@
-import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, Renderer2} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {SearchService} from "./search.service";
-import {Observable, of} from "rxjs";
-import {DirectiveModule} from "../../../directive/directive.module";
+import {
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  fromEvent,
+  map,
+  Observable,
+  of,
+  startWith,
+  switchMap
+} from "rxjs";
+import {FooterService} from "../footer/footer.service";
+import {CardComponent} from "../card/card.component";
+import {Product} from "../../store-front-utils";
+import {Router} from "@angular/router";
+import {SarreCurrency} from "../../../global-utils";
+import {HttpErrorResponse} from "@angular/common/http";
 
 @Component({
   selector: 'app-search',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, CardComponent],
   template: `
       <button (click)="openSearchBar()">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -43,9 +58,8 @@ import {DirectiveModule} from "../../../directive/directive.module";
 
             <input type="search"
                    id="search-bar"
-                   class="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50"
-                   placeholder="I'm searching for..."
-                   (keyup)="onSearch($event)">
+                   class="search-box block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50"
+                   placeholder="I'm searching for...">
           </div>
         </div>
 
@@ -58,12 +72,61 @@ import {DirectiveModule} from "../../../directive/directive.module";
           </div>
 
           <!-- Non-mobile view -->
-          <div class="h-full p-4 bg-purple-400">
-            hello none mobile view
+          <div class="h-full p-4 bg-white">
+            hello
+<!--            <ng-container *ngIf="products$() | async as products">-->
+<!--              <div class="w-full h-full bg-white p-2 xl:p-0 grid gap-3 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">-->
+<!--                <button-->
+<!--                  *ngFor="let product of products"-->
+<!--                  (click)="onItemClicked(product)"-->
+<!--                  class="w-full bg-red-500"-->
+<!--                >-->
+<!--                  <app-card-->
+<!--                    [url]="product.image"-->
+<!--                    [name]="product.name"-->
+<!--                    [price]="product.price"-->
+<!--                  ></app-card>-->
+<!--                </button>-->
+<!--              </div>-->
+<!--            </ng-container>-->
+
+            <ng-container *ngIf="products$() | async as products" [ngSwitch]="products.state">
+
+              <ng-container *ngSwitchCase="'LOADING'">
+                <div class="flex justify-center items-center">
+                  <h1 class="capitalize text-[var(--app-theme-hover)]">
+                    loading...
+                  </h1>
+                </div>
+              </ng-container>
+
+              <ng-container *ngSwitchCase="'ERROR'">
+                <div class="text-3xl text-red-500">
+                  Error: {{ products.error }}
+                </div>
+              </ng-container>
+
+              <ng-container *ngSwitchCase="'LOADED'">
+                <div  *ngIf="products.data"
+                      class="w-full bg-white p-2 xl:p-0 grid gap-3 grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+                >
+                  <button
+                    *ngFor="let product of products.data"
+                    (click)="onItemClicked(product)"
+                  >
+                    <app-card
+                      [url]="product.image"
+                      [name]="product.name"
+                      [price]="product.price"
+                    ></app-card>
+                  </button>
+                </div>
+
+              </ng-container>
+
+            </ng-container>
           </div>
-
         </div>
-
       </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -71,6 +134,10 @@ import {DirectiveModule} from "../../../directive/directive.module";
 export class SearchComponent {
 
   private readonly searchService = inject(SearchService);
+  private readonly footerService = inject(FooterService);
+  private readonly router = inject(Router);
+  private readonly render = inject(Renderer2);
+
   openSearchComponent$ = this.searchService.openSearchComponent$;
 
   closeSearchBar(): void {
@@ -81,9 +148,57 @@ export class SearchComponent {
     this.searchService.openComponent(true);
   }
 
-  onSearch(event: KeyboardEvent): void {
-    const s = (event.target as HTMLInputElement).value;
-    console.log('Search values ', s);
+  onItemClicked(p: Product): void {
+    this.router.navigate([`/shop/category/product/${p.product_id}`]);
   }
+
+  /**
+   * Makes call to server to search for item based on user input and currency
+   * */
+  products$ = () => {
+    const element = this.render.selectRootElement('.search-box', true);
+    return fromEvent<KeyboardEvent>(element, 'keyup')
+      .pipe(
+        debounceTime(800),
+        distinctUntilChanged(),
+        map((e: KeyboardEvent) => (e.target as HTMLInputElement).value),
+        switchMap((value: string) => this.footerService.currency$
+          .pipe(map((c: SarreCurrency) => ({ value: value, currency: c })))
+        ),
+        switchMap((obj: { value: string, currency: SarreCurrency }) => this.searchImpl(obj.value, obj.currency))
+      );
+  }
+
+  private searchImpl = (value: string, currency: SarreCurrency): Observable<{
+    state: string,
+    error?: string,
+    data?: Product[]
+  }> => this.searchService
+    ._search(value, currency)
+    .pipe(
+      map((products) => ({ state: 'LOADED', data: products })),
+      startWith({ state: 'LOADING' }),
+      catchError((err: HttpErrorResponse) => {
+        const message = err.error ? err.error.message : err.message;
+        return of({ state: 'ERROR', error: message });
+      })
+    );
+
+  // products$ = (): Observable<Product[]> => {
+  //   const element = this.render.selectRootElement('.search-box', true);
+  //   return fromEvent<KeyboardEvent>(element, 'keyup')
+  //     .pipe(
+  //       debounceTime(800),
+  //       distinctUntilChanged(),
+  //       map((e: KeyboardEvent) => (e.target as HTMLInputElement).value),
+  //       switchMap(value => this.footerService.currency$
+  //         .pipe(
+  //           switchMap(currency => value.trim() === ''
+  //             ? of() : this.searchService._search(value, currency)
+  //           )
+  //         )
+  //       )
+  //     );
+  // }
 
 }

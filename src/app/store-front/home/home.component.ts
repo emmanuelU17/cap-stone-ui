@@ -90,9 +90,11 @@ export class HomeComponent {
     startWith(this.images[0])
   );
 
-  /** Route to product page */
+  /**
+   * Route to product page
+   * */
   clicked(p: Product): void {
-    this.router.navigate([`/shop/category/product/${p.product_id}`])
+    this.router.navigate([`/shop/category/product/${p.product_id}`]);
   }
 
 }
