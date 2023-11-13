@@ -1,4 +1,4 @@
-<ng-container *ngIf="productDetails$ | async as detail" [ngSwitch]="detail.state">
+<div *ngIf="productDetails$ | async as detail" [ngSwitch]="detail.state">
   <ng-container *ngSwitchCase="'LOADING'">
     <div class="lg-scr h-full p-20 flex justify-center items-center">
       <h1 class="capitalize text-[var(--app-theme-hover)]">
@@ -24,18 +24,18 @@
         <div *ngIf="currentProductDetail" class="p-2.5 flex flex-col gap-1.5">
 
           <!-- image -->
-          <div class="h-40 max-h-auto rounded-sm flex-1">
+          <div class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75">
             <img [src]="currentProductDetail.currImage"
                  alt="image"
-                 class="h-full w-full object-cover object-center">
+                 class="h-full w-full object-cover object-center lg:h-full lg:w-full">
           </div>
 
           <!-- image carousel -->
           <ul class="p-2 flex gap-1.5 overflow-auto">
             <li
-              class="border-none outline-none cursor-pointer bg-transparent min-h-[64px] min-w-[64px] max-h-[75px] max-w-[75px]"
               *ngFor="let img of currentProductDetail.detail.url"
               (click)="currentProductDetail.currImage = img"
+              class="border-none outline-none cursor-pointer bg-transparent min-h-[64px] min-w-[64px] max-h-[75px] max-w-[75px]"
             >
               <img class="w-full h-full object-cover object-center" [src]="img" alt="image">
             </li>
@@ -76,10 +76,10 @@
                 <!-- Size -->
                 <div>
                   <select
+                    (change)="onselectSize($event)"
                     name="size"
                     class="w-full p-1 rounded-md cursor-pointer border border-solid border-[var(--app-theme)]"
                     formControlName="size"
-                    (change)="onselectSize($event)"
                   >
                     <option value="" disabled selected>SIZE</option>
                     <option *ngFor="let variants of currentProductDetail.detail.variants">
@@ -157,4 +157,4 @@
     </div>
 
   </ng-container>
-</ng-container>
+</div>

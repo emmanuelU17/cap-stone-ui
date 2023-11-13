@@ -18,8 +18,7 @@ import {FooterService} from "../../utils/footer/footer.service";
   imports: [CommonModule, ReactiveFormsModule, RouterLink, DirectiveModule],
   templateUrl: './product.component.html',
   styles: [
-    `
-      .show {
+    `.show {
         overflow: visible;
         height: auto;
       }
@@ -64,6 +63,15 @@ export class ProductComponent {
               .productDetailsByProductUUID(obj.id, currency)
               .pipe(
                 map((arr: ProductDetail[]): State<ProductDetail[]> => {
+
+                  arr.forEach(a => {
+                    a.url = [
+                      'assets/image/sarre1.jpg',
+                      'assets/image/sarre1.jpg',
+                      'assets/image/sarre1.jpg',
+                    ];
+                  })
+
                   // Add all product detail to product array
                   this.productDetailArray = arr;
 

@@ -59,14 +59,12 @@ export class StoreComponent {
   private readonly homeService = inject(HomeService);
   private readonly cartService = inject(CartService);
 
-  private cartItems$ = this.footerService.currency$.pipe(
-    switchMap((currency) => this.cartService.cartItems(currency))
-  );
-  private homeProducts$: Observable<Product[]> = this.footerService.currency$.pipe(
-    switchMap((currency) => this.homeService.homeProducts(currency))
-  );
-  private categories$: Observable<Category[]> = this.categoryService.fetchCategories();
-  private collections$: Observable<Collection[]> = this.collectionService.fetchCollections();
+  private readonly cartItems$ = this.footerService.currency$
+    .pipe(switchMap((currency) => this.cartService.cartItems(currency)));
+  private readonly homeProducts$: Observable<Product[]> = this.footerService.currency$
+    .pipe(switchMap((currency) => this.homeService.homeProducts(currency)));
+  private readonly categories$: Observable<Category[]> = this.categoryService.fetchCategories();
+  private readonly collections$: Observable<Collection[]> = this.collectionService.fetchCollections();
 
   // On load of storefront routes, get necessary data to improve user experience
   combine$: Observable<{
@@ -80,7 +78,10 @@ export class StoreComponent {
     .pipe(
       map((): { state: string } => ({ state: 'LOADED' })),
       startWith({ state: 'LOADING' }),
-      catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error.message }))
+      catchError((err: HttpErrorResponse) => {
+        const message = err.error ? err.error.message : err.message;
+        return of({ state: 'ERROR', error: message });
+      })
     );
 
 }

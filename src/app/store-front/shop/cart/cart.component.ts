@@ -54,8 +54,7 @@ import {Router} from "@angular/router";
                       </div>
                       <div class="flex flex-1 items-end justify-between text-sm">
                         <div class="">
-                          <p class="text-gray-500">size {{ detail.size }}</p>
-                          <p class="text-gray-500">qty {{ detail.qty }}</p>
+                          <p class="text-gray-500">{{ detail.size }}</p>
                           <input type="number"
                                  [value]="detail.qty"
                                  (keyup)="qtyChange($event, detail.sku)"
@@ -157,11 +156,9 @@ export class CartComponent {
    * Sums the total of product in cart
    * */
   total = (): Observable<number> => {
-    return this.carts$.pipe(
-      map((arr: Cart[]) =>
-        arr.reduce((sum: number, cart: Cart) => sum + (cart.qty * cart.price), 0)
-      )
-    );
+    return this.carts$
+      .pipe(map((arr: Cart[]) =>
+        arr.reduce((sum: number, cart: Cart) => sum + (cart.qty * cart.price), 0)));
   }
 
   /**
