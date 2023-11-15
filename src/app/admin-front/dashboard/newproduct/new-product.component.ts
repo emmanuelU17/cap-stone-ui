@@ -108,11 +108,14 @@ export class NewProductComponent {
    * @return void
    * */
   remove(file: File): void {
-    const index: number = this.files.findIndex((value: File) => value.name === file.name);
+    const index: number = this.files
+      .findIndex((value: File) => value.name === file.name);
     this.files.splice(index, 1);
   }
 
-  /** Sets Size and Inventory to FormGroup */
+  /**
+   * Sets Size and Inventory to FormGroup
+   * */
   sizeInv(arr: SizeInventory[]): void {
     this.rows = arr;
   }
@@ -167,7 +170,8 @@ export class NewProductComponent {
           );
       }),
       catchError((err: HttpErrorResponse) => {
-        this.toastService.toastMessage(err.error.message);
+        const message = err.error ? err.error.message : err.message;
+        this.toastService.toastMessage(message);
         return of(err.status);
       })
     );

@@ -19,7 +19,7 @@ import {AuthService} from "../../service/auth.service";
           </div>
 
           <p class="font-app-card text-center">
-            email: <strong class="mr-1.5">admin@admin.com</strong>
+            email: <strong class="mr-1.5">admin&#64;admin.com</strong>
             password: <strong>password123</strong>
           </p>
         </div>

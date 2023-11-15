@@ -64,13 +64,13 @@ export class ProductComponent {
               .pipe(
                 map((arr: ProductDetail[]): State<ProductDetail[]> => {
 
-                  arr.forEach(a => {
-                    a.url = [
-                      'assets/image/sarre1.jpg',
-                      'assets/image/sarre1.jpg',
-                      'assets/image/sarre1.jpg',
-                    ];
-                  })
+                  // arr.forEach(a => {
+                  //   a.url = [
+                  //     'assets/image/sarre1.jpg',
+                  //     'assets/image/sarre1.jpg',
+                  //     'assets/image/sarre1.jpg',
+                  //   ];
+                  // })
 
                   // Add all product detail to product array
                   this.productDetailArray = arr;

@@ -13,7 +13,7 @@ export class AsyncButtonDirective {
   @Input('asyncButton') clickFunc!: Observable<unknown>;
 
   @HostListener('click', ['$event']) onClick(): void {
-    const spinner: string = `
+    const spinner = `
         <div role="status" class="
              inline-block
              h-8 w-8

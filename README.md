@@ -1,7 +1,7 @@
 # Sarre The Brand UI
 
 ## Technologies
-* Angular 16
+* Angular 17
 * Tailwind CSS
 * Material UI
 * CKEditor 4
@@ -9,7 +9,7 @@
 ## Getting Started
 * NPM installed
 * Angular cli install
-* ng serve (Note: to run application, you'll need backend code as up and running as csrf token is needed to display UI )
+* ng serve (Note: to run application, you'll need backend code up and running as csrf token is needed to display UI)
 
 ## To convert source code to docker image
 * [Install pack](https://buildpacks.io/docs/tools/pack/)

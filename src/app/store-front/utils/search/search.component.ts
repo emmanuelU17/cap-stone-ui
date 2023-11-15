@@ -124,30 +124,4 @@ export class SearchComponent {
       );
   }
 
-  // products$ = (): Observable<{ state: Observable<string>, error?: string, data?: Product[] }> => {
-  //   const element = this.render.selectRootElement('.search-box', true);
-  //   return fromEvent<KeyboardEvent>(element, 'keyup')
-  //     .pipe(
-  //       debounceTime(800),
-  //       distinctUntilChanged(),
-  //       map((e: KeyboardEvent) => (e.target as HTMLInputElement).value),
-  //       switchMap((value: string) => this.footerService.currency$
-  //         .pipe(map((c: SarreCurrency) => ({ value: value, currency: c })))
-  //       ),
-  //       switchMap((obj: { value: string, currency: SarreCurrency })=> obj.value === ''
-  //         ? of()
-  //         : this.searchService._search(obj.value, obj.currency)
-  //       ),
-  //       map((products) => {
-  //         this.p = products
-  //         return ({ state: of('LOADED'), data: products });
-  //       }),
-  //       startWith({ state: of('LOADING') }),
-  //       catchError((err: HttpErrorResponse) => {
-  //         const message = err.error ? err.error.message : err.message;
-  //         return of({ state: of('ERROR'), error: message });
-  //       })
-  //     );
-  // }
-
 }

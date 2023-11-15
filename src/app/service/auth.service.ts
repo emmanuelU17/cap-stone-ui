@@ -18,7 +18,6 @@ export class AuthService {
   private readonly router: Router = inject(Router);
 
   register(obj: RegisterDTO, path: string, route?: string): Observable<number> {
-    // api/v1/client/auth/register
     const url = `${this.HOST}${path}`;
     return this.http.post<RegisterDTO>(url, obj, {
         headers: { 'content-type': 'application/json' },

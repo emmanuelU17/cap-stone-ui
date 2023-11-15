@@ -1,12 +1,23 @@
-import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, DestroyRef, inject, Renderer2} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {map, Observable, switchMap} from "rxjs";
+import {
+  BehaviorSubject,
+  debounceTime,
+  distinctUntilChanged,
+  fromEvent,
+  map,
+  Observable,
+  of,
+  switchMap,
+  tap
+} from "rxjs";
 import {CartService} from "./cart.service";
 import {DirectiveModule} from "../../../directive/directive.module";
 import {Cart} from "../shop.helper";
 import {FooterService} from "../../utils/footer/footer.service";
 import {SarreCurrency, VARIABLE_IS_NUMERIC} from "../../../global-utils";
 import {Router} from "@angular/router";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'app-cart',
@@ -33,9 +44,9 @@ import {Router} from "@angular/router";
 
         <div class="mt-8">
           <ng-container *ngIf="carts$ | async as carts">
-            <ng-container *ngIf="carts !== undefined && carts !== null && carts.length > 0; else empty">
+            <ng-container *ngIf="carts !== undefined && carts.length > 0; else empty">
               <div class="flow-root">
-                <ul role="list" class="-my-6 divide-y divide-gray-200">
+                <ul role="list" class="relative -my-6 divide-y divide-gray-200">
                   <li class="flex py-6" *ngFor="let detail of carts; let i = index">
                     <div class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
                       <img [src]="detail.url"
@@ -57,12 +68,12 @@ import {Router} from "@angular/router";
                           <p class="text-gray-500">{{ detail.size }}</p>
                           <input type="number"
                                  [value]="detail.qty"
-                                 (keyup)="qtyChange($event, detail.sku)"
-                                 class="p-2.5 flex-1 w-full rounded-sm border border-solid border-[var(--border-outline)]">
+                                 (keyup)="qtyChange(detail.sku)"
+                                 class="qty-box p-2.5 flex-1 w-full rounded-sm border border-solid border-[var(--border-outline)]">
                         </div>
 
                         <div class="flex">
-                          <button type="button"
+                          <button type="submit"
                                   class="font-medium text-[var(--app-theme-hover)]"
                                   [asyncButton]="remove(detail.sku)"
                           >Remove</button>
@@ -70,6 +81,28 @@ import {Router} from "@angular/router";
                       </div>
                     </div>
                   </li>
+
+                  <!-- spinner -->
+                  <div *ngIf="spinnerState$ | async as spinner"
+                       [style]="{ 'display': spinner ? 'flex' : 'none' }"
+                       class="absolute top-0 right-0 bottom-0 left-0 flex justify-center items-center bg-transparent"
+                  >
+                    <div role="status" class="
+                        inline-block
+                        h-8 w-8
+                        animate-spin
+                        rounded-full
+                        border-4 border-solid border-r-[var(--app-theme)]
+                        align-[-0.125em]
+                        text-primary motion-reduce:animate-[spin_1.5s_linear_infinite]
+                        "
+                    >
+                      <span class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
+                        Loading...
+                      </span>
+                    </div>
+                  </div>
+
                 </ul>
               </div>
             </ng-container>
@@ -86,9 +119,13 @@ import {Router} from "@angular/router";
       <div class="border-t border-gray-200 px-4 py-6 sm:px-6">
         <div class="flex justify-between text-base font-medium text-gray-900">
           <p>Subtotal</p>
-          <p *ngIf="total() | async as total"><span *ngIf="currency$ | async as c">{{ c }}</span>{{ total }}</p>
+          <p *ngIf="total() | async as total">
+            <span *ngIf="currency$ | async as c">{{ c }}</span>{{ total }}
+          </p>
         </div>
-        <p class="mt-0.5 text-sm text-gray-500">Shipping and taxes calculated at checkout.</p>
+        <p class="mt-0.5 text-sm text-gray-500">
+          Shipping and taxes calculated at checkout.
+        </p>
         <div class="mt-6">
           <button type="submit"
                   (click)="checkout()"
@@ -122,7 +159,14 @@ export class CartComponent {
 
   private readonly cartService = inject(CartService);
   private readonly footService = inject(FooterService);
+  private readonly render = inject(Renderer2);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
+
+  private spinnerSubject= new BehaviorSubject<boolean>(false);
+  spinnerState$ = this.spinnerSubject.asObservable();
+
+  private setSpinner = (bool: boolean): void => this.spinnerSubject.next(bool);
 
   carts$ = this.cartService.cart$;
   currency$ = this.footService.currency$
@@ -162,24 +206,45 @@ export class CartComponent {
   }
 
   /**
-   * Receives users input for the total amount of items
-   * https://angular.io/guide/user-input
+   * Makes call to server on change of qty
    * */
-  qtyChange(event: KeyboardEvent, sku: string): void {
-    const str = (event.target as HTMLInputElement).value;
+  qtyChange(sku: string): void {
+    const element = this.render.selectRootElement('.qty-box', true);
 
-    if (!VARIABLE_IS_NUMERIC(str)) {
-      return;
-    }
+    fromEvent<KeyboardEvent>(element, 'keyup')
+      .pipe(
+        debounceTime(700),
+        distinctUntilChanged(),
+        map((val: KeyboardEvent) => (val.target as HTMLInputElement).value),
+        switchMap((value: string) => {
+          if (!VARIABLE_IS_NUMERIC(value)) {
+            return of(0);
+          }
 
-    // TODO update users qty in server
-    const qty = Number(str);
+          const qty = Number(value);
 
-    // if (qty <= 0) {
-    //   this.remove(sku);
-    // } else {
-    //
-    // }
+          this.setSpinner(true);
+          return qty < 1
+            ? this.remove(sku)
+              .pipe(
+                tap({
+                  next: () => this.setSpinner(false),
+                  error: () => this.setSpinner(false),
+                  complete: () => this.setSpinner(false)
+                })
+              )
+            : this.cartService.createCart({ sku: sku, qty: qty })
+              .pipe(
+                tap({
+                  next: () => this.setSpinner(false),
+                  error: () => this.setSpinner(false),
+                  complete: () => this.setSpinner(false)
+                })
+              );
+        }),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe();
   }
 
   checkout(): void { }

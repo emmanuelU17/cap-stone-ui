@@ -70,20 +70,6 @@ import {RegisterDTO} from 'src/app/global-utils';
           >
         </div>
 
-        <!-- username -->
-        <div class="hidden">
-          <label for="username" class="block mb-2 text-sm font-medium text-gray-900">username</label>
-          <input type="text"
-                 id="username"
-                 formControlName="username"
-                 placeholder="username"
-                 class="
-             bg-gray-50 border border-gray-300 text-gray-900
-             sm:text-sm rounded-md block w-full p-2.5
-             "
-          >
-        </div>
-
         <!-- phone -->
         <div>
           <label for="phone" class="block mb-2 text-sm font-medium text-gray-900">
@@ -173,11 +159,12 @@ export class RegisterComponent {
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
 
+  viewPassword = false;
+
   form = this.fb.group({
     firstname: new FormControl('', [Validators.required]),
     lastname: new FormControl('', [Validators.required]),
     email: new FormControl('', [Validators.required, Validators.email]),
-    username: new FormControl('username', Validators.required),
     phone: new FormControl('', [Validators.required, Validators.pattern('[0-9]{3}-[0-9]{3}-[0-9]{4}')]),
     password: new FormControl('', [Validators.required]),
     cPassword: new FormControl('', [Validators.required]),
@@ -192,18 +179,16 @@ export class RegisterComponent {
     const cPassword = this.form.controls['cPassword'].value;
     return (!password || !cPassword) || (password !== cPassword);
   };
-  viewPassword = false;
 
   submit(): Observable<number> {
     const firstname = this.form.controls['firstname'].value;
     const lastname = this.form.controls['lastname'].value;
     const email = this.form.controls['email'].value;
-    const username = this.form.controls['username'].value;
     const phone = this.form.controls['phone'].value;
     const password = this.form.controls['password'].value;
     const cPassword = this.form.controls['cPassword'].value;
 
-    if (!firstname || !lastname || !email || !username || !phone || !password || !cPassword) {
+    if (!firstname || !lastname || !email || !phone || !password || !cPassword) {
       return of();
     }
 
@@ -211,23 +196,18 @@ export class RegisterComponent {
       firstname: firstname,
       lastname: lastname,
       email: email,
-      username: username,
+      username: '',
       phone: phone,
       password: password
     }
 
-    return this.authService.register(payload, 'api/v1/worker/auth/register').pipe(
+    return this.authService.register(payload, 'api/v1/worker/auth/register')
+      .pipe(
         tap((status): void => {
           if (status >= 200 && status < 300) {
-            this.form.reset({
-              'firstname': '',
-              'lastname': '',
-              'email': '',
-              'username': 'username',
-              'phone': '',
-              'password': '',
-              'cPassword': ''
-            });
+            for (let key in this.form.controls) {
+              this.form.get(`${key}`)?.setValue('');
+            }
           } // end of if
         })
       );
