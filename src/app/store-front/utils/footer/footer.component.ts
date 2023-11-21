@@ -36,7 +36,7 @@ import {FooterService} from "./footer.service";
 })
 export class FooterComponent {
 
-  year: number = new Date().getFullYear();
+  year = new Date().getFullYear();
   currencies: SarreCurrency[] = [SarreCurrency.NGN, SarreCurrency.USD];
 
   private readonly footerService = inject(FooterService);

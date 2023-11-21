@@ -29,7 +29,7 @@ export class SearchService {
    *
    * @param s is the user param search choice
    * @param currency is the currency set in footerService
-   * @return Observable of type Page<Product>
+   * @return Observable of Product array
    * */
   _search(s: string, currency: SarreCurrency): Observable<Product[]> {
     const url = `${this.HOST}api/v1/client/product/find?search=${s}&currency=${currency}`;

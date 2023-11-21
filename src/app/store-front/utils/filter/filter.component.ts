@@ -103,9 +103,11 @@ export class FilterComponent<T> {
   @Input() data: T[] = [];
   @Output() emitter = new EventEmitter<T>();
 
-  indexToOpen: number = -1;
+  indexToOpen = -1;
 
-  /** Close filter component */
+  /**
+   * Close filter component
+   * */
   closeModal(): void {
     this.render.selectRootElement('.filter-btn', true).style.display = 'none';
   }

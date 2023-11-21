@@ -68,7 +68,7 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
                           <p class="text-gray-500">{{ detail.size }}</p>
                           <input type="number"
                                  [value]="detail.qty"
-                                 (keyup)="qtyChange(detail.sku)"
+                                 (click)="qtyChange(detail.sku)"
                                  class="qty-box p-2.5 flex-1 w-full rounded-sm border border-solid border-[var(--border-outline)]">
                         </div>
 
@@ -153,6 +153,19 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
     </div>
   `,
+  styles: [`
+    /* Chrome, Safari, Edge, Opera */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    /* Firefox */
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+  `],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CartComponent {

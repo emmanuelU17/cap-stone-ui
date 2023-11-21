@@ -45,7 +45,9 @@ export class CartIconComponent {
   count$ = this.service.count$;
   openComponent$ = this.service.onOpenCartComponent$
 
-  /** Opens Cart component */
+  /**
+   * Opens Cart component
+   * */
   onOpenCartComponent = (): void => {
     this.service.close = true
   }
