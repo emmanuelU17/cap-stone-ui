@@ -97,6 +97,10 @@ export class PaginatorComponent {
 
   @Output() goTo = new EventEmitter<number>();
 
+  /**
+   * Displays from 0 to the total number of items (totalPages)
+   * passed by the parent component
+   * */
   range(): number[] {
     return [...Array(this.totalPages).keys()];
   }

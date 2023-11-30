@@ -14,7 +14,7 @@ import {MatRadioModule} from "@angular/material/radio";
 import {DirectiveModule} from "../../../directive/directive.module";
 import {ProductService} from "../product/product.service";
 import {HttpErrorResponse} from "@angular/common/http";
-import {ToastService} from "../../../service/toast/toast.service";
+import {ToastService} from "../../../shared-comp/toast/toast.service";
 import {SizeInventoryService} from "../sizeinventory/size-inventory.service";
 import {Router} from "@angular/router";
 import {SarreCurrency} from "../../../global-utils";

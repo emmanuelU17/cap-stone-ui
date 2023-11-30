@@ -12,7 +12,7 @@ import {HttpErrorResponse} from "@angular/common/http";
 import {FooterService} from "../../utils/footer/footer.service";
 import {CartService} from "../cart/cart.service";
 import {Page} from "../../../global-utils";
-import {PaginatorComponent} from "../../utils/paginator/paginator.component";
+import {PaginatorComponent} from "../../../shared-comp/paginator/paginator.component";
 
 @Component({
   selector: 'app-category',

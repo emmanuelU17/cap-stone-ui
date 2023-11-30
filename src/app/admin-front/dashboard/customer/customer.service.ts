@@ -3,7 +3,7 @@ import {environment} from "../../../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {catchError, Observable, of} from "rxjs";
 import {Page, SarreUser} from "../../../global-utils";
-import {ToastService} from "../../../service/toast/toast.service";
+import {ToastService} from "../../../shared-comp/toast/toast.service";
 
 @Injectable({
   providedIn: 'root'

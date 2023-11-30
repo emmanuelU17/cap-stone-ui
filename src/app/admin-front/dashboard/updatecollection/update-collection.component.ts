@@ -14,7 +14,7 @@ import {MatRadioModule} from "@angular/material/radio";
 import {DirectiveModule} from "../../../directive/directive.module";
 import {ProductService} from "../product/product.service";
 import {MatDialogModule} from "@angular/material/dialog";
-import {ToastService} from "../../../service/toast/toast.service";
+import {ToastService} from "../../../shared-comp/toast/toast.service";
 
 @Component({
   selector: 'app-update-collection',

@@ -162,7 +162,7 @@ export class AdminDashboardComponent {
   dashBoardLinks: Display[] = DASHBOARDLINKS;
 
   // Toggle behaviour when a link are clicked
-  leftColumn: boolean = false;
+  leftColumn = false;
 
   // Principal (email)
   private principal$: Observable<AuthResponse> = this.dashboardService._principal$.pipe();

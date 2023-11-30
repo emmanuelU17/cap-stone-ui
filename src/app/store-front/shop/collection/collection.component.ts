@@ -11,7 +11,7 @@ import {RouterLink} from "@angular/router";
 import {HttpErrorResponse} from "@angular/common/http";
 import {FooterService} from "../../utils/footer/footer.service";
 import {CartService} from "../cart/cart.service";
-import {PaginatorComponent} from "../../utils/paginator/paginator.component";
+import {PaginatorComponent} from "../../../shared-comp/paginator/paginator.component";
 import {Page} from "../../../global-utils";
 
 @Component({

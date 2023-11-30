@@ -3,7 +3,7 @@ import {environment} from "../../environments/environment";
 import {HttpClient, HttpErrorResponse, HttpResponse} from "@angular/common/http";
 import {catchError, map, Observable, of} from "rxjs";
 import {AuthResponse, RegisterDTO} from "../global-utils";
-import {ToastService} from "./toast/toast.service";
+import {ToastService} from "../shared-comp/toast/toast.service";
 import {Router} from "@angular/router";
 
 @Injectable({

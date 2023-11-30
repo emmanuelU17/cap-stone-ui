@@ -9,7 +9,7 @@ import {CollectionRequest} from "../../shared-util";
 import {DirectiveModule} from "../../../directive/directive.module";
 import {CollectionService} from "../collection/collection.service";
 import {HttpErrorResponse} from "@angular/common/http";
-import {ToastService} from "../../../service/toast/toast.service";
+import {ToastService} from "../../../shared-comp/toast/toast.service";
 import {Router} from "@angular/router";
 
 @Component({

@@ -24,7 +24,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {CustomUpdateVariant} from "../updatevariant/update-variant";
 import {MatDialog, MatDialogModule} from "@angular/material/dialog";
 import {UpdateVariantComponent} from "../updatevariant/update-variant.component";
-import {ToastService} from "../../../service/toast/toast.service";
+import {ToastService} from "../../../shared-comp/toast/toast.service";
 import {CreateVariantComponent} from "../create-variant/create-variant.component";
 import {UpdateProductService} from "./update-product.service";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";

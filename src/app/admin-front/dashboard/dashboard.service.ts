@@ -4,7 +4,7 @@ import {Router} from "@angular/router";
 import {HttpClient, HttpResponse} from "@angular/common/http";
 import {environment} from "../../../environments/environment";
 import {AuthResponse} from "../../global-utils";
-import {ToastService} from "../../service/toast/toast.service";
+import {ToastService} from "../../shared-comp/toast/toast.service";
 
 @Injectable({
   providedIn: 'root'
