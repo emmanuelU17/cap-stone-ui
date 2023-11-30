@@ -1,8 +1,8 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {environment} from "../../environments/environment";
 import {Observable} from "rxjs";
 import {CSRF} from "../global-utils";
+import {environment} from "../../environments/environment";
 
 @Injectable({
   providedIn: 'root'
@@ -10,11 +10,13 @@ import {CSRF} from "../global-utils";
 export class AppService {
 
   private readonly HOST: string | undefined = environment.domain;
-  private readonly http: HttpClient = inject(HttpClient);
+  private readonly http = inject(HttpClient);
 
-  /** Retrieve CSRF token on load of application */
+  /**
+   * Retrieve CSRF token on load of application
+   * */
   csrf(): Observable<CSRF> {
-    const url: string = `${this.HOST}api/v1/auth/csrf`;
+    const url: string = `${this.HOST}api/v1/csrf`;
     return this.http.get<CSRF>(url, { withCredentials: true });
   }
 

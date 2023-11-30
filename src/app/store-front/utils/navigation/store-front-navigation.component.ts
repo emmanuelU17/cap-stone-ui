@@ -4,13 +4,12 @@ import {RouterLink, RouterLinkActive} from "@angular/router";
 import {CollectionService} from "../../shop/collection/collection.service";
 import {CartIconComponent} from "../carticon/cart-icon.component";
 import {Observable} from "rxjs";
-import {SearchService} from "../search/search.service";
 import {SearchComponent} from "../search/search.component";
 
 @Component({
   selector: 'app-store-front-navigation-navigation',
   standalone: true,
-    imports: [CommonModule, RouterLink, RouterLinkActive, CartIconComponent, SearchComponent],
+  imports: [CommonModule, RouterLink, RouterLinkActive, CartIconComponent, SearchComponent],
   template: `
     <nav class="w-full p-2.5 grid grid-cols-3 bg-transparent" [ngStyle]="navBg">
 

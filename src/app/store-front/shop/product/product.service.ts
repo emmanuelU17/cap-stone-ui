@@ -18,6 +18,16 @@ export class ProductService {
     return this.http.get<ProductDetail[]>(url, {
       withCredentials: true
     })
+      // .pipe(
+      //   map((arr) => {
+      //
+      //     for (let detail of arr) {
+      //       detail.url = DUMMY_IMAGES;
+      //     }
+      //
+      //     return arr;
+      //   })
+      // );
   }
 
 }

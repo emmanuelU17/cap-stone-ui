@@ -4,26 +4,34 @@ import {concatMap, delay, from, Observable, of, repeat, startWith, switchMap} fr
 import {HomeService} from "./home.service";
 import {CardComponent} from "../utils/card/card.component";
 import {Product} from "../store-front-utils";
-import {Router} from "@angular/router";
+import {Router, RouterLink} from "@angular/router";
 import {CartService} from "../shop/cart/cart.service";
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, CardComponent],
+  imports: [CommonModule, CardComponent, RouterLink],
   template: `
     <div class="min-h-screen w-full">
-      <div class="trans relative flex justify-center items-center min-h-screen bg-center bg-no-repeat bg-cover"
+      <div class="trans flex min-h-screen bg-center bg-no-repeat bg-cover"
            *ngIf="image$ | async as image" [style.background-image]="'url(' + image + ')'"
       >
-        <h1 class="capitalize text-white bg-font">apparel for confident women</h1>
+        <div class="lg-scr relative">
+          <div class="pb-3 ml-5 inline-block overflow-hidden whitespace-nowrap absolute bottom-0 left-0">
+            <h1 class="bg-font uppercase font-bold text-white">apparel for confident women</h1>
+            <a routerLink="/shop/category"
+               class="text-sm md:text-lg capitalize text-white cursor-pointer border-b border-b-white"
+            >shop now</a>
+          </div>
+        </div>
       </div>
 
 
       <ng-container *ngIf="products$ | async as products">
         <div class="lg-scr py-4">
-          <div class="p-3.5 text-center">
-            <h1 class="capitalize"> featured collection </h1>
+          <div class="p-3.5 flex justify-center">
+            <h1 class="feature-font w-fit capitalize font-bold text-[var(--app-theme)] border-b border-b-[var(--app-theme)]"
+            >featured collection</h1>
           </div>
 
           <div class="p-2 xl:p-0 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
@@ -53,12 +61,16 @@ import {CartService} from "../shop/cart/cart.service";
       }
 
       .bg-font {
-        font-size: 30px;
+        font-size: 40px;
       }
 
-      @media only screen and (max-width: 600px) {
-        .bg-font {
-          font-size: calc(1vw + 18px);
+      .feature-font {
+        font-size: 20px;
+      }
+
+      @media only screen and (max-width: 768px) {
+        .bg-font, .feature-font {
+          font-size: calc(13px + 1vw);
         }
       }
     `
@@ -68,7 +80,7 @@ import {CartService} from "../shop/cart/cart.service";
 export class HomeComponent {
 
   private readonly cartService = inject(CartService);
-  private readonly homeService: HomeService = inject(HomeService);
+  private readonly homeService = inject(HomeService);
   private readonly router = inject(Router);
 
   currency = (str: string): string => this.cartService.currency(str);

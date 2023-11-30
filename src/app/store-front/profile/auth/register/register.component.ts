@@ -227,19 +227,19 @@ export class RegisterComponent {
   }
 
   submit(): Observable<number> {
-    const firstname = this.form.controls['firstname'].value;
+    const fname = this.form.controls['firstname'].value;
     const lastname = this.form.controls['lastname'].value;
     const email = this.form.controls['email'].value;
     const phone = this.form.controls['phone'].value;
     const password = this.form.controls['password'].value;
     const cPassword = this.form.controls['cPassword'].value;
 
-    if (!firstname || !lastname || !email || !phone || !password || !cPassword) {
+    if (!fname || !lastname || !email || !phone || !password || !cPassword) {
       return of();
     }
 
     const payload: RegisterDTO = {
-      firstname: firstname,
+      firstname: fname,
       lastname: lastname,
       email: email,
       username: '',

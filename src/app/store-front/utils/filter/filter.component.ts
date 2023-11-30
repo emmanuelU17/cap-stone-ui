@@ -10,8 +10,8 @@ import {CommonModule} from "@angular/common";
     <div class="flex w-full h-full">
       <div class="w-2/4 max-[600px]:w-full h-full p-8 bg-white overflow-y-auto">
 
-        <button type="button" class="w-full flex justify-between bg-transparent border-0" (click)="closeModal()">
-          <h1 class="text-4xl capitalize font-bold tracking-tight text-gray-900">{{ title }}</h1>
+        <button type="button" class="w-full pb-2 flex justify-between bg-transparent border-0" (click)="closeModal()">
+          <h1 class="text-2xl lg:text-4xl tracking-tight text-gray-900">{{ title }}</h1>
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18" />
           </svg>
@@ -75,14 +75,13 @@ import {CommonModule} from "@angular/common";
         <div class="w-full flex flex-col">
           <button
             type="button"
-            class="cx-font-size w-full p-8 mb-2 capitalize hover:uppercase border border-black hover:bg-black hover:text-white"
             (click)="closeModal()"
-
+            class="cx-font-size w-full p-3 mb-2 capitalize hover:uppercase border border-black hover:bg-black hover:text-white"
           >clear all</button>
           <button
             type="button"
-            class="cx-font-size w-full p-8 capitalize hover:uppercase border bg-black hover:bg-white text-white hover:text-black hover:border-black"
             (click)="closeModal()"
+            class="cx-font-size w-full p-3 capitalize hover:uppercase border bg-black hover:bg-white text-white hover:text-black hover:border-black"
           >show results</button>
         </div>
 
@@ -96,18 +95,22 @@ import {CommonModule} from "@angular/common";
 })
 export class FilterComponent<T> {
 
-  private render: Renderer2 = inject(Renderer2);
+  private readonly render = inject(Renderer2);
 
   @Input() title: string = '';
   @Input() filters: Filter<T>[] = [];
   @Input() data: T[] = [];
   @Output() emitter = new EventEmitter<T>();
 
-  indexToOpen: number = -1;
+  indexToOpen = -1;
 
-  /** Close filter component */
+  /**
+   * Close filter component
+   * */
   closeModal(): void {
-    this.render.selectRootElement('.filter-btn', true).style.display = 'none';
+    this.render
+      .selectRootElement('.filter-btn', true)
+      .style.display = 'none';
   }
 
   /**

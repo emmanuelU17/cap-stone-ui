@@ -1,6 +1,6 @@
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {BehaviorSubject, map, Observable, tap} from "rxjs";
+import {BehaviorSubject, Observable, tap} from "rxjs";
 import {Category} from "../shop.helper";
 import {environment} from "../../../../environments/environment";
 import {Page, SarreCurrency} from "../../../global-utils";
@@ -10,14 +10,12 @@ import {Product} from "../../store-front-utils";
   providedIn: 'root'
 })
 export class CategoryService {
-  HOST: string | undefined;
+
+  private readonly HOST: string | undefined = environment.domain;
+  private readonly http = inject(HttpClient);
 
   private categories$ = new BehaviorSubject<Category[]>([]);
   _categories$ = this.categories$.asObservable();
-
-  constructor(private http: HttpClient) {
-    this.HOST = environment.domain;
-  }
 
   get categories(): Category[] {
     return this.categories$.getValue();
@@ -58,7 +56,19 @@ export class CategoryService {
         currency: currency
       },
       withCredentials: true
-    });
+    })
+    // .pipe(
+    //   map((page) => {
+    //     const arr = page.content;
+    //
+    //     for (let p of arr) {
+    //       const rand = Math.floor(Math.random() * DUMMY_IMAGES.length);
+    //       p.image = DUMMY_IMAGES[rand];
+    //     }
+    //
+    //     return page;
+    //   })
+    // );
   }
 
 }

@@ -17,14 +17,33 @@ import {FooterService} from "../../utils/footer/footer.service";
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink, DirectiveModule],
   templateUrl: './product.component.html',
-  styles: [
-    `
-      .show {
-        overflow: visible;
-        height: auto;
-      }
-    `
-  ],
+  styles: [`
+    .show {
+      overflow: visible;
+      height: auto;
+    }
+
+    /* width */
+    ::-webkit-scrollbar {
+      height: 5px;
+      width: 5px;
+      margin-top: 10px;
+    }
+    /* Track */
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+      background: #bec4c4;
+    }
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+  `],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductComponent {

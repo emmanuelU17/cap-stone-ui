@@ -33,19 +33,19 @@ import {FooterService} from "./utils/footer/footer.service";
         </div>
       </ng-container>
 
-      <ng-container *ngSwitchCase="'LOADED'">
-        <div>
-          <div class="lg-scr z-10 border-b border-transparent fixed left-0 top-0 right-0">
-            <app-store-front-navigation-navigation></app-store-front-navigation-navigation>
-          </div>
+      <div class="w-full h-full flex flex-col" *ngSwitchCase="'LOADED'">
+        <div class="lg-scr z-10 border-b border-transparent fixed left-0 top-0 right-0">
+          <app-store-front-navigation-navigation></app-store-front-navigation-navigation>
         </div>
 
-        <router-outlet></router-outlet>
+        <div class="flex-1">
+          <router-outlet></router-outlet>
+        </div>
 
-        <div class="lg-scr">
+        <div class="lg-scr z-10">
           <app-footer></app-footer>
         </div>
-      </ng-container>
+      </div>
     </ng-container>
   `,
   imports: [CommonModule, StoreFrontNavigationComponent, RouterOutlet, FooterComponent],
@@ -59,14 +59,12 @@ export class StoreComponent {
   private readonly homeService = inject(HomeService);
   private readonly cartService = inject(CartService);
 
-  private cartItems$ = this.footerService.currency$.pipe(
-    switchMap((currency) => this.cartService.cartItems(currency))
-  );
-  private homeProducts$: Observable<Product[]> = this.footerService.currency$.pipe(
-    switchMap((currency) => this.homeService.homeProducts(currency))
-  );
-  private categories$: Observable<Category[]> = this.categoryService.fetchCategories();
-  private collections$: Observable<Collection[]> = this.collectionService.fetchCollections();
+  private readonly cartItems$ = this.footerService.currency$
+    .pipe(switchMap((currency) => this.cartService.cartItems(currency)));
+  private readonly homeProducts$: Observable<Product[]> = this.footerService.currency$
+    .pipe(switchMap((currency) => this.homeService.homeProducts(currency)));
+  private readonly categories$: Observable<Category[]> = this.categoryService.fetchCategories();
+  private readonly collections$: Observable<Collection[]> = this.collectionService.fetchCollections();
 
   // On load of storefront routes, get necessary data to improve user experience
   combine$: Observable<{
@@ -80,7 +78,10 @@ export class StoreComponent {
     .pipe(
       map((): { state: string } => ({ state: 'LOADED' })),
       startWith({ state: 'LOADING' }),
-      catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error.message }))
+      catchError((err: HttpErrorResponse) => {
+        const message = err.error ? err.error.message : err.message;
+        return of({ state: 'ERROR', error: message });
+      })
     );
 
 }
