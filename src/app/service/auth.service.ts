@@ -1,7 +1,7 @@
 import {inject, Injectable} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient, HttpErrorResponse, HttpResponse} from "@angular/common/http";
-import {catchError, map, Observable, of} from "rxjs";
+import {catchError, map, Observable, of, tap} from "rxjs";
 import {AuthResponse, RegisterDTO} from "../global-utils";
 import {ToastService} from "../shared-comp/toast/toast.service";
 import {Router} from "@angular/router";
@@ -17,9 +17,18 @@ export class AuthService {
   private readonly toastService = inject(ToastService);
   private readonly router: Router = inject(Router);
 
+  logout(path: string): Observable<number> {
+    return this.http.post(`${this.HOST}api/v1/logout`, {}, {
+      observe: 'response',
+      withCredentials: true
+    }).pipe(
+      map((res: any) => res === null ? 0 : res.status),
+      tap(() => this.router.navigate([`${path}`]))
+    );
+  }
+
   register(obj: RegisterDTO, path: string, route?: string): Observable<number> {
-    const url = `${this.HOST}${path}`;
-    return this.http.post<RegisterDTO>(url, obj, {
+    return this.http.post<RegisterDTO>(`${this.HOST}${path}`, obj, {
         headers: { 'content-type': 'application/json' },
         observe: 'response',
         withCredentials: true
@@ -44,8 +53,7 @@ export class AuthService {
     path: string,
     route: string
   ): Observable<number> {
-    const url = `${this.HOST}${path}`;
-    return this.http.post<AuthResponse>(url, obj, {
+    return this.http.post<AuthResponse>(`${this.HOST}${path}`, obj, {
       headers: { 'content-type': 'application/json' },
       observe: 'response',
       responseType: 'json',

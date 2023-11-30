@@ -1,10 +1,9 @@
 import {ChangeDetectionStrategy, Component, inject, Input} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {MatMenuModule} from "@angular/material/menu";
-import {Observable, tap} from "rxjs";
-import {Router} from "@angular/router";
-import {AuthMenuService} from "./auth-menu.service";
+import {Observable} from "rxjs";
 import {DirectiveModule} from "../../../directive/directive.module";
+import {AuthService} from "../../../service/auth.service";
 
 @Component({
   selector: 'app-auth-menu',
@@ -26,14 +25,11 @@ import {DirectiveModule} from "../../../directive/directive.module";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AuthMenuComponent {
-  private authMenuService: AuthMenuService = inject(AuthMenuService);
-  private router: Router = inject(Router);
 
-  @Input() principal: string = '';
+  @Input() principal = '';
 
-  /** Method logs out a user and then redirects back to auth component if status is 200 */
-  logout(): Observable<number> {
-    return this.authMenuService.logoutApi()
-      .pipe(tap(() => this.router.navigate(['/admin'])));
-  }
+  private readonly authMenuService = inject(AuthService);
+
+  logout = (): Observable<number> => this.authMenuService.logout('/admin');
+
 }

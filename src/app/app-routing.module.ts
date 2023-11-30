@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
-import {AdminGuard} from "./admin-front/admin-guard";
+import {ADMIN_IS_LOGGED_IN, AdminGuard} from "./admin-front/admin-guard";
 import {ADMIN_DASHBOARD_ROUTES} from "./admin-front/dashboard/admin-dashboard.routes";
 
 const routes: Routes = [
@@ -36,6 +36,7 @@ const routes: Routes = [
         path: '',
         loadComponent: () => import('./admin-front/auth/admin-authentication.component')
           .then(m => m.AdminAuthenticationComponent),
+        canActivate: [ADMIN_IS_LOGGED_IN],
       },
       {
         path: 'dashboard',
