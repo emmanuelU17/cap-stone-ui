@@ -81,7 +81,7 @@
     <ng-container *ngSwitchCase="'LOADED'">
 
       <div class="max-h-full" *ngIf="products.data">
-        <div class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
+        <div class="grid gap-x-2 gap-y-10 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:gap-x-8">
           <div class="group relative cursor-pointer" *ngFor="let product of ascendingOrDescending(products.data.content)">
             <a routerLink="product/{{ product.product_id }}">
               <app-card
@@ -122,7 +122,7 @@
   <div class="filter-btn z-15 bg-transparent hidden fixed top-0 right-0 bottom-0 left-0"
        [style]="{ 'display': displayFilter ? 'block' : 'none' }">
     <app-filter
-      [title]="'shop by collection'"
+      [title]="'Shop by Collection'"
       [filters]="collections"
       (emitter)="filterProductsByCollection($event)"
     ></app-filter>

@@ -33,19 +33,19 @@ import {FooterService} from "./utils/footer/footer.service";
         </div>
       </ng-container>
 
-      <ng-container *ngSwitchCase="'LOADED'">
-        <div>
-          <div class="lg-scr z-10 border-b border-transparent fixed left-0 top-0 right-0">
-            <app-store-front-navigation-navigation></app-store-front-navigation-navigation>
-          </div>
+      <div class="w-full h-full flex flex-col" *ngSwitchCase="'LOADED'">
+        <div class="lg-scr z-10 border-b border-transparent fixed left-0 top-0 right-0">
+          <app-store-front-navigation-navigation></app-store-front-navigation-navigation>
         </div>
 
-        <router-outlet></router-outlet>
+        <div class="flex-1">
+          <router-outlet></router-outlet>
+        </div>
 
-        <div class="lg-scr">
+        <div class="lg-scr z-10">
           <app-footer></app-footer>
         </div>
-      </ng-container>
+      </div>
     </ng-container>
   `,
   imports: [CommonModule, StoreFrontNavigationComponent, RouterOutlet, FooterComponent],

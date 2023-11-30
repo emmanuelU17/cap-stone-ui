@@ -26,9 +26,16 @@ export class HomeService {
 
   homeProducts(currency: SarreCurrency): Observable<Product[]> {
     const url = `${this.HOST}api/v1/client/product?page=0&size=6&currency=${currency}`;
-    return this.http.get<Page<Product>>(url, { withCredentials: true})
+    return this.http.get<Page<Product>>(url, { withCredentials: true })
       .pipe(
         map((page) => {
+          // const arr = page.content;
+          //
+          // for (let p of arr) {
+          //   const rand = Math.floor(Math.random() * DUMMY_IMAGES.length);
+          //   p.image = DUMMY_IMAGES[rand];
+          // }
+
           this.subject.next(page.content)
           return page.content;
         }),

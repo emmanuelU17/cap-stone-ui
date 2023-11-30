@@ -36,9 +36,12 @@ export class AppComponent {
 
   // Onload of application, retrieve CSRF token
   csrf$: Observable<{ state: string, error?: string, csrf?: CSRF }> = this.appService.csrf().pipe(
-    map(() => ({state: 'LOADED'})),
-    startWith({state: 'LOADING'}),
-    catchError((err: HttpErrorResponse) => of({state: 'ERROR', error: err.error.message}))
+    map(() => ({ state: 'LOADED' })),
+    startWith({ state: 'LOADING' }),
+    catchError((err: HttpErrorResponse) => {
+      const message = err.error ? err.error.message : err.message;
+      return of({ state: 'ERROR', error: message });
+    })
   );
 
 }

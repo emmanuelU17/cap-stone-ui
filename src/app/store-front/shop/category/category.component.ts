@@ -25,8 +25,8 @@ export class CategoryComponent {
 
   private readonly footService = inject(FooterService);
   private readonly cartService = inject(CartService);
-  private readonly categoryService: CategoryService = inject(CategoryService);
-  private readonly utilService: ShopService = inject(ShopService);
+  private readonly categoryService = inject(CategoryService);
+  private readonly utilService = inject(ShopService);
 
   totalElements = 0; // current total elements rendered
   iteration = (num: number): number[] => this.utilService.getRange(num);

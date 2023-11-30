@@ -82,8 +82,8 @@
 
     <ng-container *ngSwitchCase="'LOADED'">
       <div class="max-h-full mt-3" *ngIf="products.data">
-        <div class="grid gap-x-6 gap-y-10 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:gap-x-8">
-          <div class="group relative cursor-pointer" *ngFor="let product of ascendingOrDescending(products.data.content)">
+        <div class="grid gap-x-2 gap-y-10 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:gap-x-8">
+          <div *ngFor="let product of ascendingOrDescending(products.data.content)" class="group relative cursor-pointer">
             <a routerLink="product/{{ product.product_id }}">
               <app-card
                 [url]="product.image"
@@ -119,11 +119,11 @@
   </div>
 
   <!-- Filter container -->
-  <div class="filter-btn bg-transparent hidden fixed top-0 right-0 bottom-0 left-0 z-15"
-       [style]="{ 'display': displayFilter ? 'block' : 'none' }"
+  <div [style]="{ 'display': displayFilter ? 'block' : 'none' }"
+       class="filter-btn bg-transparent hidden fixed top-0 right-0 bottom-0 left-0 z-15"
   >
     <app-filter
-      [title]="'shop by category'"
+      [title]="'Shop by Category'"
       [filters]="categories"
       (emitter)="filterProductsByCategory($event)"
     ></app-filter>
