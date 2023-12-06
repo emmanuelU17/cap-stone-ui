@@ -57,18 +57,18 @@ export class CategoryService {
       },
       withCredentials: true
     })
-      // .pipe(
-      //   map((page) => {
-      //     const arr = page.content;
-      //
-      //     for (let p of arr) {
-      //       const rand = Math.floor(Math.random() * DUMMY_IMAGES.length);
-      //       p.image = DUMMY_IMAGES[rand];
-      //     }
-      //
-      //     return page;
-      //   })
-      // );
+    // .pipe(
+    //   map((page) => {
+    //     const arr = page.content;
+    //
+    //     for (let p of arr) {
+    //       const rand = Math.floor(Math.random() * DUMMY_IMAGES.length);
+    //       p.image = DUMMY_IMAGES[rand];
+    //     }
+    //
+    //     return page;
+    //   })
+    // );
   }
 
 }
