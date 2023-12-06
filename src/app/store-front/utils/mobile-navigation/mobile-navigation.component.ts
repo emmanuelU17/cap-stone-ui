@@ -39,7 +39,7 @@ import {Observable} from "rxjs";
       </div>
 
       <!-- Other links -->
-      <ul class="flex-col list-none flex gap-8">
+      <ul class="flex-col list-none flex gap-3">
         <li class="p-2.5 border-b" *ngFor="let link of links">
 
           <a class="block" *ngIf="link.bool; else regular">
@@ -54,7 +54,7 @@ import {Observable} from "rxjs";
             <span [style]="{ 'display': dropDown ? 'block' : 'none' }"
                   (click)="toggleNavDisplay(openNavMobile = !openNavMobile)"
             >
-              <a routerLink="/shop/category" class="p-2 pl-0 block border-b text-sm text-[var(--app-theme)]">
+              <a routerLink="/shop/category" class="p-2 pl-0 block text-sm text-[var(--app-theme)]">
                 shop by category
               </a>
 

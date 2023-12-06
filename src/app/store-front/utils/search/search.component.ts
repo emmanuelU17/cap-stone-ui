@@ -1,7 +1,18 @@
-import {ChangeDetectionStrategy, Component, inject, Renderer2} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, Renderer2, signal} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {SearchService} from "./search.service";
-import {debounceTime, distinctUntilChanged, fromEvent, map, Observable, of, startWith, switchMap} from "rxjs";
+import {
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  fromEvent,
+  map,
+  Observable,
+  of,
+  startWith,
+  switchMap,
+  tap
+} from "rxjs";
 import {FooterService} from "../footer/footer.service";
 import {CardComponent} from "../card/card.component";
 import {Product} from "../../store-front-utils";
@@ -49,25 +60,47 @@ import {SarreCurrency} from "../../../global-utils";
                    id="search-bar"
                    class="search-box block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50"
                    placeholder="I'm searching for...">
+
           </div>
         </div>
 
         <!-- Display component -->
-        <div class="w-full h-full flex flex-col overflow-y-auto">
+        <div class="h-full flex flex-col overflow-y-auto">
 
           <!-- search results -->
           <div class="p-4 bg-white">
-            <ng-container *ngIf="products$() | async as products">
-                <div class="w-full bg-white p-2 xl:p-0 grid gap-3 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                  <button *ngFor="let product of p" (click)="onItemClicked(product)">
-                    <app-card
-                      [url]="product.image"
-                      [name]="product.name"
-                      [currency]="currency(product.currency)"
-                      [price]="product.price"
-                    ></app-card>
-                  </button>
-                </div>
+            <ng-container *ngIf="products$() | async">
+
+              <ng-container [ngSwitch]="spinnerState()">
+
+                <!-- spinner -->
+                <ng-container *ngSwitchCase="true">
+                  <div class="w-full flex justify-center">
+                    <div role="status" class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-r-[var(--app-theme)] align-[-0.125em] text-primary motion-reduce:animate-[spin_1.5s_linear_infinite] ">
+                      <span class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
+                        Loading...
+                      </span>
+                    </div>
+                  </div>
+                </ng-container>
+
+                <!-- server results -->
+                <ng-container *ngSwitchDefault>
+                  <div class="w-full bg-white p-2 xl:p-0 grid gap-3 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+                    <button type="button" *ngFor="let product of products" (click)="onItemClicked(product)">
+                      <app-card
+                        [url]="product.image"
+                        [name]="product.name"
+                        [currency]="currency(product.currency)"
+                        [price]="product.price"
+                      ></app-card>
+                    </button>
+                  </div>
+                </ng-container>
+
+              </ng-container>
+              <!-- end of switch -->
+
             </ng-container>
           </div>
 
@@ -86,10 +119,14 @@ export class SearchComponent {
   private readonly render = inject(Renderer2);
 
   openSearchComponent$ = this.searchService.openSearchComponent$;
+
+  products: Product[] = [];
+  spinnerState = signal<boolean>(false);
+
   currency = (currency: string) => this.footerService.currency(currency);
-  p: Product[] = [];
 
   closeSearchBar(): void {
+    this.spinnerState.set(false);
     this.searchService.openComponent(false);
   }
 
@@ -102,25 +139,43 @@ export class SearchComponent {
     this.closeSearchBar();
   }
 
+  // prod = toSignal(this.products$(), { initialValue: [] })
+
   /**
    * Makes call to server to search for item based on user input and currency
+   * https://www.learnrxjs.io/learn-rxjs/operators/filtering/debouncetime
    * */
-  products$ = (): Observable<Product[]> => {
+  products$(): Observable<Product[]> {
+    const arr: Product[] = [];
+
     const element = this.render.selectRootElement('.search-box', true);
+    // const element = document.getElementById('search-bar');
+    // if (element === null) {
+    //   return of(arr);
+    // }
+
     return fromEvent<KeyboardEvent>(element, 'keyup')
       .pipe(
-        debounceTime(700),
-        distinctUntilChanged(),
         map((e: KeyboardEvent) => (e.target as HTMLInputElement).value),
+        tap((str: string): void => this.spinnerState.set(str.trim().length > 0)),
         switchMap((value: string) => this.footerService.currency$
           .pipe(map((c: SarreCurrency) => ({ value: value, currency: c })))
         ),
-        switchMap((obj: { value: string, currency: SarreCurrency })=> obj.value.trim() === ''
-          ? of()
-          : this.searchService._search(obj.value, obj.currency)
+        distinctUntilChanged(),
+        debounceTime(700),
+        switchMap((obj: { value: string, currency: SarreCurrency }) => obj.value.trim().length > 0
+          ? this.searchService._search(obj.value, obj.currency)
+          : of(arr)
         ),
-        map((products) => this.p = products),
-        startWith([])
+        map((products) => {
+          this.spinnerState.set(false);
+          return this.products = products;
+        }),
+        startWith(arr),
+        catchError(() => {
+          this.spinnerState.set(false);
+          return of(arr);
+        })
       );
   }
 

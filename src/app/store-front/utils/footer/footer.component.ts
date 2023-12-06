@@ -13,8 +13,8 @@ import {MobileFooterComponent} from "../mobilefooter/mobile-footer.component";
     <div class="p-3 border-t border-solid bg-[var(--app-theme)]">
 
       <!-- none mobile -->
-      <div class="w-full flex md:hidden bg-red-500">
-        <app-mobile-footer></app-mobile-footer>
+      <div class="w-full md:hidden">
+        <app-mobile-footer (emitter)="childEmitter($event)"></app-mobile-footer>
       </div>
 
       <!-- none mobile -->
@@ -103,6 +103,13 @@ export class FooterComponent {
   route = (str: string): void => {
     this.router.navigate([`${str}`]);
   };
+
+  /**
+   * Changes app route based on child component
+   * */
+  childEmitter(str: string): void {
+    this.route(str);
+  }
 
   setCurrency(event: Event): void {
     const currency = ((event.target as HTMLSelectElement).value) as SarreCurrency;

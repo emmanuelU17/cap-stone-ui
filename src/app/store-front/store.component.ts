@@ -42,7 +42,7 @@ import {FooterService} from "./utils/footer/footer.service";
           <router-outlet></router-outlet>
         </div>
 
-        <div class="lg-scr z-10">
+        <div class="lg-scr">
           <app-footer></app-footer>
         </div>
       </div>
@@ -63,6 +63,7 @@ export class StoreComponent {
     .pipe(switchMap((currency) => this.cartService.cartItems(currency)));
   private readonly homeProducts$: Observable<Product[]> = this.footerService.currency$
     .pipe(switchMap((currency) => this.homeService.homeProducts(currency)));
+
   private readonly categories$: Observable<Category[]> = this.categoryService.fetchCategories();
   private readonly collections$: Observable<Collection[]> = this.collectionService.fetchCollections();
 
