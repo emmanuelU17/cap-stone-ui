@@ -3,13 +3,14 @@ import {CommonModule} from "@angular/common";
 import {RouterLink, RouterLinkActive} from "@angular/router";
 import {CollectionService} from "../../shop/collection/collection.service";
 import {CartIconComponent} from "../carticon/cart-icon.component";
-import {Observable} from "rxjs";
 import {SearchComponent} from "../search/search.component";
+import {MobileNavigationComponent} from "../mobile-navigation/mobile-navigation.component";
+import {Link} from "../../../global-utils";
 
 @Component({
   selector: 'app-store-front-navigation-navigation',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, CartIconComponent, SearchComponent],
+  imports: [CommonModule, RouterLink, RouterLinkActive, CartIconComponent, SearchComponent, MobileNavigationComponent],
   template: `
     <nav class="w-full p-2.5 grid grid-cols-3 bg-transparent" [ngStyle]="navBg">
 
@@ -27,55 +28,13 @@ import {SearchComponent} from "../search/search.component";
             </svg>
           </button>
 
-          <div
-            class="max-[990px]:w-full max-[990px]:left-0 hidden absolute w-2/4 p-2.5 bg-[var(--nav-mobile)]"
-            [style]="{ 'display': openNavMobile ? 'block' : 'none' }"
-          >
-            <div class="ctn flex flex-col gap-6">
-
-              <!-- Other links -->
-              <ul class="flex-col list-none flex gap-8">
-                <li class="mob-li p-2.5" *ngFor="let link of links">
-
-                  <a class="block group" *ngIf="link.bool; else regular">
-                    <a class="uppercase flex justify-between text-[var(--app-theme)]">
-                      shop
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                           stroke="currentColor" class="w-6 h-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
-                      </svg>
-                    </a>
-                    <div class="shop hidden group-hover:block" (click)="openNavMobile = !openNavMobile">
-                      <a routerLink="/shop/category" class="capitalize p-3.5 pl-0 block text-[var(--app-theme)]">
-                        shop category
-                      </a>
-
-                      <!-- Only display collection if Collection[] it is not empty -->
-                      <ng-container *ngIf="collectionNotEmpty$ | async as col">
-                        <a
-                          routerLink="/shop/collection"
-                          class="capitalize p-3.5 pl-0 block text-[var(--app-theme)]"
-                          [style]="{ 'display': col ? 'block' : 'none' }"
-                        >
-                          shop collection
-                        </a>
-                      </ng-container>
-
-                    </div>
-                  </a>
-
-                  <ng-template #regular>
-                    <a
-                      class="w-full flex uppercase text-[var(--app-theme)]"
-                      [routerLink]="link.value"
-                      routerLinkActive="active"
-                      (click)="openNavMobile = !openNavMobile"
-                    >{{ link.name }}</a>
-                  </ng-template>
-                </li>
-              </ul>
-
-            </div>
+          <div [style]="{ 'display': openNavMobile ? 'block' : 'none' }" class="fixed top-0 right-0 bottom-0 left-0">
+            <app-mobile-navigation
+              [links]="links"
+              [empty$]="collectionNotEmpty$"
+              [openNavMobile]="openNavMobile"
+              (emitter)="toggleNav($event)"
+            ></app-mobile-navigation>
           </div>
 
         </div>
@@ -140,7 +99,7 @@ import {SearchComponent} from "../search/search.component";
           </li>
 
           <!--    Person icon    -->
-          <li>
+          <li class="hidden md:block">
             <a class="uppercase flex" routerLink="/profile">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                    stroke="currentColor" class="w-6 h-6 cursor-pointer" style="color: var(--app-theme)">
@@ -160,10 +119,10 @@ export class StoreFrontNavigationComponent {
 
   private readonly collectionService = inject(CollectionService);
 
-  collectionNotEmpty$: Observable<boolean> = this.collectionService.isEmpty$();
+  collectionNotEmpty$ = this.collectionService.isEmpty$();
 
   links: Link[] = [{ name: 'home', value: '', bool: false }, { name: 'shop', value: '', bool: true, }];
-  openNavMobile: boolean = false;
+  openNavMobile = false;
 
   navBg: any;
 
@@ -182,10 +141,8 @@ export class StoreFrontNavigationComponent {
     this.navBg = bool ? css : {};
   }
 
-}
+  toggleNav(bool: boolean): void {
+    this.openNavMobile = bool;
+  }
 
-interface Link {
-  name: string;
-  value: string;
-  bool?: boolean;
 }

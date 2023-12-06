@@ -65,7 +65,7 @@ export class NewProductComponent {
     name: new FormControl('', [Validators.required, Validators.max(50)]),
     ngn: new FormControl('', Validators.required),
     usd: new FormControl('', Validators.required),
-    desc: new FormControl('', [Validators.required, Validators.max(400)]),
+    desc: new FormControl('', [Validators.required, Validators.max(700)]),
     visible: new FormControl(false, Validators.required),
     colour: new FormControl('', Validators.required),
   });

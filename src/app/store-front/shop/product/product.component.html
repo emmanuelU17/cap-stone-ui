@@ -8,7 +8,7 @@
   </ng-container>
 
   <ng-container *ngSwitchCase="'ERROR'">
-    <div class="lg-scr p-10 text-3xl text-red-500">
+    <div class="lg-scr mg-top p-10 text-3xl text-red-500">
       Error {{ detail.error }}
     </div>
   </ng-container>
@@ -16,7 +16,7 @@
   <ng-container *ngSwitchCase="'LOADED'">
 
     <!-- Product Details  -->
-    <div class="lg-scr w-full h-full" *ngIf="detail.data as details">
+    <div class="lg-scr mg-top w-full h-full" *ngIf="detail.data as details">
 
       <div class="grid grid-cols-1 md:grid-cols-2">
 

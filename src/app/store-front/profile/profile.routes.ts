@@ -1,5 +1,5 @@
 import {Routes} from '@angular/router';
-import {CLIENT_DASHBOARD_GUARD, CLIENT_IS_LOGGED_IN} from "./route.guard";
+import {CLIENT_DASHBOARD_GUARD} from "./route.guard";
 
 export const PROFILE_ROUTES: Routes = [
   {
@@ -11,7 +11,6 @@ export const PROFILE_ROUTES: Routes = [
   {
     path: 'authentication',
     loadComponent: () => import('./auth/store-front-auth.component').then(m => m.StoreFrontAuthComponent),
-    canActivate: [CLIENT_IS_LOGGED_IN]
   },
   {
     path: '',

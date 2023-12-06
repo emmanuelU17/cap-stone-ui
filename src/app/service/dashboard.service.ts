@@ -22,7 +22,7 @@ export class DashboardService {
   /**
    * Validates if user is logged in
    * */
-  isLoggedIn = (url: string, route: string): Observable<unknown> => this.http
+  isLoggedIn = (url: string, route: string, errorRoute: string): Observable<unknown> => this.http
     .get<AuthResponse>(`${this.HOST}${url}`, {
       observe: 'response',
       responseType: 'json',
@@ -35,6 +35,10 @@ export class DashboardService {
           this.router.navigate([`${route}`]);
           this.toastService.toastMessage('please sign out');
         }
+      }),
+      catchError((err) => {
+        this.router.navigate([`${errorRoute}`]);
+        return err;
       })
     );
 

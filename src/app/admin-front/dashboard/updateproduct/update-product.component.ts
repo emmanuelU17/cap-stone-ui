@@ -46,16 +46,16 @@ import {DeleteComponent} from "../delete/delete.component";
 })
 export class UpdateProductComponent implements OnInit {
 
-  private readonly router: Router = inject(Router);
-  private readonly activeRoute: ActivatedRoute = inject(ActivatedRoute);
-  private readonly fb: FormBuilder = inject(FormBuilder);
-  private readonly updateProductService: UpdateProductService = inject(UpdateProductService);
-  private readonly productService: ProductService = inject(ProductService);
-  private readonly categoryService: CategoryService = inject(CategoryService);
-  private readonly collectionService: CollectionService = inject(CollectionService);
-  private readonly dialog: MatDialog = inject(MatDialog);
-  private readonly toastService: ToastService = inject(ToastService);
-  private readonly destroyRef: DestroyRef = inject(DestroyRef);
+  private readonly router = inject(Router);
+  private readonly activeRoute = inject(ActivatedRoute);
+  private readonly fb = inject(FormBuilder);
+  private readonly updateProductService = inject(UpdateProductService);
+  private readonly productService = inject(ProductService);
+  private readonly categoryService = inject(CategoryService);
+  private readonly collectionService = inject(CollectionService);
+  private readonly dialog = inject(MatDialog);
+  private readonly toastService = inject(ToastService);
+  private readonly destroyRef = inject(DestroyRef);
 
   // Get id from route
   private id: string | null = this.activeRoute.snapshot.paramMap.get('id');
@@ -109,7 +109,7 @@ export class UpdateProductComponent implements OnInit {
     name: new FormControl('', [Validators.required, Validators.max(50)]),
     sku: new FormControl({value: '', disabled: true}, [Validators.required]),
     price: new FormControl(0, Validators.required),
-    desc: new FormControl('', [Validators.required, Validators.max(400)]),
+    desc: new FormControl('', [Validators.required, Validators.max(700)]),
   });
 
   ngOnInit(): void {
@@ -122,7 +122,9 @@ export class UpdateProductComponent implements OnInit {
     this.form.controls['desc'].setValue(this.data.product.desc);
   }
 
-  /** Convert from ProductDetailResponse[] to CustomRowMapper[] */
+  /**
+   * Convert from ProductDetailResponse[] to CustomRowMapper[]
+   * */
   private toCustomRowMapperArray(arr: ProductDetailResponse[]): CustomRowMapper[] {
     // Flatmap to convert from CustomRowMapper[][] to CustomRowMapper[]
     return arr.flatMap((res: ProductDetailResponse) => {
@@ -348,14 +350,14 @@ export class UpdateProductComponent implements OnInit {
                   tap((arr: ProductDetailResponse[]) => {
                     // On successful deletion, update productVariants$
                     const mapper = this.toCustomRowMapperArray(arr);
-                    this.productVariants$ = of({state: 'LOADED', data: mapper});
+                    this.productVariants$ = of({ state: 'LOADED', data: mapper });
                   }),
                   switchMap(() => of(status))
                 );
             })
           );
 
-        const open = this.dialog.open(DeleteComponent, {
+        this.dialog.open(DeleteComponent, {
           width: '500px',
           maxWidth: '100%',
           height: 'fit-content',
@@ -364,7 +366,6 @@ export class UpdateProductComponent implements OnInit {
             asyncButton: obs
           }
         });
-
 
         break;
       }
