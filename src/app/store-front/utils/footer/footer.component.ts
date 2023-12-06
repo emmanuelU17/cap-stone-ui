@@ -3,17 +3,18 @@ import {CommonModule} from '@angular/common';
 import {SarreCurrency} from "../../../global-utils";
 import {FooterService} from "./footer.service";
 import {Router} from "@angular/router";
+import {MobileFooterComponent} from "../mobilefooter/mobile-footer.component";
 
 @Component({
   selector: 'app-footer',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MobileFooterComponent],
   template: `
       <div class="p-3 border-t border-solid bg-[var(--app-theme)]">
 
         <!-- none mobile -->
         <div class="w-full flex md:hidden bg-red-500">
-          <h2 class="text-base">follow us</h2>
+          <app-mobile-footer></app-mobile-footer>
         </div>
 
         <!-- none mobile -->
