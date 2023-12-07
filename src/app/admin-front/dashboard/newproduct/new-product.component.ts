@@ -14,7 +14,7 @@ import {MatRadioModule} from "@angular/material/radio";
 import {DirectiveModule} from "../../../directive/directive.module";
 import {ProductService} from "../product/product.service";
 import {HttpErrorResponse} from "@angular/common/http";
-import {ToastService} from "../../../service/toast/toast.service";
+import {ToastService} from "../../../shared-comp/toast/toast.service";
 import {SizeInventoryService} from "../sizeinventory/size-inventory.service";
 import {Router} from "@angular/router";
 import {SarreCurrency} from "../../../global-utils";
@@ -65,7 +65,7 @@ export class NewProductComponent {
     name: new FormControl('', [Validators.required, Validators.max(50)]),
     ngn: new FormControl('', Validators.required),
     usd: new FormControl('', Validators.required),
-    desc: new FormControl('', [Validators.required, Validators.max(400)]),
+    desc: new FormControl('', [Validators.required, Validators.max(700)]),
     visible: new FormControl(false, Validators.required),
     colour: new FormControl('', Validators.required),
   });

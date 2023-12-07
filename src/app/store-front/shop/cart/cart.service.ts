@@ -3,7 +3,7 @@ import {environment} from "../../../../environments/environment";
 import {HttpClient, HttpErrorResponse, HttpResponse} from "@angular/common/http";
 import {BehaviorSubject, catchError, map, Observable, of, switchMap, tap} from "rxjs";
 import {Cart, CartDTO} from "../shop.helper";
-import {ToastService} from "../../../service/toast/toast.service";
+import {ToastService} from "../../../shared-comp/toast/toast.service";
 import {SarreCurrency} from "../../../global-utils";
 import {FooterService} from "../../utils/footer/footer.service";
 
@@ -41,13 +41,13 @@ export class CartService {
   /**
    * Returns the number of items in Cart[]
    * */
-  count$ = (): Observable<number> => this.cart$.pipe(map((arr) => arr.length));
+  count$ = (): Observable<number> => this.cart$.pipe(map((arr: Cart[]) => arr.length));
 
   /**
    * Returns an Observable of list of Cart
    * */
   cartItems(currency: SarreCurrency): Observable<Cart[]> {
-    const url = `${this.HOST}api/v1/client/cart?currency=${currency}`
+    const url = `${this.HOST}api/v1/cart?currency=${currency}`
     return this.http.get<Cart[]>(url, {
       headers: { 'content-type': 'application/json' },
       responseType: 'json',
@@ -63,7 +63,7 @@ export class CartService {
    * @return Observable of type number
    * */
   createCart(cart: CartDTO): Observable<number> {
-    const url = `${this.HOST}api/v1/client/cart`
+    const url = `${this.HOST}api/v1/cart`
     return this.http.post<CartDTO>(url, cart, {
       headers: { 'content-type': 'application/json' },
       observe: 'response',
@@ -90,7 +90,7 @@ export class CartService {
    * @param sku is a unique string for each Product
    * */
   removeFromCart(sku: string): Observable<number> {
-    const url = `${this.HOST}api/v1/client/cart?sku=${sku}`
+    const url = `${this.HOST}api/v1/cart?sku=${sku}`
     return this.http.delete<any>(url, {
       observe: 'response',
       withCredentials: true

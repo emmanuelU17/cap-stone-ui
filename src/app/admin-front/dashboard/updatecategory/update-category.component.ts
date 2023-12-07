@@ -13,7 +13,7 @@ import {Page} from "../../../global-utils";
 import {CategoryService} from "../category/category.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {ProductService} from "../product/product.service";
-import {ToastService} from "../../../service/toast/toast.service";
+import {ToastService} from "../../../shared-comp/toast/toast.service";
 import {MatDialogModule} from "@angular/material/dialog";
 
 @Component({

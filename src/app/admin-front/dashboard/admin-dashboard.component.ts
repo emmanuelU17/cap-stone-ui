@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {catchError, combineLatest, map, Observable, of, startWith, switchMap, tap} from "rxjs";
-import {DashboardService} from "./dashboard.service";
+import {DashboardService} from "../../service/dashboard.service";
 import {CategoryService} from "./category/category.service";
 import {CategoryResponse, CollectionResponse, ProductResponse} from "../shared-util";
 import {AuthResponse, Page, SarreCurrency} from "../../global-utils";
@@ -162,10 +162,10 @@ export class AdminDashboardComponent {
   dashBoardLinks: Display[] = DASHBOARDLINKS;
 
   // Toggle behaviour when a link are clicked
-  leftColumn: boolean = false;
+  leftColumn = false;
 
   // Principal (email)
-  private principal$: Observable<AuthResponse> = this.dashboardService._principal$.pipe();
+  private principal$: Observable<AuthResponse> = this.dashboardService.principal$.pipe();
 
   // Products
   private products$: Observable<Page<ProductResponse>> = this.productService.currency$

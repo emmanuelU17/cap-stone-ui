@@ -12,6 +12,12 @@ export interface CSRF {
   headerName: string;
 }
 
+export interface Link {
+  name: string;
+  value: string;
+  bool?: boolean;
+}
+
 export interface AuthResponse {
   principal: string;
 }

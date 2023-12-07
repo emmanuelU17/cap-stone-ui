@@ -14,7 +14,7 @@ export class SearchService {
 
   private readonly http = inject(HttpClient);
 
-  private subject = new BehaviorSubject<boolean>(false);
+  private readonly subject = new BehaviorSubject<boolean>(false);
   openSearchComponent$ = this.subject.asObservable();
 
   /**

@@ -9,7 +9,7 @@ import {ProductDetailResponse, SizeInventory} from "../../shared-util";
 import {DirectiveModule} from "../../../directive/directive.module";
 import {catchError, Observable, of, switchMap, tap} from "rxjs";
 import {CreateVariantService} from "./create-variant.service";
-import {ToastService} from "../../../service/toast/toast.service";
+import {ToastService} from "../../../shared-comp/toast/toast.service";
 import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from "@angular/material/dialog";
 import {CreateVariantData} from "./createVariantData";
 import {HttpErrorResponse} from "@angular/common/http";

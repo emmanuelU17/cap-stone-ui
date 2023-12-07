@@ -7,8 +7,8 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 })
 export class AsyncButtonDirective {
 
-  private readonly destroyRef: DestroyRef = inject(DestroyRef);
-  private readonly el: ElementRef = inject(ElementRef);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly el = inject(ElementRef);
 
   @Input('asyncButton') clickFunc!: Observable<unknown>;
 

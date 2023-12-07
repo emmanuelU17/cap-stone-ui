@@ -16,8 +16,8 @@ export class AppService {
    * Retrieve CSRF token on load of application
    * */
   csrf(): Observable<CSRF> {
-    const url: string = `${this.HOST}api/v1/csrf`;
-    return this.http.get<CSRF>(url, { withCredentials: true });
+    return this.http
+      .get<CSRF>(`${this.HOST}api/v1/csrf`, { withCredentials: true });
   }
 
 }

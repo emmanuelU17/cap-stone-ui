@@ -1,9 +1,7 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {AuthMenuComponent} from "../authmenu/auth-menu.component";
-import {DashboardService} from "../dashboard.service";
-import {Observable} from "rxjs";
-import {AuthResponse} from "../../../global-utils";
+import {DashboardService} from "../../../service/dashboard.service";
 
 @Component({
   selector: 'app-navigation',
@@ -40,10 +38,9 @@ import {AuthResponse} from "../../../global-utils";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NavigationComponent {
-  principal$: Observable<AuthResponse>;
 
-  constructor(private dashboardService: DashboardService) {
-    this.principal$ = this.dashboardService._principal$.pipe();
-  }
+  private readonly dashboardService = inject(DashboardService);
+
+  principal$ = this.dashboardService.principal$;
 
 }

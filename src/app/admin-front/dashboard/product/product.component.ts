@@ -94,8 +94,6 @@ export class ProductComponent {
    * Makes call to server on change of page or page size
    * */
   pageChange(page: PageChange): void {
-    console.log('Page ', page.page)
-    console.log('Size ', page.size)
     this.data$ = this.productService.currency$
       .pipe(
         switchMap((currency) => this.productService

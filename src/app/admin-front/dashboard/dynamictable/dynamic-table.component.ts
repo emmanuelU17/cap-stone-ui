@@ -1,13 +1,13 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output, signal} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {MatPaginatorModule, PageEvent} from "@angular/material/paginator";
 import {PageChange, TableContent} from "../../shared-util";
 import {Page} from "../../../global-utils";
+import {PaginatorComponent} from "../../../shared-comp/paginator/paginator.component";
 
 @Component({
   selector: 'app-dynamic-table',
   standalone: true,
-  imports: [CommonModule, MatPaginatorModule],
+  imports: [CommonModule, PaginatorComponent],
   template: `
     <!-- Product Template -->
     <ng-container *ngIf="paginationTable">
@@ -30,11 +30,12 @@ import {Page} from "../../../global-utils";
             <td *ngFor="let head of tHead">
               <ng-container [ngSwitch]="head">
 
-                <ng-container *ngSwitchCase="'product_id'">{{ i + 1 }}</ng-container>
+                <ng-container *ngSwitchCase="'product_id'">
+                  {{ (i + 1) + (currentPage() * 10) }}
+                </ng-container>
 
                 <!-- Image -->
-                <div class="rounded overflow-hidden min-w-[2.75rem] min-h-[2.75rem] max-w-[7rem] max-h-[4rem]"
-                     *ngSwitchCase="'image'">
+                <div *ngSwitchCase="'image'" class="rounded overflow-hidden min-w-[2.75rem] min-h-[2.75rem] max-w-[7rem] max-h-[4rem]">
                   <img [src]="data[head]" alt="image" class="w-full h-full object-cover object-center">
                 </div>
 
@@ -76,15 +77,16 @@ import {Page} from "../../../global-utils";
           </tr>
           </tbody>
         </table>
-        <mat-paginator
-          [length]="pageData.totalElements"
-          [pageSize]="pageData.size"
-          [pageIndex]="pageData.number"
-          (page)="changePage($event)"
-          [pageSizeOptions]="[5, 10, 15, 20]"
-          showFirstLastButtons
-          aria-label="Select page">
-        </mat-paginator>
+
+        <div class="w-full mt-6 p-1.5">
+          <app-paginator
+            [currentPage]="pageData.number"
+            [totalPages]="pageData.size"
+            [totalElements]="pageData.totalElements"
+            (goTo)="onPageNumber($event)"
+          ></app-paginator>
+        </div>
+
       </div>
     </ng-container>
 
@@ -215,6 +217,9 @@ import {Page} from "../../../global-utils";
 })
 export class DynamicTableComponent<T> {
 
+  // TODO validate why current pages isn't changing on html
+  protected currentPage = signal<number>(0);
+
   @Input() paginationTable: boolean = false; // validates if pagination table should be rendered
   @Input() tHead: (keyof T)[] = [];
   @Input() detail: boolean = false; // verifies if details button should be displayed
@@ -228,13 +233,6 @@ export class DynamicTableComponent<T> {
   }
 
   /**
-   * Updates datasource to be rendered on table when next button is clicked
-   * */
-  changePage(event: PageEvent): void {
-    this.pageEmitter.emit({ page: event.pageIndex, size: event.pageSize });
-  }
-
-  /**
    * Informs Parent component. Note the table clicked on is the table that does not require pagination
    *
    * @param data represents the row details
@@ -242,12 +240,22 @@ export class DynamicTableComponent<T> {
    * @return void
    * */
   onClick(data: T, key: string): void {
-    this.eventEmitter.emit({data: data, key: key});
+    this.eventEmitter.emit({ data: data, key: key });
   }
 
-  /** Informs Product Component on the row clicked. Requires pagination */
+  /**
+   * Informs Product Component on the row clicked. Requires pagination
+   * */
   onclickProduct(data: T, key: string): void {
-    this.eventEmitter.emit({data: data, key: key});
+    this.eventEmitter.emit({ data: data, key: key });
+  }
+
+  /**
+   * Emits page number clicked
+   * */
+  onPageNumber(pageNumber: number): void {
+    this.currentPage.set(pageNumber);
+    this.pageEmitter.emit({ page: pageNumber, size: 20 });
   }
 
 }

@@ -5,7 +5,7 @@ import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from "@angular/material/
 import {DeleteData} from "./delete-data";
 import {DirectiveModule} from "../../../directive/directive.module";
 import {catchError, map, Observable, of} from "rxjs";
-import {ToastService} from "../../../service/toast/toast.service";
+import {ToastService} from "../../../shared-comp/toast/toast.service";
 import {HttpErrorResponse} from "@angular/common/http";
 
 @Component({

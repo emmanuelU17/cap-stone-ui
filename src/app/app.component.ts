@@ -19,7 +19,7 @@ import {CSRF} from "./global-utils";
 
       <ng-container *ngSwitchCase="'ERROR'">
         <div class="lg-scr p-10 text-3xl text-red-500">
-          Error {{ csrf.error }}
+          Please try again later as server is undergoing maintenance
         </div>
       </ng-container>
 
@@ -32,16 +32,17 @@ import {CSRF} from "./global-utils";
 })
 export class AppComponent {
 
-  private readonly appService: AppService = inject(AppService);
+  private readonly appService = inject(AppService);
 
   // Onload of application, retrieve CSRF token
-  csrf$: Observable<{ state: string, error?: string, csrf?: CSRF }> = this.appService.csrf().pipe(
-    map(() => ({ state: 'LOADED' })),
-    startWith({ state: 'LOADING' }),
-    catchError((err: HttpErrorResponse) => {
-      const message = err.error ? err.error.message : err.message;
-      return of({ state: 'ERROR', error: message });
-    })
+  csrf$: Observable<{ state: string, error?: string, csrf?: CSRF }> = this.appService.csrf()
+    .pipe(
+      map(() => ({ state: 'LOADED' })),
+      startWith({ state: 'LOADING' }),
+      catchError((err: HttpErrorResponse) => {
+        const message = err.error ? err.error.message : err.message;
+        return of({ state: 'ERROR', error: message });
+      })
   );
 
 }
