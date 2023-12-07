@@ -10,7 +10,7 @@ import {CommonModule} from '@angular/common';
       <!-- info -->
       <div class="w-full p-2 border-b">
         <button (click)="infoBtn = !infoBtn" type="button" class="w-full flex justify-between">
-          <h2 class="uppercase text-base font-bold">legal</h2>
+          <h2 class="uppercase text-base font-bold">Info</h2>
 
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                stroke="currentColor" class="w-6 h-6">

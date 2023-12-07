@@ -12,7 +12,7 @@ import {FormControl, ReactiveFormsModule} from "@angular/forms";
 @Component({
   selector: 'app-search',
   standalone: true,
-  imports: [CommonModule, CardComponent, ReactiveFormsModule,],
+  imports: [CommonModule, CardComponent, ReactiveFormsModule],
   template: `
     <button (click)="openSearchBar()">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
