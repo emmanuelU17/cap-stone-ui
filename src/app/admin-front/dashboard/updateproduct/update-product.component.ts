@@ -109,7 +109,7 @@ export class UpdateProductComponent implements OnInit {
     name: new FormControl('', [Validators.required, Validators.max(50)]),
     sku: new FormControl({value: '', disabled: true}, [Validators.required]),
     price: new FormControl(0, Validators.required),
-    desc: new FormControl('', [Validators.required, Validators.max(700)]),
+    desc: new FormControl('', [Validators.required, Validators.max(1000)]),
   });
 
   ngOnInit(): void {
@@ -260,7 +260,7 @@ export class UpdateProductComponent implements OnInit {
           name: name,
           currency: currency,
           price: price,
-          desc: desc,
+          desc: desc.trim(),
           category: product.category,
           collection: !product.collection ? '' : product.collection
         };

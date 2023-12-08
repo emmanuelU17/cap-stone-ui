@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {CategoryResponse, CKEDITOR4CONFIG, CollectionResponse, SizeInventory} from "../../shared-util";
+import {CKEDITOR4CONFIG, SizeInventory} from "../../shared-util";
 import {catchError, Observable, of, switchMap} from "rxjs";
 import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
 import {CategoryService} from "../category/category.service";
@@ -39,14 +39,14 @@ import {SarreCurrency} from "../../../global-utils";
 })
 export class NewProductComponent {
 
-  private readonly newProductService: NewProductService = inject(NewProductService);
-  private readonly categoryService: CategoryService = inject(CategoryService);
-  private readonly collectionService: CollectionService = inject(CollectionService);
-  private readonly productService: ProductService = inject(ProductService);
-  private readonly toastService: ToastService = inject(ToastService);
-  private readonly fb: FormBuilder = inject(FormBuilder);
-  private readonly sizeInventoryService: SizeInventoryService = inject(SizeInventoryService);
-  private readonly router: Router = inject(Router);
+  private readonly newProductService = inject(NewProductService);
+  private readonly categoryService = inject(CategoryService);
+  private readonly collectionService = inject(CollectionService);
+  private readonly productService = inject(ProductService);
+  private readonly toastService = inject(ToastService);
+  private readonly fb = inject(FormBuilder);
+  private readonly sizeInventoryService = inject(SizeInventoryService);
+  private readonly router = inject(Router);
 
   // Converts from file to string
   toString = (file: File): string => URL.createObjectURL(file);
@@ -56,8 +56,8 @@ export class NewProductComponent {
   files: File[] = []; // Images
   rows: SizeInventory[] = [];
 
-  categories$: Observable<CategoryResponse[]> = this.categoryService.categories$;
-  collections$: Observable<CollectionResponse[]> = this.collectionService._collections$;
+  categories$ = this.categoryService.categories$;
+  collections$ = this.collectionService._collections$;
 
   form = this.fb.group({
     category: new FormControl('', [Validators.required]),
@@ -65,7 +65,7 @@ export class NewProductComponent {
     name: new FormControl('', [Validators.required, Validators.max(50)]),
     ngn: new FormControl('', Validators.required),
     usd: new FormControl('', Validators.required),
-    desc: new FormControl('', [Validators.required, Validators.max(700)]),
+    desc: new FormControl('', [Validators.required, Validators.max(1000)]),
     visible: new FormControl(false, Validators.required),
     colour: new FormControl('', Validators.required),
   });
@@ -126,7 +126,7 @@ export class NewProductComponent {
    * @return void
    * */
   submit(): Observable<number> {
-    const formData: FormData = new FormData();
+    const formData = new FormData();
 
     const dto = {
       category: this.form.controls['category'].value,
@@ -136,7 +136,7 @@ export class NewProductComponent {
         { currency: SarreCurrency.NGN, price: this.form.controls['ngn'].value },
         { currency: SarreCurrency.USD , price: this.form.controls['usd'].value }
       ],
-      desc: this.form.controls['desc'].value,
+      desc: this.form.controls['desc'].value?.trim(),
       visible: this.form.controls['visible'].value,
       colour: this.form.controls['colour'].value,
       sizeInventory: this.rows,

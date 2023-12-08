@@ -15,7 +15,7 @@ export class AuthService {
 
   private readonly http = inject(HttpClient);
   private readonly toastService = inject(ToastService);
-  private readonly router: Router = inject(Router);
+  private readonly router = inject(Router);
 
   logout(path: string): Observable<number> {
     return this.http.post(`${this.HOST}api/v1/logout`, {}, {
@@ -29,12 +29,12 @@ export class AuthService {
 
   register(obj: RegisterDTO, path: string, route?: string): Observable<number> {
     return this.http.post<RegisterDTO>(`${this.HOST}${path}`, obj, {
-        headers: { 'content-type': 'application/json' },
-        observe: 'response',
-        withCredentials: true
+      headers: { 'content-type': 'application/json' },
+      observe: 'response',
+      withCredentials: true
     }).pipe(
       map((res: HttpResponse<RegisterDTO>) => {
-        this.toastService.toastMessage('Registered!');
+        this.toastService.toastMessage('registered!');
         if (route) {
           this.router.navigate([`${route}`]);
         }

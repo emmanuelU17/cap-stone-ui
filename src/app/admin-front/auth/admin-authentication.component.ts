@@ -3,7 +3,6 @@ import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from "@angula
 import {Observable, of} from "rxjs";
 import {CommonModule} from "@angular/common";
 import {DirectiveModule} from "../../directive/directive.module";
-import {MatDialogModule} from "@angular/material/dialog";
 import {AuthService} from "../../service/auth.service";
 
 @Component({
