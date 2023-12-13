@@ -20,7 +20,7 @@ const routes: Routes = [
         loadChildren: () => import('./store-front/shop/shop.routes').then(m => m.SHOP_ROUTES),
       },
       {
-        path: 'profile',
+        path: 'account',
         loadComponent: () => import('./store-front/profile/profile.component').then(m => m.ProfileComponent),
         loadChildren: () => import('./store-front/profile/profile.routes').then(m => m.PROFILE_ROUTES)
       },

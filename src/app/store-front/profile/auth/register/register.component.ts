@@ -248,11 +248,8 @@ export class RegisterComponent {
     }
 
     return this.authService
-      .register(
-        payload,
-        'api/v1/client/auth/register',
-        '/profile/dashboard'
-      ).pipe(
+      .register(payload, 'api/v1/client/auth/register', '/account')
+      .pipe(
         tap((status): void => {
           if (status >= 200 && status < 300) {
             for (let key in this.form.controls) {

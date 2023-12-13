@@ -3,9 +3,9 @@ import {CLIENT_DASHBOARD_GUARD} from "./route.guard";
 
 export const PROFILE_ROUTES: Routes = [
   {
-    path: 'dashboard',
-    loadComponent: () => import('./dashboard/dashboard.component').then(m => m.DashboardComponent),
-    loadChildren: () => import('./dashboard/dash.routes').then(m => m.PROFILE_DASHBOARD_ROUTES),
+    path: '',
+    loadComponent: () => import('./dashboard/account.component').then(m => m.AccountComponent),
+    loadChildren: () => import('./dashboard/account.routes').then(m => m.ACCOUNT_DASHBOARD_ROUTES),
     canActivateChild: [CLIENT_DASHBOARD_GUARD]
   },
   {
@@ -14,7 +14,7 @@ export const PROFILE_ROUTES: Routes = [
   },
   {
     path: '',
-    redirectTo: 'dashboard',
+    redirectTo: '',
     pathMatch: 'full'
   }
 ];

@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {AuthMenuComponent} from "../authmenu/auth-menu.component";
-import {DashboardService} from "../../../service/dashboard.service";
+import {AuthService} from "../../../service/auth.service";
 
 @Component({
   selector: 'app-navigation',
@@ -29,8 +29,8 @@ import {DashboardService} from "../../../service/dashboard.service";
       </div>
 
       <!--  Auth-menu  -->
-      <div class="flex items-center max-[768px]:hidden" *ngIf="principal$ | async as p">
-        <app-auth-menu [principal]="p.principal"></app-auth-menu>
+      <div class="flex items-center max-[768px]:hidden">
+        <app-auth-menu [principal]="principal"></app-auth-menu>
       </div>
 
     </div>
@@ -39,8 +39,7 @@ import {DashboardService} from "../../../service/dashboard.service";
 })
 export class NavigationComponent {
 
-  private readonly dashboardService = inject(DashboardService);
-
-  principal$ = this.dashboardService.principal$;
+  private readonly service = inject(AuthService);
+  principal = this.service.principal;
 
 }

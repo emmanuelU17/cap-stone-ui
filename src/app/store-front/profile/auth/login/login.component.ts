@@ -134,7 +134,7 @@ export class LoginComponent {
       : this.authService.login(
           { principal: principal, password: password },
             'api/v1/client/auth/login',
-            '/profile/dashboard'
+            '/account'
         );
   }
 

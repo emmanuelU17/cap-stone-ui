@@ -6,12 +6,6 @@ export enum SarreCurrency {
   NGN_SYMBOL = '₦', USD_SYMBOL = '$'
 }
 
-export interface CSRF {
-  token: string;
-  parameterName: string;
-  headerName: string;
-}
-
 export interface Link {
   name: string;
   value: string;

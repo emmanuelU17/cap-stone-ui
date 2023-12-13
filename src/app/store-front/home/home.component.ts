@@ -18,7 +18,7 @@ import {CartService} from "../shop/cart/cart.service";
       >
         <div class="lg-scr relative">
           <div class="pb-3 ml-5 inline-block overflow-hidden whitespace-nowrap absolute bottom-0 left-0">
-            <h1 class="bg-font uppercase font-bold text-white">apparel for confident women</h1>
+            <h1 class="bg-font uppercase font-bold text-white">clothing apparel for the confident women</h1>
             <a routerLink="/shop/category"
                class="text-sm md:text-lg capitalize text-white cursor-pointer border-b border-b-white"
             >shop now</a>
@@ -91,7 +91,7 @@ export class HomeComponent {
    * Function achieves an infinite typing effect only difference is
    * this is done with images.
    * */
-  private readonly images: string[] = this.homeService.bgImages;
+  private readonly images = this.homeService.bgImages;
   image$: Observable<string> = of(this.images).pipe(
     switchMap((photos: string[]) => from(photos)
       .pipe(

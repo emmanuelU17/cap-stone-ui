@@ -1,8 +1,6 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {catchError, map, Observable, of, startWith} from "rxjs";
-import {AppService} from "./service/app.service";
-import {HttpErrorResponse} from "@angular/common/http";
-import {CSRF} from "./global-utils";
+import {AuthService} from "./service/auth.service";
 
 @Component({
   selector: 'app-root',
@@ -32,17 +30,14 @@ import {CSRF} from "./global-utils";
 })
 export class AppComponent {
 
-  private readonly appService = inject(AppService);
+  private readonly authService = inject(AuthService);
 
   // Onload of application, retrieve CSRF token
-  csrf$: Observable<{ state: string, error?: string, csrf?: CSRF }> = this.appService.csrf()
+  csrf$: Observable<{ state: string }> = this.authService.csrf()
     .pipe(
       map(() => ({ state: 'LOADED' })),
       startWith({ state: 'LOADING' }),
-      catchError((err: HttpErrorResponse) => {
-        const message = err.error ? err.error.message : err.message;
-        return of({ state: 'ERROR', error: message });
-      })
-  );
+      catchError(() => of({ state: 'ERROR' }))
+    );
 
 }

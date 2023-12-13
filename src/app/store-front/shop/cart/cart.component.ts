@@ -44,7 +44,7 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
         <div class="mt-8">
           <ng-container *ngIf="carts$ | async as carts">
-            <ng-container *ngIf="carts !== undefined && carts.length > 0; else empty">
+            <ng-container *ngIf="carts.length > 0; else empty">
               <div class="flow-root">
                 <ul role="list" class="relative -my-6 divide-y divide-gray-200">
                   <li class="flex py-6" *ngFor="let detail of carts; let i = index">
