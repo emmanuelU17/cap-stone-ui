@@ -1,11 +1,12 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {CommonModule} from '@angular/common';
+import {RouterOutlet} from "@angular/router";
 
 @Component({
-  selector: 'app-contact',
+  selector: 'app-cart',
   standalone: true,
-  imports: [CommonModule],
-  template: `Contact component works`,
+  imports: [CommonModule, RouterOutlet],
+  template: `<router-outlet></router-outlet>`,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ContactComponent { }
+export class CartComponent {}

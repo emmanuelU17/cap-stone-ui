@@ -280,8 +280,8 @@ export class UpdateProductComponent implements OnInit {
           .pipe(switchMap((currency) =>
             this.productService.allProducts(0, 20, currency))
           );
-        const categories$ = this.categoryService.fetchCategories();
-        const collections$ = this.collectionService.fetchCollections();
+        const categories$ = this.categoryService.allCategories();
+        const collections$ = this.collectionService.allCollections();
         const combine$ = combineLatest([products$, categories$, collections$])
           .pipe(switchMap(() => res));
 

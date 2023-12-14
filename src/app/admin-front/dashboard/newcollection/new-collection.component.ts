@@ -130,7 +130,7 @@ export class NewCollectionComponent {
     return this.newCollectionService.create(obj).pipe(
       switchMap((status: number): Observable<number> => {
         this.clear();
-        return this.collectionService.fetchCollections()
+        return this.collectionService.allCollections()
           .pipe(switchMap(() => of(status)));
       }),
       catchError((err: HttpErrorResponse) => {

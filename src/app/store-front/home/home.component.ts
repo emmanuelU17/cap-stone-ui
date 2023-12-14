@@ -5,7 +5,7 @@ import {HomeService} from "./home.service";
 import {CardComponent} from "../utils/card/card.component";
 import {Product} from "../store-front-utils";
 import {Router, RouterLink} from "@angular/router";
-import {CartService} from "../checkout/cart/cart.service";
+import {CartService} from "../payment/cart/cart.service";
 
 @Component({
   selector: 'app-home',

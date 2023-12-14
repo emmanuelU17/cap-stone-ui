@@ -81,7 +81,7 @@ export class CollectionComponent {
                 .pipe(switchMap((currency) =>
                   this.productService.allProducts(0, 20, currency))
                 );
-              const collections$ = this.collectionService.fetchCollections();
+              const collections$ = this.collectionService.allCollections();
 
               return of(status).pipe(
                 switchMap((num: number) =>

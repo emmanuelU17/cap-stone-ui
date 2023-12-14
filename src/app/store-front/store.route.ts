@@ -21,8 +21,13 @@ export const route: Routes = [
     loadChildren: () => import('./pages/pages.route').then(m => m.PAGES_ROUTES)
   },
   {
+    path: 'cart',
+    loadComponent: () => import('./payment/cart/cart.component').then(m => m.CartComponent),
+    loadChildren: () => import('./payment/cart/cart.route').then(m => m.routes)
+  },
+  {
     path: 'checkout',
-    loadComponent: () => import('./checkout/checkout.component').then(m => m.CheckoutComponent),
-    loadChildren: () => import('./checkout/checkout.route').then(m => m.routes)
+    loadComponent: () => import('./payment/checkout/checkout.component').then(m => m.CheckoutComponent),
+    loadChildren: () => import('./payment/checkout/checkout.route').then(m => m.routes)
   }
 ];

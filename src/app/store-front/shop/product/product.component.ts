@@ -8,7 +8,7 @@ import {HttpErrorResponse} from "@angular/common/http";
 import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
 import {CommonModule} from "@angular/common";
 import {ShopService} from "../shop.service";
-import {CartService} from "../../checkout/cart/cart.service";
+import {CartService} from "../../payment/cart/cart.service";
 import {DirectiveModule} from "../../../directive/directive.module";
 import {FooterService} from "../../utils/footer/footer.service";
 

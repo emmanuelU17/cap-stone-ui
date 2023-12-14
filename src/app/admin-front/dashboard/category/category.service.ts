@@ -26,7 +26,7 @@ export class CategoryService {
   }
 
   // Fetch Categories
-  fetchCategories(): Observable<CategoryResponse[]> {
+  allCategories(): Observable<CategoryResponse[]> {
     const url = `${this.HOST}api/v1/worker/category`
     return this.http.get<CategoryResponse[]>(url, {
       observe: 'response',

@@ -171,19 +171,15 @@ export class AdminDashboardComponent {
     .pipe(switchMap((currency) => this.productService.allProducts(0, 20, currency)));
 
   // Categories
-  private readonly category$ = this.categoryService.fetchCategories()
+  private readonly category$ = this.categoryService.allCategories()
     .pipe(
-      tap((arr: CategoryResponse[]) =>
-        arr.sort((a: CategoryResponse, b: CategoryResponse) => a.category.localeCompare(b.category))
-      )
+      tap((arr: CategoryResponse[]) => arr.sort((a, b) => a.category.localeCompare(b.category)))
     );
 
   // Collections
-  private readonly collection$ = this.collectionService.fetchCollections()
+  private readonly collection$ = this.collectionService.allCollections()
     .pipe(
-      tap((arr: CollectionResponse[]) =>
-        arr.sort((a: CollectionResponse, b: CollectionResponse) => a.collection.localeCompare(b.collection))
-      )
+      tap((arr: CollectionResponse[]) => arr.sort((a, b) => a.collection.localeCompare(b.collection)))
     );
 
   combine$: Observable<{ state: string, error?: string }> =

@@ -132,7 +132,7 @@ export class NewCategoryComponent {
         this.clear();
 
         // Make call to server to update CategoryResponse[]
-        return this.categoryService.fetchCategories()
+        return this.categoryService.allCategories()
           .pipe(switchMap(() => of(status)));
       }),
       catchError((err: HttpErrorResponse) => {

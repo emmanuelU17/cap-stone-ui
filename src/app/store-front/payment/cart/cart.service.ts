@@ -12,31 +12,18 @@ import {FooterService} from "../../utils/footer/footer.service";
 })
 export class CartService {
 
-  HOST: string | undefined = environment.domain;
-
+  private readonly HOST: string | undefined = environment.domain;
   private readonly http = inject(HttpClient);
   private readonly footerService = inject(FooterService);
   private readonly toastService = inject(ToastService);
 
-  private subject = new BehaviorSubject<Cart[]>([]);
+  private readonly subject = new BehaviorSubject<Cart[]>([]);
   cart$ = this.subject.asObservable();
 
-  private openCartSubject = new BehaviorSubject<boolean>(false);
-  onOpenCartComponent$ = this.openCartSubject.asObservable();
-
   // Displays currency symbol
-  currency = (str: string): string => {
-    return str.toUpperCase() === SarreCurrency.NGN
-      ? SarreCurrency.NGN_SYMBOL
-      : SarreCurrency.USD_SYMBOL;
-  }
-
-  /**
-   * Close cart component
-   * */
-  close(bool: boolean): void {
-    this.openCartSubject.next(bool);
-  }
+  currency = (str: string): string => str.toUpperCase() === SarreCurrency.NGN
+    ? SarreCurrency.NGN_SYMBOL
+    : SarreCurrency.USD_SYMBOL;
 
   /**
    * Returns the number of items in Cart[]

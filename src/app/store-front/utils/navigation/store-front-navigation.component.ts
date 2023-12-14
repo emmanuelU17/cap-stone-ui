@@ -2,15 +2,15 @@ import {ChangeDetectionStrategy, Component, HostListener, inject} from '@angular
 import {CommonModule} from "@angular/common";
 import {RouterLink, RouterLinkActive} from "@angular/router";
 import {CollectionService} from "../../shop/collection/collection.service";
-import {CartIconComponent} from "../carticon/cart-icon.component";
 import {SearchComponent} from "../search/search.component";
 import {MobileNavigationComponent} from "../mobile-navigation/mobile-navigation.component";
 import {Link} from "../../../global-utils";
+import {CartService} from "../../payment/cart/cart.service";
 
 @Component({
   selector: 'app-store-front-navigation-navigation',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, CartIconComponent, SearchComponent, MobileNavigationComponent],
+  imports: [CommonModule, RouterLink, RouterLinkActive, SearchComponent, MobileNavigationComponent],
   template: `
     <nav class="w-full p-2.5 grid grid-cols-3 bg-transparent" [ngStyle]="navBg">
 
@@ -18,7 +18,7 @@ import {Link} from "../../../global-utils";
       <div class="flex items-center mr-auto">
 
         <!--  Mobile  -->
-        <div class="block lg:hidden">
+        <div class="block md:hidden">
           <!-- burger -->
           <button class="bg-transparent outline-none border-none cursor-pointer relative" type="button"
                   (click)="openNavMobile = !openNavMobile">
@@ -40,7 +40,7 @@ import {Link} from "../../../global-utils";
         </div>
 
         <!--  None Mobile  -->
-        <div class="hidden lg:block">
+        <div class="hidden md:block">
           <ul class="h-full flex items-center list-none gap-8">
             <li class="h-full flex items-center" *ngFor="let link of links">
               <ng-container  *ngIf="link.bool; else regular">
@@ -95,7 +95,22 @@ import {Link} from "../../../global-utils";
 
           <!--    Shopping cart    -->
           <li>
-            <app-cart-icon></app-cart-icon>
+              <a class="uppercase flex" routerLink="/cart">
+                  <svg xmlns="http://www.w3.org/2000/svg"
+                       fill="none"
+                       viewBox="0 0 24 24"
+                       stroke-width="1.5"
+                       stroke="currentColor"
+                       class="w-6 h-6 cursor-pointer text-[var(--app-theme)]">
+                      <path stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/>
+                  </svg>
+                  <span class="text-xs text-red-600"
+                        *ngIf="count$() | async as count"
+                        [style]="{ 'display': count > 0 ? 'block' : 'none'  }"
+                  >{{ count }}</span>
+              </a>
           </li>
 
           <!--    Person icon    -->
@@ -118,8 +133,10 @@ import {Link} from "../../../global-utils";
 export class StoreFrontNavigationComponent {
 
   private readonly collectionService = inject(CollectionService);
+  private readonly service = inject(CartService);
 
-  collectionNotEmpty$ = this.collectionService.isEmpty$();
+  readonly collectionNotEmpty$ = this.collectionService.isEmpty$();
+  count$ = this.service.count$;
 
   links: Link[] = [{ name: 'home', value: '', bool: false }, { name: 'shop', value: '', bool: true, }];
   openNavMobile = false;

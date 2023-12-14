@@ -13,7 +13,7 @@ export class HomeService {
   private readonly HOST: string | undefined = environment.domain;
   private readonly http = inject(HttpClient);
 
-  private subject = new BehaviorSubject<Product[]>([]);
+  private readonly subject = new BehaviorSubject<Product[]>([]);
   products$ = this.subject.asObservable()
 
   get bgImages(): string[] {
@@ -29,13 +29,6 @@ export class HomeService {
     return this.http.get<Page<Product>>(url, { withCredentials: true })
       .pipe(
         map((page) => {
-          // const arr = page.content;
-          //
-          // for (let p of arr) {
-          //   const rand = Math.floor(Math.random() * DUMMY_IMAGES.length);
-          //   p.image = DUMMY_IMAGES[rand];
-          // }
-
           this.subject.next(page.content)
           return page.content;
         }),

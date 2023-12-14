@@ -27,7 +27,7 @@ export class CollectionService {
   }
 
   // Fetch Collection
-  fetchCollections(): Observable<CollectionResponse[]> {
+  allCollections(): Observable<CollectionResponse[]> {
     const url = `${this.HOST}api/v1/worker/collection`;
     return this.http.get<CollectionResponse[]>(url, {
       observe: 'response',
