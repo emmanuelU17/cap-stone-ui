@@ -93,12 +93,12 @@ import {Router} from "@angular/router";
 })
 export class NewCategoryComponent {
 
-  private readonly newCategoryService: NewCategoryService = inject(NewCategoryService);
-  private readonly categoryService: CategoryService = inject(CategoryService);
-  private readonly toastService: ToastService = inject(ToastService);
-  private readonly router: Router = inject(Router);
+  private readonly newCategoryService = inject(NewCategoryService);
+  private readonly categoryService = inject(CategoryService);
+  private readonly toastService = inject(ToastService);
+  private readonly router = inject(Router);
 
-  reactiveForm: FormGroup = new FormGroup({
+  reactiveForm = new FormGroup({
     name: new FormControl('', [Validators.required, Validators.max(80)]),
     parent: new FormControl(''),
     visible: new FormControl(false, Validators.required)
@@ -120,11 +120,15 @@ export class NewCategoryComponent {
    * @return Observable of type number
    * */
   submit(): Observable<number> {
-    const obj: CategoryRequest = {
-      name: this.reactiveForm.controls['name'].value,
-      parent: this.reactiveForm.controls['parent'].value,
-      visible: this.reactiveForm.controls['visible'].value
-    };
+    const name = this.reactiveForm.controls['name'].value;
+    const parent = this.reactiveForm.controls['parent'].value
+    const visible = this.reactiveForm.controls['visible'].value;
+
+    if (!name || !parent || visible === null) {
+      return of();
+    }
+
+    const obj: CategoryRequest = { name: name,  parent: parent,  visible: visible };
 
     return this.newCategoryService.create(obj).pipe(
       switchMap((status: number): Observable<number> => {

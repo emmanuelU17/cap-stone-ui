@@ -7,9 +7,11 @@ import {ToastComponent} from "./toast.component";
 })
 export class ToastService {
 
-  private _snackBar: MatSnackBar = inject(MatSnackBar);
+  private readonly _snackBar: MatSnackBar = inject(MatSnackBar);
 
-  /** Opens snack bar for 5 seconds */
+  /**
+   * Opens snack bar for 5 seconds
+   * */
   toastMessage(message: string): void {
     this._snackBar.openFromComponent(ToastComponent, {
       duration: 5000,

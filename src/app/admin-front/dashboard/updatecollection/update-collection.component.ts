@@ -34,13 +34,13 @@ import {ToastService} from "../../../shared-comp/toast/toast.service";
 })
 export class UpdateCollectionComponent implements OnInit {
 
-  private readonly updateCollectionService: UpdateCollectionService = inject(UpdateCollectionService);
-  private readonly collectionService: CollectionService = inject(CollectionService);
-  private readonly productService: ProductService = inject(ProductService);
-  private readonly activeRoute: ActivatedRoute = inject(ActivatedRoute);
-  private readonly fb: FormBuilder = inject(FormBuilder);
-  private readonly toastService: ToastService = inject(ToastService);
-  private readonly router: Router = inject(Router);
+  private readonly updateCollectionService = inject(UpdateCollectionService);
+  private readonly collectionService = inject(CollectionService);
+  private readonly productService = inject(ProductService);
+  private readonly activeRoute = inject(ActivatedRoute);
+  private readonly fb = inject(FormBuilder);
+  private readonly toastService = inject(ToastService);
+  private readonly router = inject(Router);
 
   // Get id from route
   private id: string | null = this.activeRoute.snapshot.paramMap.get('id');

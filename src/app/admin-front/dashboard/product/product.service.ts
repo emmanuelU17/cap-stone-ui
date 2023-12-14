@@ -1,5 +1,5 @@
-import {Injectable} from '@angular/core';
-import {BehaviorSubject, map, Observable, of, ReplaySubject, tap} from "rxjs";
+import {inject, Injectable} from '@angular/core';
+import {BehaviorSubject, map, Observable, ReplaySubject, tap} from "rxjs";
 import {Page, SarreCurrency} from "../../../global-utils";
 import {ProductResponse, UpdateProduct} from "../../shared-util";
 import {HttpClient, HttpResponse} from "@angular/common/http";
@@ -9,18 +9,16 @@ import {environment} from "../../../../environments/environment";
   providedIn: 'root'
 })
 export class ProductService {
-  HOST: string | undefined;
 
-  private productSubject = new ReplaySubject<Page<ProductResponse>>()
+  private readonly HOST: string | undefined = environment.domain;
+  private readonly http = inject(HttpClient);
+
+  private readonly productSubject = new ReplaySubject<Page<ProductResponse>>()
   products$: Observable<Page<ProductResponse>> = this.productSubject.asObservable();
   products: ProductResponse[] = [];
 
-  private subject = new BehaviorSubject<SarreCurrency>(SarreCurrency.NGN);
+  private readonly subject = new BehaviorSubject<SarreCurrency>(SarreCurrency.NGN);
   currency$ = this.subject.asObservable();
-
-  constructor(private http: HttpClient) {
-    this.HOST = environment.domain;
-  }
 
   setCurrencySubject(currency: SarreCurrency): void {
     this.subject.next(currency);

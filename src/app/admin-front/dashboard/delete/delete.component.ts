@@ -32,7 +32,7 @@ import {HttpErrorResponse} from "@angular/common/http";
 })
 export class DeleteComponent {
 
-  private toastService: ToastService = inject(ToastService);
+  private readonly toastService = inject(ToastService);
 
   constructor(
     private dialogRef: MatDialogRef<DeleteComponent>,

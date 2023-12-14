@@ -40,6 +40,6 @@ import {AuthService} from "../../../service/auth.service";
 export class NavigationComponent {
 
   private readonly service = inject(AuthService);
-  principal = this.service.principal;
+  readonly principal = this.service.principal;
 
 }

@@ -100,5 +100,4 @@ export class MobileNavigationComponent {
     this.emitter.emit(bool);
   }
 
-
 }

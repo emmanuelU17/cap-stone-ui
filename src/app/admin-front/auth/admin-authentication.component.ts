@@ -8,7 +8,7 @@ import {AuthService} from "../../service/auth.service";
 @Component({
   selector: 'app-admin-authentication',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, DirectiveModule], // MatDialogModule
+  imports: [CommonModule, ReactiveFormsModule, DirectiveModule],
   template: `
     <div class="h-full flex justify-center items-center bg-[var(--all-background)]">
       <form [formGroup]="loginForm" class="w-fit py-3 px-4 appearance-none shadow-md outline-none border-none block rounded-lg bg-[var(--white)]">

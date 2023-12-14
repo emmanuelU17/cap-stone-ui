@@ -66,11 +66,11 @@ import {CategoryService} from "../category/category.service";
 })
 export class ProductComponent {
 
-  private readonly productService: ProductService = inject(ProductService);
-  private readonly categoryService: CategoryService = inject(CategoryService);
-  private readonly collectionService: CollectionService = inject(CollectionService);
-  private readonly router: Router = inject(Router);
-  private readonly dialog: MatDialog = inject(MatDialog);
+  private readonly productService = inject(ProductService);
+  private readonly categoryService = inject(CategoryService);
+  private readonly collectionService = inject(CollectionService);
+  private readonly router = inject(Router);
+  private readonly dialog = inject(MatDialog);
 
   // Table details
   thead: Array<keyof ProductResponse> = ['product_id', 'image', 'name', 'desc', 'currency', 'price', 'action'];

@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {map, Observable} from "rxjs";
 import {HttpClient, HttpHeaders, HttpResponse} from "@angular/common/http";
 import {environment} from "../../../../environments/environment";
@@ -7,11 +7,9 @@ import {environment} from "../../../../environments/environment";
   providedIn: 'root'
 })
 export class NewProductService {
-  private readonly HOST: string | undefined;
 
-  constructor(private http: HttpClient) {
-    this.HOST = environment.domain;
-  }
+  private readonly HOST: string | undefined = environment.domain;
+  private readonly http = inject(HttpClient);
 
   /**
    * POST call to create a new product

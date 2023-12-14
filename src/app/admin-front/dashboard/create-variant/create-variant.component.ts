@@ -34,11 +34,11 @@ import {SizeInventoryService} from "../sizeinventory/size-inventory.service";
 })
 export class CreateVariantComponent {
 
-  private readonly createVariantService: CreateVariantService = inject(CreateVariantService);
-  private readonly fb: FormBuilder = inject(FormBuilder);
-  private readonly toastService: ToastService = inject(ToastService);
-  private readonly updateProductService: UpdateProductService = inject(UpdateProductService);
-  private readonly sizeInventoryService: SizeInventoryService = inject(SizeInventoryService);
+  private readonly createVariantService = inject(CreateVariantService);
+  private readonly fb = inject(FormBuilder);
+  private readonly toastService = inject(ToastService);
+  private readonly updateProductService = inject(UpdateProductService);
+  private readonly sizeInventoryService = inject(SizeInventoryService);
 
   files: File[] = []; // Images
   rows: SizeInventory[] = [];
@@ -112,7 +112,7 @@ export class CreateVariantComponent {
   }
 
   create(): Observable<number> {
-    const formData: FormData = new FormData();
+    const formData = new FormData();
 
     const payload = {
       product_id: this.data.id,

@@ -66,7 +66,7 @@ export interface UpdateCategory {
 
 export interface CollectionRequest {
   name: string;
-  visible: string;
+  visible: boolean;
 }
 
 export interface CollectionResponse {

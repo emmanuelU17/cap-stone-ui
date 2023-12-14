@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {HttpClient, HttpResponse} from "@angular/common/http";
 import {environment} from "../../../../environments/environment";
 import {CollectionRequest} from "../../shared-util";
@@ -8,11 +8,9 @@ import {map, Observable} from "rxjs";
   providedIn: 'root'
 })
 export class NewCollectionService {
-  private HOST: string | undefined;
 
-  constructor(private http: HttpClient) {
-    this.HOST = environment.domain;
-  }
+  private readonly HOST: string | undefined = environment.domain;
+  private readonly http = inject(HttpClient);
 
   /**
    * Responsible for POST call to our server to create a new collection

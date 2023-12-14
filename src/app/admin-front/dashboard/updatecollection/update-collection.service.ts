@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {HttpClient, HttpResponse} from "@angular/common/http";
 import {environment} from "../../../../environments/environment";
 import {map, Observable} from "rxjs";
@@ -9,11 +9,9 @@ import {ProductResponse, UpdateCollection} from "../../shared-util";
   providedIn: 'root'
 })
 export class UpdateCollectionService {
-  HOST: string | undefined;
 
-  constructor(private http: HttpClient) {
-    this.HOST = environment.domain;
-  }
+  private readonly HOST: string | undefined = environment.domain;
+  private readonly http = inject(HttpClient);
 
   /** Returns a Page of Product Response based on CollectionResponse id and pagination params */
   allProductsByCollection(

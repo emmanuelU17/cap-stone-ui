@@ -97,12 +97,12 @@ import {Router} from "@angular/router";
 })
 export class NewCollectionComponent {
 
-  private readonly newCollectionService: NewCollectionService = inject(NewCollectionService);
-  private readonly collectionService: CollectionService = inject(CollectionService);
-  private readonly toastService: ToastService = inject(ToastService);
-  private readonly router: Router = inject(Router);
+  private readonly newCollectionService = inject(NewCollectionService);
+  private readonly collectionService = inject(CollectionService);
+  private readonly toastService = inject(ToastService);
+  private readonly router = inject(Router);
 
-  reactiveForm: FormGroup = new FormGroup({
+  reactiveForm = new FormGroup({
     name: new FormControl('', [Validators.required, Validators.max(50)]),
     visible: new FormControl(false, Validators.required)
   });
@@ -122,10 +122,14 @@ export class NewCollectionComponent {
    * @return Observable of type number
    * */
   submit(): Observable<number> {
-    const obj: CollectionRequest = {
-      name: this.reactiveForm.controls['name'].value,
-      visible: this.reactiveForm.controls['visible'].value
-    };
+    const name = this.reactiveForm.controls['name'].value;
+    const visible = this.reactiveForm.controls['visible'].value;
+
+    if (!name || visible === null) {
+      return of();
+    }
+
+    const obj: CollectionRequest = { name: name, visible: visible };
 
     return this.newCollectionService.create(obj).pipe(
       switchMap((status: number): Observable<number> => {

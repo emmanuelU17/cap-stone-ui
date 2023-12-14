@@ -92,10 +92,10 @@ import {ProductDetailResponse} from "../../shared-util";
 })
 export class UpdateVariantComponent {
 
-  private readonly updateVariantService: UpdateVariantService = inject(UpdateVariantService);
-  private readonly updateProductService: UpdateProductService = inject(UpdateProductService);
-  private readonly toastService: ToastService = inject(ToastService);
-  private readonly fb: FormBuilder = inject(FormBuilder);
+  private readonly updateVariantService = inject(UpdateVariantService);
+  private readonly updateProductService = inject(UpdateProductService);
+  private readonly toastService = inject(ToastService);
+  private readonly fb = inject(FormBuilder);
 
   form: FormGroup;
 

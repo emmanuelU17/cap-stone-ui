@@ -158,13 +158,13 @@ import {MatDialogModule} from "@angular/material/dialog";
 })
 export class UpdateCategoryComponent implements OnInit {
 
-  private readonly updateCategoryService: UpdateCategoryService = inject(UpdateCategoryService);
-  private readonly productService: ProductService = inject(ProductService);
-  private readonly categoryService: CategoryService = inject(CategoryService);
-  private readonly activeRoute: ActivatedRoute = inject(ActivatedRoute);
-  private readonly fb: FormBuilder = inject(FormBuilder);
-  private readonly toastService: ToastService = inject(ToastService);
-  private readonly router: Router = inject(Router);
+  private readonly updateCategoryService = inject(UpdateCategoryService);
+  private readonly productService = inject(ProductService);
+  private readonly categoryService = inject(CategoryService);
+  private readonly activeRoute = inject(ActivatedRoute);
+  private readonly fb = inject(FormBuilder);
+  private readonly toastService = inject(ToastService);
+  private readonly router = inject(Router);
 
   // Get id from route
   private id: string | null = this.activeRoute.snapshot.paramMap.get('id');

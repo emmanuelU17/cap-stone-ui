@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {ProductDetailResponse} from "../../shared-util";
 import {map, Observable} from "rxjs";
 import {HttpClient, HttpResponse} from "@angular/common/http";
@@ -8,11 +8,9 @@ import {environment} from "../../../../environments/environment";
   providedIn: 'root'
 })
 export class UpdateProductService {
-  HOST: string | undefined;
 
-  constructor(private http: HttpClient) {
-    this.HOST = environment.domain;
-  }
+  private readonly HOST: string | undefined = environment.domain;
+  private readonly http = inject(HttpClient);
 
   /** Fetch ProductDetail based on id */
   fetchProductDetails(id: string): Observable<ProductDetailResponse[]> {

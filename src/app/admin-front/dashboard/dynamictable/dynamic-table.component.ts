@@ -218,7 +218,7 @@ import {PaginatorComponent} from "../../../shared-comp/paginator/paginator.compo
 export class DynamicTableComponent<T> {
 
   // TODO validate why current pages isn't changing on html
-  protected currentPage = signal<number>(0);
+  protected readonly currentPage = signal<number>(0);
 
   @Input() paginationTable: boolean = false; // validates if pagination table should be rendered
   @Input() tHead: (keyof T)[] = [];
