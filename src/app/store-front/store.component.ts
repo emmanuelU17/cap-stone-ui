@@ -10,7 +10,7 @@ import {RouterOutlet} from "@angular/router";
 import {HomeService} from "./home/home.service";
 import {Product} from "./store-front-utils";
 import {FooterComponent} from "./utils/footer/footer.component";
-import {CartService} from "./shop/cart/cart.service";
+import {CartService} from "./checkout/cart/cart.service";
 import {FooterService} from "./utils/footer/footer.service";
 
 @Component({

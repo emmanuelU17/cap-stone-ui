@@ -22,7 +22,8 @@ import {AccountService} from "../account.service";
           <!-- Order history -->
           <section class="flex-1 p-2">
               <div class="w-full flex justify-center">
-                  <h1 class="w-fit capitalize border-b border-[var(--app-theme)] text-sm md:text-base">order history</h1>
+                  <h1 class="w-fit capitalize border-b border-[var(--app-theme)] text-sm md:text-base">order
+                      history</h1>
               </div>
 
               <div class="w-full mt-2">
@@ -47,7 +48,7 @@ import {AccountService} from "../account.service";
 
                       <!-- body -->
                       <div class="p-2 gap-3 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                          @for (o of obj.payload; track o.url) {
+                          @for (o of obj.detail;track o.url) {
                               <app-card [url]="o.url" [name]="o.name" [bool]="false"></app-card>
                           }
                       </div>
@@ -64,12 +65,15 @@ import {AccountService} from "../account.service";
                   <button [asyncButton]="logout$"
                           type="button"
                           class="w-fit capitalize text-blue-300 text-sm md:text-base"
-                  >logout</button>
+                  >logout
+                  </button>
               </div>
 
               <div class="w-full pt-2 flex flex-col gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                       stroke="currentColor" class="w-6 h-6">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/>
                   </svg>
                   <h1 class="w-fit capitalize text-sm md:text-base">{{ principal }}</h1>
               </div>

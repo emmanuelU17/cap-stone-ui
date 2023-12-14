@@ -1,13 +1,13 @@
 export interface OrderHistoryDTO {
   date: number,
+  currency: string
   total: number,
   orderNumber: string,
-  payload: PayloadMapper[]
+  detail: PayloadMapper[]
 }
 
 export interface PayloadMapper {
   name: string,
   url: string,
-  currency?: string
   colour: string
 }

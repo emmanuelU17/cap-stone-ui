@@ -1,19 +1,9 @@
-import {ChangeDetectionStrategy, Component, DestroyRef, inject, Renderer2} from '@angular/core';
+import {ChangeDetectionStrategy, Component, DestroyRef, inject, Renderer2, signal} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {
-  BehaviorSubject,
-  debounceTime,
-  distinctUntilChanged,
-  fromEvent,
-  map,
-  Observable,
-  of,
-  switchMap,
-  tap
-} from "rxjs";
+import {debounceTime, distinctUntilChanged, fromEvent, map, Observable, of, switchMap, tap} from "rxjs";
 import {CartService} from "./cart.service";
 import {DirectiveModule} from "../../../directive/directive.module";
-import {Cart} from "../shop.helper";
+import {Cart} from "../../shop/shop.helper";
 import {FooterService} from "../../utils/footer/footer.service";
 import {SarreCurrency, VARIABLE_IS_NUMERIC} from "../../../global-utils";
 import {Router} from "@angular/router";
@@ -47,14 +37,13 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
             <ng-container *ngIf="carts.length > 0; else empty">
               <div class="flow-root">
                 <ul role="list" class="relative -my-6 divide-y divide-gray-200">
-                  <li class="flex py-6" *ngFor="let detail of carts; let i = index">
-                    <div class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
+                    <li class="flex py-6" *ngFor="let detail of carts; let i = index">
+                      <div class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
                       <img [src]="detail.url"
                            alt="product image{{ i }}"
                            class="h-full w-full object-cover object-center">
                     </div>
-
-                    <div class="ml-4 flex flex-1 flex-col">
+                      <div class="ml-4 flex flex-1 flex-col">
                       <div>
                         <div class="flex justify-between text-base font-medium text-gray-900">
                           <h3 class="font-app-card cursor-pointer hover:border-b hover:border-black"
@@ -64,7 +53,7 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
                         <p class="mt-1 text-sm text-gray-500">{{ detail.colour }}</p>
                       </div>
                       <div class="flex flex-1 items-end justify-between text-sm">
-                        <div class="">
+                        <div>
                           <p class="text-gray-500">{{ detail.size }}</p>
                           <input type="number"
                                  [value]="detail.qty"
@@ -73,36 +62,27 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
                         </div>
 
                         <div class="flex">
-                          <button type="submit"
-                                  class="font-medium text-[var(--app-theme-hover)]"
-                                  [asyncButton]="remove(detail.sku)"
-                          >Remove</button>
+                          <button [asyncButton]="remove(detail.sku)" type="submit"
+                                  class="font-medium text-[var(--app-theme-hover)]">
+                              Remove
+                          </button>
                         </div>
                       </div>
                     </div>
+
                   </li>
 
-                  <!-- spinner -->
-                  <div *ngIf="spinnerState$ | async as spinner"
-                       [style]="{ 'display': spinner ? 'flex' : 'none' }"
-                       class="absolute top-0 right-0 bottom-0 left-0 flex justify-center items-center bg-transparent"
-                  >
-                    <div role="status" class="
-                        inline-block
-                        h-8 w-8
-                        animate-spin
-                        rounded-full
-                        border-4 border-solid border-r-[var(--app-theme)]
-                        align-[-0.125em]
-                        text-primary motion-reduce:animate-[spin_1.5s_linear_infinite]
-                        "
+                    <!-- spinner -->
+                    <div *ngIf="spinner() as spin"
+                         [style]="{ 'display': spin ? 'flex' : 'none' }"
+                         class="absolute top-0 right-0 bottom-0 left-0 flex justify-center items-center bg-black opacity-50"
                     >
-                      <span class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
-                        Loading...
-                      </span>
+                        <div role="status" class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-r-[var(--app-theme)] align-[-0.125em] text-primary motion-reduce:animate-[spin_1.5s_linear_infinite]">
+                              <span class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
+                                  Loading...
+                              </span>
+                        </div>
                     </div>
-                  </div>
-
                 </ul>
               </div>
             </ng-container>
@@ -120,7 +100,8 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
         <div class="flex justify-between text-base font-medium text-gray-900">
           <p>Subtotal</p>
           <p *ngIf="total() | async as total">
-            <span *ngIf="currency$ | async as c">{{ c }}</span>{{ total }}
+            <span *ngIf="currency$ | async as c">{{ c }}</span>
+              {{ total }}
           </p>
         </div>
         <p class="mt-0.5 text-sm text-gray-500">
@@ -176,10 +157,7 @@ export class CartComponent {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
 
-  private spinnerSubject= new BehaviorSubject<boolean>(false);
-  spinnerState$ = this.spinnerSubject.asObservable();
-
-  private setSpinner = (bool: boolean): void => this.spinnerSubject.next(bool);
+  spinner = signal<boolean>(false);
 
   carts$ = this.cartService.cart$;
   currency$ = this.footService.currency$
@@ -198,9 +176,7 @@ export class CartComponent {
   /**
    * Closes CartComponent
    * */
-  closeComponent = (): void => {
-    this.cartService.close = false;
-  }
+  closeComponent = (): void => this.cartService.close(false);
 
   /**
    * Removes Item from Cart
@@ -236,30 +212,23 @@ export class CartComponent {
 
           const qty = Number(value);
 
-          this.setSpinner(true);
+          this.spinner.set(true);
           return qty < 1
-            ? this.remove(sku)
-              .pipe(
-                tap({
-                  next: () => this.setSpinner(false),
-                  error: () => this.setSpinner(false),
-                  complete: () => this.setSpinner(false)
-                })
-              )
+            ? this.remove(sku).pipe(tap(() => this.spinner.set(false)))
             : this.cartService.createCart({ sku: sku, qty: qty })
-              .pipe(
-                tap({
-                  next: () => this.setSpinner(false),
-                  error: () => this.setSpinner(false),
-                  complete: () => this.setSpinner(false)
-                })
-              );
+              .pipe(tap(() => this.spinner.set(false)));
         }),
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe();
   }
 
-  checkout(): void { }
+  /**
+   * Displays contact information
+   * */
+  checkout(): void {
+    this.router.navigate([``]);
+    this.closeComponent();
+  }
 
 }

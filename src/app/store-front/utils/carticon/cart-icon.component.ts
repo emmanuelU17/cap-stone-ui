@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {CartComponent} from "../../shop/cart/cart.component";
-import {CartService} from "../../shop/cart/cart.service";
+import {CartComponent} from "../../checkout/cart/cart.component";
+import {CartService} from "../../checkout/cart/cart.service";
 
 @Component({
   selector: 'app-cart-icon',
@@ -48,8 +48,6 @@ export class CartIconComponent {
   /**
    * Opens Cart component
    * */
-  onOpenCartComponent = (): void => {
-    this.service.close = true
-  }
+  onOpenCartComponent = (): void => this.service.close(true);
 
 }

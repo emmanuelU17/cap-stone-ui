@@ -2,7 +2,7 @@ import {inject, Injectable} from '@angular/core';
 import {environment} from "../../../../environments/environment";
 import {HttpClient, HttpErrorResponse, HttpResponse} from "@angular/common/http";
 import {BehaviorSubject, catchError, map, Observable, of, switchMap, tap} from "rxjs";
-import {Cart, CartDTO} from "../shop.helper";
+import {Cart, CartDTO} from "../../shop/shop.helper";
 import {ToastService} from "../../../shared-comp/toast/toast.service";
 import {SarreCurrency} from "../../../global-utils";
 import {FooterService} from "../../utils/footer/footer.service";
@@ -34,7 +34,7 @@ export class CartService {
   /**
    * Close cart component
    * */
-  set close(bool: boolean) {
+  close(bool: boolean): void {
     this.openCartSubject.next(bool);
   }
 

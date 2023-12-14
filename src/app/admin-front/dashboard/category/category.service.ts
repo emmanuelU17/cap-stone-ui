@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {CategoryResponse} from "../../shared-util";
 import {BehaviorSubject, map, Observable} from "rxjs";
 import {HttpClient, HttpResponse} from "@angular/common/http";
@@ -8,15 +8,13 @@ import {environment} from "../../../../environments/environment";
   providedIn: 'root'
 })
 export class CategoryService {
-  HOST: string | undefined;
+
+  private readonly HOST: string | undefined = environment.domain;
+  private readonly http = inject(HttpClient);
 
   private subject$ = new BehaviorSubject<CategoryResponse[]>([]);
-  categories$: Observable<CategoryResponse[]> = this.subject$.asObservable();
+  categories$ = this.subject$.asObservable();
   categories: CategoryResponse[] = [];
-
-  constructor(private http: HttpClient) {
-    this.HOST = environment.domain;
-  }
 
   // Delete category based on id
   deleteCategory(id: string): Observable<number> {

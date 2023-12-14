@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {BehaviorSubject, map, Observable} from "rxjs";
 import {CollectionResponse} from "../../shared-util";
 import {HttpClient, HttpResponse} from "@angular/common/http";
@@ -8,15 +8,13 @@ import {environment} from "../../../../environments/environment";
   providedIn: 'root'
 })
 export class CollectionService {
-  HOST: string | undefined;
+
+  HOST: string | undefined = environment.domain;
+  private readonly http = inject(HttpClient);
 
   private subject = new BehaviorSubject<CollectionResponse[]>([]);
   _collections$ = this.subject.asObservable();
   collections: CollectionResponse[] = [];
-
-  constructor(private http: HttpClient) {
-    this.HOST = environment.domain;
-  }
 
   // Delete collection based on id
   deleteCollection(id: string): Observable<number> {

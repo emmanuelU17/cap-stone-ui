@@ -1,7 +1,6 @@
 import {ChangeDetectionStrategy, Component, inject, Input} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {MatMenuModule} from "@angular/material/menu";
-import {Observable} from "rxjs";
 import {DirectiveModule} from "../../../directive/directive.module";
 import {AuthService} from "../../../service/auth.service";
 
@@ -19,7 +18,7 @@ import {AuthService} from "../../../service/auth.service";
 
     <mat-menu #menu="matMenu">
       <h1 mat-menu-item>Hello <span>{{ principal }}!</span></h1>
-      <button mat-menu-item type="button" [asyncButton]="logout()">logout</button>
+      <button mat-menu-item type="button" [asyncButton]="logout$">logout</button>
     </mat-menu>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -30,6 +29,6 @@ export class AuthMenuComponent {
 
   private readonly authMenuService = inject(AuthService);
 
-  logout = (): Observable<number> => this.authMenuService.logout('/admin');
+  logout$ = this.authMenuService.logout('/admin');
 
 }

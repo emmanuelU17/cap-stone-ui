@@ -46,12 +46,12 @@ import {HttpErrorResponse} from "@angular/common/http";
 })
 export class CategoryComponent {
 
-  private readonly categoryService: CategoryService = inject(CategoryService);
-  private readonly productService: ProductService = inject(ProductService);
-  private readonly router: Router = inject(Router);
-  private readonly dialog: MatDialog = inject(MatDialog);
+  private readonly categoryService = inject(CategoryService);
+  private readonly productService = inject(ProductService);
+  private readonly router = inject(Router);
+  private readonly dialog = inject(MatDialog);
 
-  data$: Observable<CategoryResponse[]> = this.categoryService.categories$;
+  data$ = this.categoryService.categories$;
   tHead: Array<keyof CategoryResponse> = ['category_id', 'category', 'created_at', 'modified_at', 'visible', 'action'];
 
   routeToNewCategory = (): void => {

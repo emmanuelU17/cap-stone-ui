@@ -9,27 +9,7 @@ const routes: Routes = [
   {
     path: '',
     loadComponent: () => import('./store-front/store.component').then(m => m.StoreComponent),
-    children: [
-      {
-        path: '',
-        loadComponent: () => import('./store-front/home/home.component').then(m => m.HomeComponent)
-      },
-      {
-        path: 'shop',
-        loadComponent: () => import('./store-front/shop/shop.component').then(m => m.ShopComponent),
-        loadChildren: () => import('./store-front/shop/shop.routes').then(m => m.SHOP_ROUTES),
-      },
-      {
-        path: 'account',
-        loadComponent: () => import('./store-front/profile/profile.component').then(m => m.ProfileComponent),
-        loadChildren: () => import('./store-front/profile/profile.routes').then(m => m.PROFILE_ROUTES)
-      },
-      {
-        path: 'pages',
-        loadComponent: () => import('./store-front/pages/pages.component').then(m => m.PagesComponent),
-        loadChildren: () => import('./store-front/pages/pages.route').then(m => m.PAGES_ROUTES)
-      }
-    ]
+    loadChildren: () => import('./store-front/store.route').then(m => m.route)
   },
 
   // Admin front

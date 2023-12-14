@@ -48,12 +48,12 @@ import {ProductService} from "../product/product.service";
 })
 export class CollectionComponent {
 
-  private readonly collectionService: CollectionService = inject(CollectionService);
-  private readonly productService: ProductService = inject(ProductService);
-  private readonly router: Router = inject(Router);
-  private readonly dialog: MatDialog = inject(MatDialog);
+  private readonly collectionService = inject(CollectionService);
+  private readonly productService = inject(ProductService);
+  private readonly router = inject(Router);
+  private readonly dialog = inject(MatDialog);
 
-  data$: Observable<CollectionResponse[]> = this.collectionService._collections$;
+  data$ = this.collectionService._collections$;
   columns: Array<keyof CollectionResponse> = ['collection_id', 'collection', 'created_at', 'modified_at', 'visible', 'action'];
 
   routeToNewCollection = (): void => {
