@@ -78,10 +78,8 @@ export class CartService {
    * */
   removeFromCart(sku: string): Observable<number> {
     const url = `${this.HOST}api/v1/cart?sku=${sku}`
-    return this.http.delete<any>(url, {
-      observe: 'response',
-      withCredentials: true
-    }).pipe(
+    return this.http.delete<any>(url, { observe: 'response', withCredentials: true })
+      .pipe(
       switchMap((res) => this.footerService.currency$
         .pipe(
           switchMap((currency) => this.cartItems(currency)
