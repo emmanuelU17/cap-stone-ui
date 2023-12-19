@@ -13,9 +13,9 @@ export class ProductService {
   private readonly HOST: string | undefined = environment.domain;
   private readonly http = inject(HttpClient);
 
-  productDetailsByProductUUID(uuid: string, currency: SarreCurrency): Observable<ProductDetail[]> {
-    const url: string = `${this.HOST}api/v1/client/product/detail?product_id=${uuid}&currency=${currency}`;
-    return this.http.get<ProductDetail[]>(url, { withCredentials: true })
+  productDetailsByProductUUID(uuid: string, c: SarreCurrency): Observable<ProductDetail[]> {
+    const url: string = `${this.HOST}api/v1/client/product/detail?product_id=${uuid}&currency=${c}`;
+    return this.http.get<ProductDetail[]>(url, { withCredentials: true });
   }
 
 }

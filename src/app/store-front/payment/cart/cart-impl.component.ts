@@ -182,7 +182,7 @@ export class CartImplComponent {
   currency$ = this.footService.currency$
     .pipe(switchMap((c: SarreCurrency) => this.currency(c)));
 
-  currency = (str: string): string => this.cartService.currency(str);
+  currency = (str: string): string => this.footService.currency(str);
 
   route = (route: string): void => { this.router.navigate([`${route}`]); }
 

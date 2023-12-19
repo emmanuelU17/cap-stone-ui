@@ -1,6 +1,7 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output, Renderer2} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {RouterLinkActive} from "@angular/router";
+import {UtilService} from "../../service/util.service";
 
 @Component({
   selector: 'app-paginator',
@@ -90,10 +91,11 @@ import {RouterLinkActive} from "@angular/router";
 export class PaginatorComponent {
 
   private readonly render = inject(Renderer2);
+  private readonly utilService = inject(UtilService);
 
-  @Input() currentPage: number = 0;
-  @Input() totalPages: number = 0;
-  @Input() totalElements: number = 0;
+  @Input() currentPage = 0;
+  @Input() totalPages = 0;
+  @Input() totalElements = 0;
 
   @Output() goTo = new EventEmitter<number>();
 
@@ -101,9 +103,7 @@ export class PaginatorComponent {
    * Displays from 0 to the total number of items (totalPages)
    * passed by the parent component
    * */
-  range(): number[] {
-    return [...Array(this.totalPages).keys()];
-  }
+  range = (): number[] => this.utilService.getRange(this.totalPages);
 
   /**
    * Informs parent component on what page number was clicked

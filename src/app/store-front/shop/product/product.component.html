@@ -52,7 +52,7 @@
           </h4>
 
           <!-- Form -->
-          <form class="flex flex-col gap-2" [formGroup]="reactiveForm">
+          <form class="flex flex-col gap-2" [formGroup]="form">
 
             <!-- Form Contents -->
             <div class="flex gap-1.5 flex-col md:flex-row">
@@ -61,66 +61,24 @@
                 <select
                   name="colour"
                   formControlName="colour"
-                  class="w-full p-1 rounded-md cursor-pointer border border-solid border-[var(--app-theme)]"
+                  class="w-full p-2 rounded-md cursor-pointer border border-solid border-[var(--app-theme)]"
                   (change)="onclickColour($event)"
                 >
-                  <option value="" disabled [selected]="true">COLOUR</option>
+                  <option value="" disabled [selected]="true">colour</option>
                   <option *ngFor="let d of detail.data" [value]="d.colour">
                     {{ d.colour }}
                   </option>
                 </select>
               </div>
 
-              <!-- Size and Qty container -->
+              <!-- Size -->
               <div class="flex flex-1 gap-1.5" *ngIf="currentProductDetail">
-                <!-- Size -->
-                <div>
-                  <select
-                    (change)="onselectSize($event)"
-                    name="size"
-                    class="w-full p-1 rounded-md cursor-pointer border border-solid border-[var(--app-theme)]"
-                    formControlName="size"
-                  >
-                    <option value="" disabled selected>SIZE</option>
-                    <option *ngFor="let variants of currentProductDetail.detail.variants">
-                      {{ variants.size }}
-                    </option>
-                  </select>
-                </div>
-
-                <!-- Qty -->
-                <div class="flex-1">
-                  <ng-container *ngIf="inventory < 0">
-                    <select
-                      name="qty"
-                      class="w-full p-1 rounded-md cursor-pointer border border-solid border-[var(--app-theme)]"
-                      formControlName="qty"
-                    >
-                      <option value="" disabled selected>QUANTITY</option>
-                    </select>
-                  </ng-container>
-                  <ng-container *ngIf="inventory === 0">
-                    <select
-                      name="qty"
-                      class="w-full p-1 rounded-md cursor-pointer border border-solid border-[var(--app-theme)]"
-                      formControlName="qty"
-                    >
-                      <option value="" disabled selected>sold out</option>
-                    </select>
-                  </ng-container>
-                  <ng-container *ngIf="inventory > 0">
-                    <select
-                      name="qty"
-                      class="w-full p-1 rounded-md cursor-pointer border border-solid border-[var(--app-theme)]"
-                      formControlName="qty"
-                    >
-                      <option value="" disabled selected>QUANTITY</option>
-                      <option *ngFor="let range of range(inventory); let i = index">
-                        {{ i + 1 }}
-                      </option>
-                    </select>
-                  </ng-container>
-                </div>
+                <select (change)="onselectSize($event)" formControlName="size" name="size" class="w-full p-2 rounded-md cursor-pointer border border-solid border-[var(--app-theme)]">
+                  <option value="" disabled selected>size</option>
+                  <option *ngFor="let variants of currentProductDetail.detail.variants">
+                    {{ variants.size }}
+                  </option>
+                </select>
               </div>
 
             </div>
@@ -128,7 +86,7 @@
             <button
               class="w-full p-3 uppercase border border-black hover:bg-black hover:text-white"
               type="submit"
-              [disabled]="reactiveForm.invalid"
+              [disabled]="form.invalid"
               [asyncButton]="addToCart()"
             >add to cart</button>
           </form>

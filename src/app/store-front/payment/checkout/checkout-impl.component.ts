@@ -3,12 +3,14 @@ import {CommonModule} from '@angular/common';
 import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CartService} from "../cart/cart.service";
-import {of} from "rxjs";
+import {Observable, of} from "rxjs";
+import {DirectiveModule} from "../../../directive/directive.module";
+import {FooterService} from "../../utils/footer/footer.service";
 
 @Component({
   selector: 'app-checkout-impl',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, DirectiveModule],
   styles: [`
     .cx-font-fam {
       font-family: 'Jost', sans-serif;
@@ -52,9 +54,9 @@ import {of} from "rxjs";
                   <button type="button" class="text-center opacity-50 hover:bg-transparent hover:opacity-100">
                       <div class="flex gap-1 justify-center">
                           <h1 class="cx-font-fam banner">03</h1>
-                          <h3 class="cx-font-fam banner uppercase">order complete</h3>
+                          <h3 class="cx-font-fam banner uppercase">payment details</h3>
                       </div>
-                      <p class="banner capitalize">review your order</p>
+                      <p class="banner capitalize">confirm your order</p>
                   </button>
               </div>
 
@@ -80,8 +82,8 @@ import {of} from "rxjs";
                   <div class="p-3 flex gap-3 cursor-pointer bg-white opacity-50 hover:bg-transparent hover:opacity-100">
                       <h1 class="cx-font-fam" style="font-size: 50px">03</h1>
                       <div class="my-auto mx-0 text-left">
-                          <h3 class="cx-font-fam text-xl uppercase">order complete</h3>
-                          <p class="text-xs capitalize">review your order</p>
+                          <h3 class="cx-font-fam text-xl uppercase">payment details</h3>
+                          <p class="text-xs capitalize">confirm your order</p>
                       </div>
                   </div>
 
@@ -176,12 +178,12 @@ import {of} from "rxjs";
 
                           <!-- postcode -->
                           <div class="w-full">
-                              <h5 class="cs-font md:text-xs uppercase">postcode/zipcode</h5>
+                              <h5 class="cs-font md:text-xs uppercase">postalcode/zipcode</h5>
                               <input type="text"
                                      name="postcode"
                                      formControlName="postcode"
                                      class="w-full p-2 border"
-                                     placeholder="postcode/zipcode">
+                                     placeholder="postalcode/zipcode">
                           </div>
                       </div>
 
@@ -205,69 +207,106 @@ import {of} from "rxjs";
                           <textarea formControlName="deliveryInfo" name="deliveryInfo" class="w-full p-2 border"></textarea>
                       </div>
 
+                      <div class="w-full flex justify-end text-sm md:text-base">
+                          <button [asyncButton]="submit()" type="submit" class="p-2 text-white hover:text-black bg-black hover:bg-[var(--app-theme-hover)]">
+                              Continue to payment
+                          </button>
+                      </div>
+
                   </form>
               </div>
 
               <!-- products div -->
-              <div class="p-2 max-h-[500px] overflow-y-auto pb-4 border-l bg-neutral-100">
-                  <ul role="list" class="relative -my-6 divide-y divide-gray-200">
-                      <li class="flex pt-6 pb-3" *ngFor="let detail of carts$ | async; let i = index">
-                          <div class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-                              <img [src]="detail.url" alt="product image{{ i }}" class="h-full w-full object-cover object-center">
-                          </div>
-                          <div class="ml-4 flex flex-1 flex-col">
-                              <div class="md:mb-2 flex flex-col md:flex-row md:justify-between text-base font-medium text-gray-900">
-                                  <h3 class="cs-font cursor-pointer hover:border-b hover:border-black">
-                                      {{ detail.product_name }}
-                                  </h3>
-                                  <p class="cs-font ml-4">{{ currency(detail.currency) }}{{ detail.price }}</p>
-                              </div>
+              <div class="p-2 max-h-[500px] overflow-y-auto border-l bg-neutral-100">
 
-                              <!-- mobile -->
-                              <div class="cs-font md:hidden">
-                                  <div class="grid grid-cols-2">
-                                      <div class="">
-                                          <h5 class="w-fit border-b font-bold">size</h5>
+                  <div class="pb-4">
+                      <ul role="list" class="relative -my-6 divide-y divide-gray-200">
+                          <li class="flex pt-6 pb-3" *ngFor="let detail of carts$ | async; let i = index">
+                              <div class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
+                                  <img [src]="detail.url" alt="product image{{ i }}" class="h-full w-full object-cover object-center">
+                              </div>
+                              <div class="ml-4 flex flex-1 flex-col">
+                                  <div class="md:mb-2 flex flex-col md:flex-row md:justify-between text-base font-medium text-gray-900">
+                                      <h3 class="cs-font">
+                                          {{ detail.product_name }}
+                                      </h3>
+                                      <p class="cs-font ml-4">{{ currency(detail.currency) }}{{ detail.price }}</p>
+                                  </div>
+
+                                  <!-- mobile -->
+                                  <div class="cs-font md:hidden">
+                                      <div class="grid grid-cols-2">
+                                          <div class="">
+                                              <h5 class="w-fit border-b font-bold">size</h5>
+                                              <p class="text-gray-500">{{ detail.size }}</p>
+                                          </div>
+
+                                          <div class="">
+                                              <h5 class="w-fit border-b font-bold">quantity</h5>
+                                              <p class="text-gray-500">{{ detail.qty }}</p>
+                                          </div>
+                                      </div>
+
+                                      <div class="w-full pt-1">
+                                          <h5 class="w-fit border-b font-bold">colour</h5>
+                                          <p class="mt-1 text-gray-500">{{ detail.colour }}</p>
+                                      </div>
+
+                                  </div>
+
+
+                                  <!-- none mobile -->
+                                  <div class="hidden md:grid grid-cols-3 text-xs">
+
+                                      <div class="border-r-2">
+                                          <h5 class="border-b font-bold">colour</h5>
+                                          <p class="mt-1 text-sm text-gray-500">{{ detail.colour }}</p>
+                                      </div>
+
+                                      <div class="border-r-2 text-center">
+                                          <h5 class="border-b font-bold">size</h5>
                                           <p class="text-gray-500">{{ detail.size }}</p>
                                       </div>
 
-                                      <div class="">
-                                          <h5 class="w-fit border-b font-bold">quantity</h5>
-                                          <p class="text-gray-500">{{ detail.qty }}</p>
+                                      <div class="border-r-2">
+                                          <h5 class="border-b text-right font-bold">quantity</h5>
+                                          <p class="text-gray-500 text-right">{{ detail.qty }}</p>
                                       </div>
-                                  </div>
 
-                                  <div class="w-full pt-1">
-                                      <h5 class="w-fit border-b font-bold">colour</h5>
-                                      <p class="mt-1 text-gray-500">{{ detail.colour }}</p>
                                   </div>
-
                               </div>
 
+                          </li>
+                      </ul>
+                  </div>
 
-                              <!-- none mobile -->
-                              <div class="hidden md:grid grid-cols-3 text-xs">
+                  <div>
+                      <!-- subtotal -->
+                      <div class="cs-font py-1 flex justify-between md:text-sm">
+                          <h3 class="capitalize">subtotal</h3>
+                          <h3 class="capitalize">$50.00</h3>
+                      </div>
 
-                                  <div class="border-r-2">
-                                      <h5 class="border-b font-bold">colour</h5>
-                                      <p class="mt-1 text-sm text-gray-500">{{ detail.colour }}</p>
-                                  </div>
+                      <!-- shipping -->
+                      <div class="cs-font py-1 flex justify-between md:text-xs">
+                          <h3 class="capitalize">shipping</h3>
+                          <h3 class="capitalize">$15.00</h3>
+                      </div>
 
-                                  <div class="border-r-2 text-center">
-                                      <h5 class="border-b font-bold">size</h5>
-                                      <p class="text-gray-500">{{ detail.size }}</p>
-                                  </div>
+                      <!-- taxes -->
+                      <div class="cs-font py-1 flex justify-between md:text-sm">
+                          <h3 class="capitalize">taxes</h3>
+                          <h3>$2.00</h3>
+                      </div>
 
-                                  <div class="border-r-2">
-                                      <h5 class="border-b text-right font-bold">quantity</h5>
-                                      <p class="text-gray-500 text-right">{{ detail.qty }}</p>
-                                  </div>
+                      <!-- total -->
+                      <div class="cs-font py-1 flex justify-between font-semibold md:text-sm">
+                          <h3 class="capitalize">total</h3>
+                          <h3 class="uppercase"><span style="font-size: 8px">USD</span> $50.00</h3>
+                      </div>
 
-                              </div>
-                          </div>
+                  </div>
 
-                      </li>
-                  </ul>
               </div>
           </div>
 
@@ -278,6 +317,7 @@ import {of} from "rxjs";
 export class CheckoutImplComponent {
 
   private readonly cartService = inject(CartService);
+  private readonly footService = inject(FooterService);
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
 
@@ -300,6 +340,10 @@ export class CheckoutImplComponent {
    * */
   routeCart = (): void => { this.router.navigate(['/cart']); }
 
-  currency = (str: string): string => this.cartService.currency(str);
+  currency = (str: string): string => this.footService.currency(str);
+
+  submit(): Observable<number> {
+    return of(0);
+  }
 
 }

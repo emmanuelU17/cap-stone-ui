@@ -3,12 +3,10 @@ import {CategoryService} from "./shop/category/category.service";
 import {CollectionService} from "./shop/collection/collection.service";
 import {catchError, combineLatest, map, Observable, of, startWith, switchMap} from "rxjs";
 import {HttpErrorResponse} from "@angular/common/http";
-import {Cart, Category, Collection} from "./shop/shop.helper";
 import {CommonModule} from "@angular/common";
 import {StoreFrontNavigationComponent} from "./utils/navigation/store-front-navigation.component";
 import {RouterOutlet} from "@angular/router";
 import {HomeService} from "./home/home.service";
-import {Product} from "./store-front-utils";
 import {FooterComponent} from "./utils/footer/footer.component";
 import {CartService} from "./payment/cart/cart.service";
 import {FooterService} from "./utils/footer/footer.service";
@@ -61,28 +59,21 @@ export class StoreComponent {
 
   private readonly cartItems$ = this.footerService.currency$
     .pipe(switchMap((currency) => this.cartService.cartItems(currency)));
-  private readonly homeProducts$: Observable<Product[]> = this.footerService.currency$
+  private readonly homeProducts$ = this.footerService.currency$
     .pipe(switchMap((currency) => this.homeService.homeProducts(currency)));
 
-  private readonly categories$: Observable<Category[]> = this.categoryService.fetchCategories();
-  private readonly collections$: Observable<Collection[]> = this.collectionService.fetchCollections();
+  private readonly categories$ = this.categoryService.fetchCategories();
+  private readonly collections$ = this.collectionService.fetchCollections();
 
   // On load of storefront routes, get necessary data to improve user experience
-  combine$: Observable<{
-    state: string,
-    error?: string,
-    cart?: Cart[],
-    products?: Product[]
-    categories?: Category[],
-    collections?: Collection[]
-  }> = combineLatest([this.cartItems$, this.homeProducts$, this.categories$, this.collections$])
-    .pipe(
-      map((): { state: string } => ({ state: 'LOADED' })),
-      startWith({ state: 'LOADING' }),
-      catchError((err: HttpErrorResponse) => {
-        const message = err.error ? err.error.message : err.message;
-        return of({ state: 'ERROR', error: message });
-      })
-    );
+  combine$: Observable<{ state: string, error?: string }> =
+    combineLatest([this.cartItems$, this.homeProducts$, this.categories$, this.collections$])
+      .pipe(
+        map(() => ({ state: 'LOADED' })),
+        startWith({ state: 'LOADING' }),
+        catchError((err: HttpErrorResponse) =>
+          of({ state: 'ERROR', error: err.error ? err.error.message : err.message })
+        )
+      );
 
 }

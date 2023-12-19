@@ -2,7 +2,6 @@ import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {catchError, map, Observable, of, startWith, switchMap, take} from "rxjs";
 import {Collection, Filter} from "../shop.helper";
 import {CollectionService} from "./collection.service";
-import {ShopService} from "../shop.service";
 import {Product} from "../../store-front-utils";
 import {CommonModule} from "@angular/common";
 import {CardComponent} from "../../utils/card/card.component";
@@ -10,9 +9,9 @@ import {FilterComponent} from "../../utils/filter/filter.component";
 import {RouterLink} from "@angular/router";
 import {HttpErrorResponse} from "@angular/common/http";
 import {FooterService} from "../../utils/footer/footer.service";
-import {CartService} from "../../payment/cart/cart.service";
 import {PaginatorComponent} from "../../../shared-comp/paginator/paginator.component";
 import {Page} from "../../../global-utils";
+import {UtilService} from "../../../service/util.service";
 
 @Component({
   selector: 'app-collection',
@@ -24,26 +23,26 @@ import {Page} from "../../../global-utils";
 export class CollectionComponent {
 
   private readonly footerService = inject(FooterService);
-  private readonly cartService = inject(CartService);
   private readonly collectionService = inject(CollectionService);
-  private readonly utilService = inject(ShopService);
+  private readonly utilService = inject(UtilService);
 
   totalElements = 0; // current total elements rendered
   iteration = (num: number): number[] => this.utilService.getRange(num);
-  currency = (str: string): string => this.cartService.currency(str);
+  currency = (str: string): string => this.footerService.currency(str);
 
-  activeGridIcon: boolean = true; // Approves if products should be displayed x3 or x4 in the x-axis
-  filterByPrice: boolean = true; // A variable need to keep the state of price filter for future filtering
-  displayFilter: boolean = false; // Displays filter button
+  activeGridIcon = true; // Approves if products should be displayed x3 or x4 in the x-axis
+  filterByPrice = true; // A variable need to keep the state of price filter for future filtering
+  displayFilter = false; // Displays filter button
 
   // Fetch Collections
-  collections$ = this.collectionService.cols$.pipe(
-    map((arr: Collection[]) => {
-      const collection: string[] = arr.map(m => m.collection);
-      const filter: Filter<string>[] = [{isOpen: false, parent: 'collections', children: collection}];
-      return filter;
-    })
-  );
+  readonly collections$ = this.collectionService.cols$
+    .pipe(
+      map((arr: Collection[]) => {
+        const collection: string[] = arr.map(m => m.collection);
+        const filter: Filter<string>[] = [{isOpen: false, parent: 'collections', children: collection}];
+        return filter;
+      })
+    );
 
   private currentCollection$: Observable<Collection> = this.collectionService.cols$
     .pipe(map((collections: Collection[]) => collections[0]), take(1));

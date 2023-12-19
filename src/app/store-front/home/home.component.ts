@@ -5,7 +5,7 @@ import {HomeService} from "./home.service";
 import {CardComponent} from "../utils/card/card.component";
 import {Product} from "../store-front-utils";
 import {Router, RouterLink} from "@angular/router";
-import {CartService} from "../payment/cart/cart.service";
+import {FooterService} from "../utils/footer/footer.service";
 
 @Component({
   selector: 'app-home',
@@ -79,11 +79,11 @@ import {CartService} from "../payment/cart/cart.service";
 })
 export class HomeComponent {
 
-  private readonly cartService = inject(CartService);
+  private readonly footerService = inject(FooterService);
   private readonly homeService = inject(HomeService);
   private readonly router = inject(Router);
 
-  currency = (str: string): string => this.cartService.currency(str);
+  currency = (str: string): string => this.footerService.currency(str);
 
   readonly products$ = this.homeService.products$;
 

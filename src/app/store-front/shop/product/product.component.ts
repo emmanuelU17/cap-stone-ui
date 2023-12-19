@@ -7,7 +7,6 @@ import {ProductService} from "./product.service";
 import {HttpErrorResponse} from "@angular/common/http";
 import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
 import {CommonModule} from "@angular/common";
-import {ShopService} from "../shop.service";
 import {CartService} from "../../payment/cart/cart.service";
 import {DirectiveModule} from "../../../directive/directive.module";
 import {FooterService} from "../../utils/footer/footer.service";
@@ -50,16 +49,12 @@ export class ProductComponent {
 
   private readonly footerService = inject(FooterService);
   private readonly productService = inject(ProductService);
-  private readonly utilService = inject(ShopService);
   private readonly route = inject(ActivatedRoute);
   private readonly fb = inject(FormBuilder);
   private readonly cartService = inject(CartService);
 
-  // Displays number of items available in stock
-  range = (num: number): number[] => this.utilService.getRange(num);
-
   // Displays currency symbol
-  currency = (str: string): string => this.cartService.currency(str);
+  currency = (str: string): string => this.footerService.currency(str);
 
   // ProductDetail array and Current ProductDetail
   private productDetailArray: ProductDetail[] = [];
@@ -72,7 +67,7 @@ export class ProductComponent {
    * Retrieves product id from the route param and then refreshes page.
    * https://angular.io/api/router/ActivatedRoute#snapshot
    * */
-  productDetails$: Observable<State<ProductDetail[]>> = this.route.params
+  readonly productDetails$: Observable<State<ProductDetail[]>> = this.route.params
     .pipe(
       switchMap((param: Params) => {
         const obj = param as { path: string, id: string }
@@ -102,12 +97,11 @@ export class ProductComponent {
       })
     );
 
-  showMore: boolean = false; // Show more paragraph
+  showMore = false; // Show more paragraph
 
-  reactiveForm = this.fb.group({
+  form = this.fb.group({
     colour: new FormControl('', [Validators.required]),
     size: new FormControl({ value: '', disabled: true }, [Validators.required]),
-    qty: new FormControl({ value: '', disabled: true }, [Validators.required]),
   });
 
   /**
@@ -128,8 +122,7 @@ export class ProductComponent {
     this.currentColourSize.colour = colour;
 
     // Reset dependent FormControls
-    this.reactiveForm.controls['size'].reset({ value: '', disabled: false });
-    this.reactiveForm.controls['qty'].reset({ value: '', disabled: true });
+    this.form.controls['size'].reset({ value: '', disabled: false });
 
     // Update currentProductDetail
     this.currentProductDetail = { currImage: findProductDetail.url[0], detail: findProductDetail };
@@ -162,24 +155,21 @@ export class ProductComponent {
     this.sku = findVariant.sku;
     this.currentColourSize.size = size;
     this.inventory = Number(findVariant.inventory);
-
-    // reset qty element
-    this.reactiveForm.controls['qty'].reset({ value: '', disabled: false });
   }
 
-  /** Stores product in users cart */
+  /**
+   * Makes call to server to persist item to user's cart
+   * */
   addToCart(): Observable<number> {
     const detail = this.productDetailArray
       .find(d => d.variants.find(v => v.sku === this.sku));
 
-    const qty = this.reactiveForm.controls['qty'].value
-
-    if (!detail || qty === null || qty.length === 0) {
+    if (!detail) {
       return of();
     }
 
     // Api call to add to cart
-    return this.cartService.createCart({ sku: this.sku, qty: Number(qty) });
+    return this.cartService.createCart({ sku: this.sku, qty: 1 });
   }
 
 }

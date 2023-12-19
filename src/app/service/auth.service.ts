@@ -24,7 +24,7 @@ export class AuthService {
   private readonly router = inject(Router);
   private readonly sig = signal<string>('');
 
-  principal = this.sig();
+  readonly principal = this.sig();
 
   /**
    * Retrieve CSRF token on load of application

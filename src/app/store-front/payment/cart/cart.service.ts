@@ -18,12 +18,7 @@ export class CartService {
   private readonly toastService = inject(ToastService);
 
   private readonly subject = new BehaviorSubject<Cart[]>([]);
-  cart$ = this.subject.asObservable();
-
-  // Displays currency symbol
-  currency = (str: string): string => str.toUpperCase() === SarreCurrency.NGN
-    ? SarreCurrency.NGN_SYMBOL
-    : SarreCurrency.USD_SYMBOL;
+  readonly cart$ = this.subject.asObservable();
 
   /**
    * Returns the number of items in Cart[]
@@ -80,14 +75,14 @@ export class CartService {
     const url = `${this.HOST}api/v1/cart?sku=${sku}`
     return this.http.delete<any>(url, { observe: 'response', withCredentials: true })
       .pipe(
-      switchMap((res) => this.footerService.currency$
-        .pipe(
-          switchMap((currency) => this.cartItems(currency)
-            .pipe(map(() => (res.status)))
+        switchMap((res) => this.footerService.currency$
+          .pipe(
+            switchMap((currency) => this.cartItems(currency)
+              .pipe(map(() => (res.status)))
+            )
           )
         )
-      )
-    );
+      );
   }
 
 }
