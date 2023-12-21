@@ -21,7 +21,6 @@
     "@angular/platform-browser-dynamic": "^17.0.2",
     "@angular/router": "^17.0.2",
     "ckeditor4-angular": "^4.0.1",
-    "flutterwave-angular-v3": "^1.2.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.2"
