@@ -5,8 +5,7 @@ import {CommonModule} from '@angular/common';
   selector: 'app-payment',
   standalone: true,
   imports: [CommonModule],
-  template: `
-  `,
+  template: ``,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PaymentComponent {
