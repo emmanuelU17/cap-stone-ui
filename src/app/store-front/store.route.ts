@@ -1,5 +1,7 @@
 import {Routes} from "@angular/router";
 import {checkoutGuard} from "./payment/checkout/checkout.guard";
+import {importProvidersFrom} from "@angular/core";
+import {Angular4PaystackModule} from "angular4-paystack";
 
 export const route: Routes = [
   {
@@ -29,5 +31,10 @@ export const route: Routes = [
     path: 'checkout',
     loadComponent: () => import('./payment/checkout/checkout.component').then(m => m.CheckoutComponent),
     canActivate: [checkoutGuard]
+  },
+  {
+    path: 'payment',
+    loadComponent: () => import('./payment/payment/payment.component').then(m => m.PaymentComponent),
+    providers: [importProvidersFrom(Angular4PaystackModule.forRoot(''))]
   }
 ];

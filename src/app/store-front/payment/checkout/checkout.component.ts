@@ -6,6 +6,7 @@ import {DirectiveModule} from "../../../directive/directive.module";
 import {CartService} from "../cart/cart.service";
 import {FooterService} from "../../utils/footer/footer.service";
 import {Observable, of} from "rxjs";
+import {CheckoutService} from "./checkout.service";
 
 @Component({
   selector: 'app-checkout',
@@ -208,7 +209,10 @@ import {Observable, of} from "rxjs";
                       </div>
 
                       <div class="w-full flex justify-end text-sm md:text-base">
-                          <button [asyncButton]="submit()" type="submit" class="p-2 text-white hover:text-black bg-black hover:bg-[var(--app-theme-hover)]">
+                          <button [asyncButton]="submit()"
+                                  type="submit"
+                                  class="p-2 text-white hover:text-black bg-black hover:bg-[var(--app-theme-hover)]"
+                          >
                               Continue to payment
                           </button>
                       </div>
@@ -318,10 +322,12 @@ export class CheckoutComponent {
 
   private readonly cartService = inject(CartService);
   private readonly footService = inject(FooterService);
+  private readonly checkoutService = inject(CheckoutService);
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
 
   readonly carts$ = this.cartService.cart$;
+  readonly validate$ = this.checkoutService.validate();
 
   form = this.fb.group({
     email: new FormControl("", [Validators.required]),
