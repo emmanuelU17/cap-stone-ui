@@ -8,20 +8,17 @@ import {Angular4PaystackModule} from "angular4-paystack";
   imports: [CommonModule, Angular4PaystackModule],
   template: `
 
-    
-      <div class="mg-top">
-          <angular4-paystack
-                  [email]="'mailexample@mail.com'"
-                  [key]="''"
-                  [amount]="5000000"
-                  [ref]="reference"
-                  [channels]="['card']"
-                  [class]="'btn btn-primary'"
-                  (onClose)="paymentCancel()"
-                  (callback)="paymentDone($event)"
-          >
-              Pay with Paystack
-          </angular4-paystack>
+    <div class="mg-top">
+      <angular4-paystack
+        [email]="'mailexample@mail.com'"
+        [key]="''"
+        [amount]="5000000"
+        [ref]="reference"
+        [channels]="['card']"
+        [class]="'btn btn-primary'"
+        (onClose)="paymentCancel()"
+        (callback)="paymentDone($event)"
+      >pay</angular4-paystack>
       </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush
