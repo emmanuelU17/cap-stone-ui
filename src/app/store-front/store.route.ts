@@ -34,7 +34,7 @@ export const route: Routes = [
   },
   {
     path: 'payment',
-    loadComponent: () => import('./payment/payment/payment.component').then(m => m.PaymentComponent),
+    loadComponent: () => import('./payment/payment.component').then(m => m.PaymentComponent),
     providers: [importProvidersFrom(Angular4PaystackModule.forRoot(''))]
   }
 ];

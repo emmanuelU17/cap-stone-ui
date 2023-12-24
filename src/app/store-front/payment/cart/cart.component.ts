@@ -8,7 +8,6 @@ import {Router} from "@angular/router";
 import {HomeService} from "../../home/home.service";
 import {debounceTime, distinctUntilChanged, fromEvent, map, Observable, of, switchMap, tap} from "rxjs";
 import {SarreCurrency, VARIABLE_IS_NUMERIC} from "../../../global-utils";
-import {Cart} from "../../shop/shop.helper";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
@@ -191,11 +190,7 @@ export class CartComponent {
    * */
   remove = (sku: string): Observable<number> => this.cartService.removeFromCart(sku);
 
-  /**
-   * Sums the total of product in cart
-   * */
-  total$ = this.carts$
-    .pipe(map((arr: Cart[]) => arr.reduce((sum: number, cart: Cart) => sum + (cart.qty * cart.price), 0)));
+  readonly total$ = this.cartService.total$;
 
   /**
    * Makes call to server on change of qty

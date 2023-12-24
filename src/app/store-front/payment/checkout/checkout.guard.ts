@@ -8,6 +8,5 @@ export const checkoutGuard = () => {
   const service = inject(CartService);
   const route = inject(Router);
   return service.cartItems(SarreCurrency.NGN)
-    .pipe(tap((cart) => { if(cart && cart.length < 1) route.navigate(['/cart']); }));
-
+    .pipe(tap((cart): void => { if(cart && cart.length < 1) route.navigate(['/cart']); }));
 }

@@ -21,6 +21,12 @@ export class CartService {
   readonly cart$ = this.subject.asObservable();
 
   /**
+   * Sums the total of product in cart
+   * */
+  readonly total$ = this.cart$
+    .pipe(map((arr: Cart[]) => arr.reduce((sum, cart) => sum + (cart.qty * cart.price), 0)));
+
+  /**
    * Returns the number of items in Cart[]
    * */
   count$ = (): Observable<number> => this.cart$.pipe(map((arr: Cart[]) => arr.length));

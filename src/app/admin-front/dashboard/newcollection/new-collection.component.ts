@@ -17,7 +17,7 @@ import {Router} from "@angular/router";
   standalone: true,
   imports: [CommonModule, MatButtonModule, MatRadioModule, ReactiveFormsModule, DirectiveModule],
   template: `
-    <form class="h-full flex flex-col py-0 px-2.5" [formGroup]="reactiveForm" (ngSubmit)="submit()">
+    <form class="h-full flex flex-col py-0 px-2.5" [formGroup]="reactiveForm">
       <!-- Title -->
       <div class="py-2.5 px-0 mb-4 flex">
         <button type="button"
