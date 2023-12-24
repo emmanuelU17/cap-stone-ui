@@ -20,7 +20,7 @@ export class CheckoutService {
   validate = (): Observable<Checkout> => this.footerService.currency$
     .pipe(
       switchMap((currency) => this.http
-        .get<Checkout>(`${this.HOST}payment?currency=${currency}`, { withCredentials: true })
+        .get<Checkout>(`${this.HOST}api/v1/payment?currency=${currency}`, { withCredentials: true })
       )
     );
 

@@ -7,6 +7,8 @@ import {Angular4PaystackModule} from "angular4-paystack";
   standalone: true,
   imports: [CommonModule, Angular4PaystackModule],
   template: `
+
+    
       <div class="mg-top">
           <angular4-paystack
                   [email]="'mailexample@mail.com'"
@@ -29,7 +31,7 @@ export class PaymentComponent {
   reference = `ref-${Math.ceil(Math.random() * 10e13)}`;
   constructor() {}
 
-  paymentInit() {
+  paymentInit(): void {
     console.log('Payment initialized');
   }
 
