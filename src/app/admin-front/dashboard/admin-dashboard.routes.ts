@@ -1,6 +1,6 @@
 import {Routes} from "@angular/router";
 
-export const ADMIN_DASHBOARD_ROUTES: Routes = [
+export const routes: Routes = [
   {
     path: 'statistics',
     loadComponent: () => import('./statistics/statistics.component').then(m => m.StatisticsComponent),

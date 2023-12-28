@@ -4,15 +4,14 @@ import {SearchService} from "./search.service";
 import {catchError, debounceTime, distinctUntilChanged, map, of, switchMap, tap} from "rxjs";
 import {FooterService} from "../footer/footer.service";
 import {CardComponent} from "../card/card.component";
-import {Product} from "../../store-front-utils";
-import {Router} from "@angular/router";
+import {RouterLink} from "@angular/router";
 import {SarreCurrency} from "../../../global-utils";
 import {FormControl, ReactiveFormsModule} from "@angular/forms";
 
 @Component({
   selector: 'app-search',
   standalone: true,
-  imports: [CommonModule, CardComponent, ReactiveFormsModule],
+  imports: [CommonModule, CardComponent, ReactiveFormsModule, RouterLink],
   template: `
     <button (click)="openSearchBar()">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -84,14 +83,15 @@ import {FormControl, ReactiveFormsModule} from "@angular/forms";
               <ng-container *ngSwitchDefault>
                 <div
                   class="w-full bg-white p-2 xl:p-0 grid gap-3 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
-                  <button type="button" *ngFor="let product of products" (click)="onItemClicked(product)">
+                  <a (click)="closeSearchBar()" *ngFor="let p of products"
+                     [routerLink]="'/shop/category/product/' + p.product_id" class="cursor-pointer">
                     <app-card
-                      [url]="product.image"
-                      [name]="product.name"
-                      [currency]="currency(product.currency)"
-                      [price]="product.price"
+                      [url]="p.image"
+                      [name]="p.name"
+                      [currency]="currency(p.currency)"
+                      [price]="p.price"
                     ></app-card>
-                  </button>
+                  </a>
                 </div>
               </ng-container>
 
@@ -112,7 +112,6 @@ export class SearchComponent {
 
   private readonly searchService = inject(SearchService);
   private readonly footerService = inject(FooterService);
-  private readonly router = inject(Router);
 
   openSearchComponent$ = this.searchService.openSearchComponent$;
 
@@ -127,11 +126,6 @@ export class SearchComponent {
 
   openSearchBar(): void {
     this.searchService.openComponent(true);
-  }
-
-  onItemClicked(p: Product): void {
-    this.router.navigate([`/shop/category/product/${p.product_id}`]);
-    this.closeSearchBar();
   }
 
   /**

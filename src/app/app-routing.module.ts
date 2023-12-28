@@ -1,7 +1,5 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
-import {AdminGuard} from "./admin-front/admin-guard";
-import {ADMIN_DASHBOARD_ROUTES} from "./admin-front/dashboard/admin-dashboard.routes";
 
 const routes: Routes = [
 
@@ -16,26 +14,13 @@ const routes: Routes = [
   {
     path: 'admin',
     loadComponent: () => import('./admin-front/admin.component').then(m => m.AdminComponent),
-    children: [
-      {
-        path: '',
-        loadComponent: () => import('./admin-front/auth/admin-authentication.component')
-          .then(m => m.AdminAuthenticationComponent),
-      },
-      {
-        path: 'dashboard',
-        loadComponent: () => import('./admin-front/dashboard/admin-dashboard.component')
-          .then(m => m.AdminDashboardComponent),
-        children: ADMIN_DASHBOARD_ROUTES,
-        canActivateChild: [AdminGuard],
-      }
-    ]
+    loadChildren: () => import('./admin-front/admin-routes').then(m => m.route)
   },
 
   // Error
   {
     path: '404',
-    loadComponent: () => import('./store-front/utils/pagenotfound/page-not-found.component')
+    loadComponent: () => import('./store-front/utils/page-not-found/page-not-found.component')
       .then(m => m.PageNotFoundComponent)
   },
   { path: '**', redirectTo: '/404' },

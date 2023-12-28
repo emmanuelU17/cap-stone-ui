@@ -2,19 +2,30 @@ import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {SarreCurrency} from "../../../global-utils";
 import {FooterService} from "./footer.service";
-import {Router} from "@angular/router";
+import {RouterLink} from "@angular/router";
 import {MobileFooterComponent} from "../mobilefooter/mobile-footer.component";
 
 @Component({
   selector: 'app-footer',
   standalone: true,
-  imports: [CommonModule, MobileFooterComponent],
+  imports: [CommonModule, MobileFooterComponent, RouterLink],
+  styles: [`
+    .f-font {
+      font-size: 15px;
+    }
+
+    @media (max-width: 768px) {
+      .f-font {
+        font-size: calc(7px + 1vw);
+      }
+    }
+  `],
   template: `
     <div class="p-3 border-t border-solid bg-[var(--app-theme)]">
 
-      <!-- none mobile -->
+      <!-- mobile -->
       <div class="w-full md:hidden">
-        <app-mobile-footer (emitter)="childEmitter($event)"></app-mobile-footer>
+        <app-mobile-footer></app-mobile-footer>
       </div>
 
       <!-- none mobile -->
@@ -23,9 +34,9 @@ import {MobileFooterComponent} from "../mobilefooter/mobile-footer.component";
         <div class="p-2">
           <h2 class="uppercase text-base font-bold">legal</h2>
           <ul class="list-none">
-            <li class="py-2 text-sm"><a (click)="route('/pages/about-us')"  class="cursor-pointer">About Us</a></li>
-            <li class="py-2 text-sm"><a (click)="route('/pages/terms-of-service')"  class="cursor-pointer">Terms of Service</a></li>
-            <li class="py-2 text-sm"><a (click)="route('/pages/refund')"  class="cursor-pointer">Refund Policy</a></li>
+            <li class="py-2 text-sm"><a routerLink="/pages/about-us"  class="cursor-pointer">About Us</a></li>
+            <li class="py-2 text-sm"><a routerLink="/pages/terms-of-service"  class="cursor-pointer">Terms of Service</a></li>
+            <li class="py-2 text-sm"><a routerLink="/pages/refund"  class="cursor-pointer">Refund Policy</a></li>
           </ul>
         </div>
 
@@ -33,8 +44,8 @@ import {MobileFooterComponent} from "../mobilefooter/mobile-footer.component";
         <div class="p-2">
           <h2 class="uppercase text-base font-bold">help</h2>
           <ul class="list-none">
-            <li class="py-2 text-sm"><a (click)="route('/pages/faq')"  class="cursor-pointer">FAQ</a></li>
-            <li class="py-2 text-sm"><a (click)="route('/pages/contact-us')" class="cursor-pointer">Contact Us</a></li>
+            <li class="py-2 text-sm"><a routerLink="/pages/faq"  class="cursor-pointer">FAQ</a></li>
+            <li class="py-2 text-sm"><a routerLink="/pages/contact-us" class="cursor-pointer">Contact Us</a></li>
           </ul>
         </div>
 
@@ -79,37 +90,14 @@ import {MobileFooterComponent} from "../mobilefooter/mobile-footer.component";
 
     </div>
   `,
-  styles: [`
-    .f-font {
-      font-size: 15px;
-    }
-
-    @media (max-width: 768px) {
-      .f-font {
-        font-size: calc(7px + 1vw);
-      }
-    }
-  `],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FooterComponent {
 
   private readonly footerService = inject(FooterService);
-  private readonly router = inject(Router);
 
-  year = new Date().getFullYear();
-  currencies: SarreCurrency[] = [SarreCurrency.NGN, SarreCurrency.USD];
-
-  route = (str: string): void => {
-    this.router.navigate([`${str}`]);
-  };
-
-  /**
-   * Changes app route based on child component
-   * */
-  childEmitter(str: string): void {
-    this.route(str);
-  }
+  readonly year = new Date().getFullYear();
+  readonly currencies = [SarreCurrency.NGN, SarreCurrency.USD];
 
   setCurrency(event: Event): void {
     const currency = ((event.target as HTMLSelectElement).value) as SarreCurrency;

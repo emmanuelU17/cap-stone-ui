@@ -42,43 +42,31 @@ import {Observable} from "rxjs";
       <ul class="flex-col list-none flex gap-3">
         <li class="p-2.5 border-b" *ngFor="let link of links">
 
-          <a class="block" *ngIf="link.bool; else regular">
-            <span (click)="dropDown = !dropDown" class="uppercase flex justify-between text-[var(--app-theme)]">
-              shop
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                   stroke="currentColor" class="w-6 h-6">
+          @if (link.bool) {
+            <a class="block">
+              <span (click)="dropDown = !dropDown" class="uppercase flex justify-between text-[var(--app-theme)]">
+                shop
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
               </svg>
-            </span>
-
-            <span [style]="{ 'display': dropDown ? 'block' : 'none' }"
-                  (click)="toggleNavDisplay(openNavMobile = !openNavMobile)"
-            >
-              <a routerLink="/shop/category" class="p-2 pl-0 block text-sm text-[var(--app-theme)]">
-                shop by category
-              </a>
-
-              <!-- Only display collection if Collection[] it is not empty -->
-              <ng-container *ngIf="empty$ | async as col">
-                <a
-                  routerLink="/shop/collection"
-                  class="p-2 pl-0 block text-sm text-[var(--app-theme)]"
-                  [style]="{ 'display': col ? 'block' : 'none' }"
-                >
-                  shop by collection
+              </span>
+              <span [style]="{ 'display': dropDown ? 'block' : 'none' }" (click)="toggleNavDisplay(openNavMobile = !openNavMobile)">
+                <a routerLink="/shop/category" class="p-2 pl-0 block text-sm text-[var(--app-theme)]">
+                  shop by category
                 </a>
-              </ng-container>
-
-            </span>
-
-          </a>
-
-          <ng-template #regular>
-            <a [routerLink]="link.value"
-               (click)="toggleNavDisplay(openNavMobile = !openNavMobile)"
-               class="w-full flex uppercase text-[var(--app-theme)]"
-            >{{ link.name }}</a>
-          </ng-template>
+                <!-- Only display collection if Collection[] it is not empty -->
+                @if (empty$ | async; as col) {
+                  <a routerLink="/shop/collection" [style]="{ 'display': col ? 'block' : 'none' }" class="p-2 pl-0 block text-sm text-[var(--app-theme)]">
+                    shop by collection
+                  </a>
+                }
+              </span>
+            </a>
+          } @else {
+            <a [routerLink]="link.value" (click)="toggleNavDisplay(openNavMobile = !openNavMobile)" class="w-full flex uppercase text-[var(--app-theme)]">
+              {{ link.name }}
+            </a>
+          }
         </li>
       </ul>
 

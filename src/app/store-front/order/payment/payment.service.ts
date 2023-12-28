@@ -1,10 +1,10 @@
 import {inject, Injectable} from '@angular/core';
-import {environment} from "../../../environments/environment";
+import {environment} from "../../../../environments/environment";
 import {HttpClient, HttpErrorResponse} from "@angular/common/http";
-import {FooterService} from "../utils/footer/footer.service";
+import {FooterService} from "../../utils/footer/footer.service";
 import {BehaviorSubject, catchError, Observable, of, switchMap, tap} from "rxjs";
-import {PaymentDTO, ReservationDTO} from "./index";
-import {ToastService} from "../../shared-comp/toast/toast.service";
+import {PaymentDTO, ReservationDTO} from "../index";
+import {ToastService} from "../../../shared-comp/toast/toast.service";
 import {Router} from "@angular/router";
 
 @Injectable({
@@ -19,7 +19,8 @@ export class PaymentService {
   private readonly router = inject(Router);
 
   private readonly addressSubject = new BehaviorSubject<ReservationDTO | undefined>(undefined);
-  readonly address$ = this.addressSubject.asObservable()
+  readonly address$ = this.addressSubject
+    .asObservable()
     .pipe(tap((dto) => { if (!dto) this.router.navigate(['/checkout']); }));
 
   setAddress = (dto: ReservationDTO): void => this.addressSubject.next(dto);
@@ -29,16 +30,17 @@ export class PaymentService {
   /**
    * Api call to server to prevent overselling before displaying page
    * */
-  validate = (): Observable<PaymentDTO> => this.footerService.currency$.pipe(
-    switchMap((currency) => this.http
-      .get<PaymentDTO>(`${this.HOST}api/v1/payment?currency=${currency}`, { withCredentials: true })
-      .pipe(
-        catchError((err: HttpErrorResponse) => {
-          this.toast(err.error ? err.error.message : err.message);
-          this.router.navigate(['/checkout']);
-          return of();
-        })
+  validate = (): Observable<PaymentDTO> => this.footerService.currency$
+    .pipe(
+      switchMap((currency) => this.http
+        .get<PaymentDTO>(`${this.HOST}api/v1/payment?currency=${currency}`, { withCredentials: true })
+        .pipe(
+          catchError((err: HttpErrorResponse) => {
+            this.toast(err.error ? err.error.message : err.message);
+            this.router.navigate(['/checkout']);
+            return of();
+          })
+        )
       )
-    )
-  )
+    );
 }

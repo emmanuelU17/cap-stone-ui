@@ -5,7 +5,7 @@ import {CollectionService} from "../../shop/collection/collection.service";
 import {SearchComponent} from "../search/search.component";
 import {MobileNavigationComponent} from "../mobile-navigation/mobile-navigation.component";
 import {Link} from "../../../global-utils";
-import {CartService} from "../../payment/cart/cart.service";
+import {CartService} from "../../order/cart/cart.service";
 
 @Component({
   selector: 'app-store-front-navigation-navigation',
@@ -20,9 +20,9 @@ import {CartService} from "../../payment/cart/cart.service";
         <!--  Mobile  -->
         <div class="block md:hidden">
           <!-- burger -->
-          <button class="bg-transparent outline-none border-none cursor-pointer relative" type="button"
-                  (click)="openNavMobile = !openNavMobile">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          <button (click)="openNavMobile = !openNavMobile" class="bg-transparent outline-none border-none cursor-pointer relative" type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                 stroke="currentColor"
                  class="w-6 h-6" style="color: var(--app-theme)">
               <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/>
             </svg>
@@ -43,34 +43,32 @@ import {CartService} from "../../payment/cart/cart.service";
         <div class="hidden md:block">
           <ul class="h-full flex items-center list-none gap-8">
             <li class="h-full flex items-center" *ngFor="let link of links">
-              <ng-container  *ngIf="link.bool; else regular">
+
+              @if (link.bool) {
                 <a class="group h-full relative flex items-center cursor-pointer uppercase text-[var(--app-theme)]">
                   shop
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/>
                   </svg>
 
-                  <div class="absolute top-6 w-40 bg-white border hidden rounded-md group-hover:block">
-                    <a
-                      class="p-3 flex rounded-md whitespace-nowrap capitalize hover:text-[var(--active)] hover:bg-[var(--app-theme)]"
-                      routerLink="/shop/category"
-                    >shop category</a>
+                  <div class="absolute top-5 w-40 bg-white border hidden rounded-md group-hover:block">
+                    <a routerLink="/shop/category" class="p-3 flex rounded-md whitespace-nowrap capitalize hover:text-[var(--active)] hover:bg-[var(--app-theme)]">
+                      shop category
+                    </a>
 
                     <!-- Only display collection if Collection[] it is not empty -->
-                    <ng-container *ngIf="collectionNotEmpty$ | async as col">
-                      <a
-                        class="p-3 flex rounded-md whitespace-nowrap capitalize hover:text-[var(--active)] hover:bg-[var(--app-theme)]"
-                        routerLink="/shop/collection"
-                        [style]="{ 'display': col ? 'block' : 'none' }"
-                      >shop collection</a>
-                    </ng-container>
+                    @if (collectionNotEmpty$ | async; as col) {
+                      <a routerLink="/shop/collection" [style]="{ 'display': col ? 'block' : 'none' }" class="p-3 flex rounded-md whitespace-nowrap capitalize hover:text-[var(--active)] hover:bg-[var(--app-theme)]">
+                        shop collection
+                      </a>
+                    }
                   </div>
                 </a>
-              </ng-container>
-
-              <ng-template #regular>
-                <a class="uppercase flex text-[var(--app-theme)]" [routerLink]="link.value" routerLinkActive="active" >{{ link.name }}</a>
-              </ng-template>
+              } @else {
+                <a [routerLink]="link.value" routerLinkActive="active" class="uppercase flex text-[var(--app-theme)]" >
+                  {{ link.name }}
+                </a>
+              }
             </li>
           </ul>
         </div>
@@ -90,27 +88,27 @@ import {CartService} from "../../payment/cart/cart.service";
 
           <!--    Search    -->
           <li>
-              <app-search></app-search>
+            <app-search></app-search>
           </li>
 
           <!--    Shopping cart    -->
           <li>
-              <a class="uppercase flex" routerLink="/cart">
-                  <svg xmlns="http://www.w3.org/2000/svg"
-                       fill="none"
-                       viewBox="0 0 24 24"
-                       stroke-width="1.5"
-                       stroke="currentColor"
-                       class="w-6 h-6 cursor-pointer text-[var(--app-theme)]">
-                      <path stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/>
-                  </svg>
-                  <span class="text-xs text-red-600"
-                        *ngIf="count$() | async as count"
-                        [style]="{ 'display': count > 0 ? 'block' : 'none'  }"
-                  >{{ count }}</span>
-              </a>
+            <a routerLink="/order/cart" class="uppercase flex">
+              <svg xmlns="http://www.w3.org/2000/svg"
+                   fill="none"
+                   viewBox="0 0 24 24"
+                   stroke-width="1.5"
+                   stroke="currentColor"
+                   class="w-6 h-6 cursor-pointer text-[var(--app-theme)]">
+                <path stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/>
+              </svg>
+              <span *ngIf="count$() | async as count" [style]="{ 'display': count > 0 ? 'block' : 'none' }"
+                    class="text-xs text-red-600">
+                {{ count }}
+              </span>
+            </a>
           </li>
 
           <!--    Person icon    -->

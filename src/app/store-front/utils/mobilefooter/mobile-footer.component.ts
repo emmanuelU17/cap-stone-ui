@@ -1,17 +1,17 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {CommonModule} from '@angular/common';
+import {RouterLink} from "@angular/router";
 
 @Component({
   selector: 'app-mobile-footer',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   template: `
     <div class="w-full h-full flex flex-col">
       <!-- info -->
       <div class="w-full p-2 border-b">
         <button (click)="infoBtn = !infoBtn" type="button" class="w-full flex justify-between">
-          <h2 class="uppercase text-base font-bold">Info</h2>
-
+          <h2 class="uppercase font-bold" style="font-size: 15px">legal</h2>
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                stroke="currentColor" class="w-6 h-6">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
@@ -19,16 +19,16 @@ import {CommonModule} from '@angular/common';
         </button>
 
         <ul class="list-none" [style]="{ 'display': infoBtn ? 'block' : 'none'}">
-          <li class="py-2 text-sm"><a (click)="route('/pages/about-us')"  class="cursor-pointer">About Us</a></li>
-          <li class="py-2 text-sm"><a (click)="route('/pages/terms-of-service')"  class="cursor-pointer">Terms of Service</a></li>
-          <li class="py-2 text-sm"><a (click)="route('/pages/refund')"  class="cursor-pointer">Refund Policy</a></li>
+          <li class="py-2 text-sm"><a routerLink="/pages/about-us"  class="cursor-pointer">About Us</a></li>
+          <li class="py-2 text-sm"><a routerLink="/pages/terms-of-service"  class="cursor-pointer">Terms of Service</a></li>
+          <li class="py-2 text-sm"><a routerLink="/pages/refund"  class="cursor-pointer">Refund Policy</a></li>
         </ul>
       </div>
 
       <!-- help -->
       <div class="w-full p-2 border-b">
         <button (click)="helpBtn = !helpBtn" type="button" class="w-full flex justify-between">
-          <h2 class="uppercase text-base font-bold">help</h2>
+          <h2 class="uppercase font-bold" style="font-size: 15px">help</h2>
 
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                stroke="currentColor" class="w-6 h-6">
@@ -37,14 +37,14 @@ import {CommonModule} from '@angular/common';
         </button>
 
         <ul class="list-none" [style]="{ 'display': helpBtn ? 'block' : 'none'}">
-          <li class="py-2 text-sm"><a (click)="route('/pages/faq')" class="cursor-pointer">FAQ</a></li>
-          <li class="py-2 text-sm"><a (click)="route('/pages/contact-us')" class="cursor-pointer">Contact Us</a></li>
+          <li class="py-2 text-sm"><a routerLink="/pages/faq"  class="cursor-pointer">FAQ</a></li>
+          <li class="py-2 text-sm"><a routerLink="/pages/contact-us" class="cursor-pointer">Contact Us</a></li>
         </ul>
       </div>
 
       <!-- socials -->
       <div class="w-full p-2">
-        <h2 class="uppercase text-base font-bold">follow us</h2>
+        <h2 class="uppercase font-bold" style="font-size: 15px">follow us</h2>
         <ul class="list-none">
           <!-- instagram -->
           <li class="py-2 text-sm">
@@ -71,11 +71,5 @@ export class MobileFooterComponent {
 
   infoBtn = false;
   helpBtn = false;
-
-  @Output() emitter = new EventEmitter<string>();
-
-  route(str: string): void {
-    this.emitter.emit(str);
-  }
 
 }

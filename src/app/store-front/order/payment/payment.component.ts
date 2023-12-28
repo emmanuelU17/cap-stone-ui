@@ -31,14 +31,14 @@ import {RouterLink} from "@angular/router";
         <!-- mobile -->
         <div class="grid grid-cols-3 md:hidden">
 
-          <a routerLink="/cart" class="text-center opacity-50 hover:bg-transparent hover:opacity-100">
+          <a routerLink="/order/cart" class="text-center opacity-50 hover:bg-transparent hover:opacity-100">
             <div class="flex justify-center">
               <h1 class="cx-font-fam uppercase banner">01 shopping cart</h1>
             </div>
             <p class="banner capitalize">manage your items</p>
           </a>
 
-          <a routerLink="/checkout" class="text-center opacity-50 hover:bg-transparent hover:opacity-100">
+          <a routerLink="/order/checkout" class="text-center opacity-50 hover:bg-transparent hover:opacity-100">
             <div class="flex justify-center">
               <h1 class="cx-font-fam banner uppercase">02 checkout details</h1>
             </div>
@@ -56,7 +56,7 @@ import {RouterLink} from "@angular/router";
         <!-- non mobile -->
         <div class="hidden md:grid grid-cols-3">
 
-          <a routerLink="/cart" class="p-3 flex gap-3 bg-white opacity-50 hover:bg-transparent hover:opacity-100">
+          <a routerLink="/order/cart" class="p-3 flex gap-3 bg-white opacity-50 hover:bg-transparent hover:opacity-100">
             <div class="h-full flex items-center">
               <h1 class="cx-font-fam" style="font-size: 50px">01</h1>
             </div>
@@ -66,7 +66,7 @@ import {RouterLink} from "@angular/router";
             </div>
           </a>
 
-          <a routerLink="/checkout" class="p-3 flex gap-3 bg-white opacity-50 hover:bg-transparent hover:opacity-100">
+          <a routerLink="/order/checkout" class="p-3 flex gap-3 bg-white opacity-50 hover:bg-transparent hover:opacity-100">
             <div class="h-full flex items-center">
               <h1 class="cx-font-fam" style="font-size: 50px">02</h1>
             </div>

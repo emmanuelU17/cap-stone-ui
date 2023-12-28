@@ -7,7 +7,7 @@ import {ProductService} from "./product.service";
 import {HttpErrorResponse} from "@angular/common/http";
 import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
 import {CommonModule} from "@angular/common";
-import {CartService} from "../../payment/cart/cart.service";
+import {CartService} from "../../order/cart/cart.service";
 import {DirectiveModule} from "../../../directive/directive.module";
 import {FooterService} from "../../utils/footer/footer.service";
 
@@ -67,34 +67,31 @@ export class ProductComponent {
    * Retrieves product id from the route param and then refreshes page.
    * https://angular.io/api/router/ActivatedRoute#snapshot
    * */
-  readonly productDetails$: Observable<State<ProductDetail[]>> = this.route.params
+  readonly productDetails$: Observable<{ state: string, error?: string, data?: ProductDetail[] }> = this.route.params
     .pipe(
-      switchMap((param: Params) => {
-        const obj = param as { path: string, id: string }
+      map((p: Params) => p as { path: string, id: string }),
+      switchMap((obj) => this.footerService.currency$
+        .pipe(map((c) => ({ currency: c, id: obj.id })))
+      ),
+      switchMap((object) => this.productService
+        .productDetailsByProductUUID(object.id, object.currency)
+        .pipe(
+          map((arr) => {
+            // Add all product detail to product array
+            this.productDetailArray = arr;
 
-        return this.footerService.currency$
-          .pipe(
-            switchMap((currency) => this.productService
-              .productDetailsByProductUUID(obj.id, currency)
-              .pipe(
-                map((arr: ProductDetail[]): State<ProductDetail[]> => {
-                  // Add all product detail to product array
-                  this.productDetailArray = arr;
+            // First item in array
+            const curr: ProductDetail = arr[0];
 
-                  // First item in array
-                  const curr: ProductDetail = arr[0];
+            // Current ProductDetail with the first item in arr
+            this.currentProductDetail = { currImage: curr.url[0], detail: curr };
 
-                  // Current ProductDetail with the first item in arr
-                  this.currentProductDetail = { currImage: curr.url[0], detail: curr };
-
-                  return { state: 'LOADED', data: arr };
-                }),
-                startWith({ state: 'LOADING' }),
-                catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.message }))
-              )
-            )
-          );
-      })
+            return { state: 'LOADED', data: arr };
+          }),
+          startWith({ state: 'LOADING' }),
+          catchError((e: HttpErrorResponse) => of({ state: 'ERROR', error: e.error ? e.error.message : e.message }))
+        )
+      )
     );
 
   showMore = false; // Show more paragraph

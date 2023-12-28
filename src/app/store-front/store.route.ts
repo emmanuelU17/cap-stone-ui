@@ -1,5 +1,5 @@
 import {Routes} from "@angular/router";
-import {checkoutGuard} from "./payment/checkout/checkout.guard";
+import {checkoutGuard} from "./order/checkout/checkout.guard";
 import {importProvidersFrom} from "@angular/core";
 import {Angular4PaystackModule} from "angular4-paystack";
 
@@ -24,17 +24,8 @@ export const route: Routes = [
     loadChildren: () => import('./pages/pages.route').then(m => m.PAGES_ROUTES)
   },
   {
-    path: 'cart',
-    loadComponent: () => import('./payment/cart/cart.component').then(m => m.CartComponent),
-  },
-  {
-    path: 'checkout',
-    loadComponent: () => import('./payment/checkout/checkout.component').then(m => m.CheckoutComponent),
-    canActivate: [checkoutGuard]
-  },
-  {
-    path: 'payment',
-    loadComponent: () => import('./payment/payment.component').then(m => m.PaymentComponent),
-    providers: [importProvidersFrom(Angular4PaystackModule.forRoot(''))]
+    path: 'order',
+    loadComponent: () => import('./order/order.component').then(m => m.OrderComponent),
+    loadChildren: () => import('./order/order-routes').then(m => m.route)
   }
 ];

@@ -11,48 +11,6 @@ import {FooterService} from "../utils/footer/footer.service";
   selector: 'app-home',
   standalone: true,
   imports: [CommonModule, CardComponent, RouterLink],
-  template: `
-    <div class="min-h-screen w-full">
-      <div class="trans flex min-h-screen bg-center bg-no-repeat bg-cover"
-           *ngIf="image$ | async as image" [style.background-image]="'url(' + image + ')'"
-      >
-        <div class="lg-scr relative">
-          <div class="pb-3 ml-5 inline-block overflow-hidden whitespace-nowrap absolute bottom-0 left-0">
-            <h1 class="bg-font uppercase font-bold text-white">clothing apparel for the confident women</h1>
-            <a routerLink="/shop/category"
-               class="text-sm md:text-lg capitalize text-white cursor-pointer border-b border-b-white"
-            >shop now</a>
-          </div>
-        </div>
-      </div>
-
-
-      <ng-container *ngIf="products$ | async as products">
-        <div class="lg-scr py-4">
-          <div class="p-3.5 flex justify-center">
-            <h1 class="feature-font w-fit capitalize font-bold text-[var(--app-theme)] border-b border-b-[var(--app-theme)]"
-            >featured collection</h1>
-          </div>
-
-          <div class="p-2 xl:p-0 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-            <button
-              *ngFor="let product of products; let i = index"
-              (click)="clicked(product)"
-            >
-              <app-card
-                [url]="product.image"
-                [name]="product.name"
-                [currency]="currency(product.currency)"
-                [price]="product.price"
-              ></app-card>
-            </button>
-          </div>
-
-        </div>
-      </ng-container>
-
-    </div>
-  `,
   styles: [
     `
       .trans {
@@ -75,6 +33,37 @@ import {FooterService} from "../utils/footer/footer.service";
       }
     `
   ],
+  template: `
+    <div class="min-h-screen w-full">
+      <div *ngIf="image$ | async as image" [style.background-image]="'url(' + image + ')'" class="trans min-h-screen flex bg-center bg-no-repeat bg-cover">
+        <div class="lg-scr relative">
+          <div class="pb-3 ml-5 inline-block overflow-hidden whitespace-nowrap absolute bottom-0 left-0">
+            <h1 class="bg-font uppercase font-bold text-white">clothing apparel for the confident women</h1>
+            <a routerLink="/shop/category" class="text-sm md:text-lg capitalize text-white cursor-pointer border-b border-b-white">
+              shop now
+            </a>
+          </div>
+        </div>
+      </div>
+
+      @if (products$ | async; as products) {
+        <div class="lg-scr py-4">
+          <div class="p-3.5 flex justify-center">
+            <h1 class="feature-font w-fit capitalize font-bold text-[var(--app-theme)] border-b border-b-[var(--app-theme)]">
+              featured collection
+            </h1>
+          </div>
+
+          <div class="p-2 xl:p-0 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            <button *ngFor="let product of products; let i = index" (click)="clicked(product)" type="button">
+              <app-card [url]="product.image" [name]="product.name" [currency]="currency(product.currency)" [price]="product.price"></app-card>
+            </button>
+          </div>
+
+        </div>
+      }
+    </div>
+  `,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HomeComponent {
@@ -92,15 +81,16 @@ export class HomeComponent {
    * this is done with images.
    * */
   private readonly images = this.homeService.bgImages;
-  image$: Observable<string> = of(this.images).pipe(
-    switchMap((photos: string[]) => from(photos)
-      .pipe(
-        concatMap((photo: string) => of(photo).pipe(delay(5000))),
-        repeat()
-      )
-    ),
-    startWith(this.images[0])
-  );
+  image$: Observable<string> = of(this.images)
+    .pipe(
+      switchMap((photos: string[]) => from(photos)
+        .pipe(
+          concatMap((photo: string) => of(photo).pipe(delay(5000))),
+          repeat()
+        )
+      ),
+      startWith(this.images[0])
+    );
 
   /**
    * Route to product page

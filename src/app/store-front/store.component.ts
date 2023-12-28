@@ -8,7 +8,7 @@ import {StoreFrontNavigationComponent} from "./utils/navigation/store-front-navi
 import {RouterOutlet} from "@angular/router";
 import {HomeService} from "./home/home.service";
 import {FooterComponent} from "./utils/footer/footer.component";
-import {CartService} from "./payment/cart/cart.service";
+import {CartService} from "./order/cart/cart.service";
 import {FooterService} from "./utils/footer/footer.service";
 
 @Component({

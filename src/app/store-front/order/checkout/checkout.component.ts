@@ -4,7 +4,7 @@ import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from "@angula
 import {CartService} from "../cart/cart.service";
 import {FooterService} from "../../utils/footer/footer.service";
 import {map, switchMap} from "rxjs";
-import {PaymentService} from "../payment.service";
+import {PaymentService} from "../payment/payment.service";
 import {ReservationDTO} from "../index";
 import {RouterLink} from "@angular/router";
 
@@ -33,7 +33,7 @@ import {RouterLink} from "@angular/router";
       <div class="p-2 mb-2 md:p-4 md:mb-3 bg-neutral-100">
         <!-- mobile -->
         <div class="grid grid-cols-3 md:hidden">
-          <a routerLink="/cart'" class="text-center opacity-50 hover:bg-transparent hover:opacity-100">
+          <a routerLink="/order/cart" class="text-center opacity-50 hover:bg-transparent hover:opacity-100">
             <div class="flex gap-1 justify-center">
               <h1 class="cx-font-fam uppercase banner">01 shopping cart</h1>
             </div>
@@ -55,7 +55,7 @@ import {RouterLink} from "@angular/router";
 
         <!-- non mobile -->
         <div class="hidden md:grid grid-cols-3">
-          <button routerLink="/cart" class="p-3 flex gap-3 opacity-50 bg-white hover:bg-transparent hover:opacity-100">
+          <button routerLink="/order/cart" class="p-3 flex gap-3 opacity-50 bg-white hover:bg-transparent hover:opacity-100">
             <div class="h-full flex items-center">
               <h1 class="cx-font-fam" style="font-size: 50px">01</h1>
             </div>
@@ -201,11 +201,7 @@ import {RouterLink} from "@angular/router";
             </div>
 
             <div class="w-full flex justify-end text-sm md:text-base">
-              <a (click)="onAddressEntered()"
-                 routerLink="/payment"
-                 class="p-2 text-white hover:text-black bg-black hover:bg-[var(--app-theme-hover)]"
-                 [style]="{ 'display': form.valid ? 'block' : 'none' }"
-              >
+              <a routerLink="/order" (click)="onAddressEntered()" [style]="{ 'display': form.valid ? 'block' : 'none' }" class="p-2 text-white hover:text-black bg-black hover:bg-[var(--app-theme-hover)]">
                 Continue to payment
               </a>
             </div>
