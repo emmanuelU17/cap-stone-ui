@@ -50,4 +50,19 @@ export const DASHBOARDLINKS: Display[] = [
       }
     ]
   },
+  {
+    title: 'setting',
+    array: [
+      {
+        icon: 'local_shipping',
+        name: 'shipping',
+        route: 'setting/shipping',
+      },
+      {
+        icon: 'attach_money',
+        name: 'tax',
+        route: 'setting/tax',
+      }
+    ]
+  },
 ];

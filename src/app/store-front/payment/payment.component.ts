@@ -186,6 +186,7 @@ import {RouterLink} from "@angular/router";
                   [key]="dto.pubKey"
                   [amount]="dto.total"
                   [ref]="reference"
+                  [metadata]="address"
                   [currency]="dto.currency"
                   [channels]="['card']"
                   [class]="'btn btn-primary'"

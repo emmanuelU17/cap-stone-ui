@@ -1,7 +1,6 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
-import {SizeInventoryComponent} from "../../sizeinventory/size-inventory.component";
 import {Router} from "@angular/router";
 import {DirectiveModule} from "../../../../directive/directive.module";
 import {Observable, of, tap} from "rxjs";
@@ -150,7 +149,7 @@ import {RegisterDTO} from 'src/app/global-utils';
 
     </form>
   `,
-  imports: [CommonModule, ReactiveFormsModule, SizeInventoryComponent, DirectiveModule, MatButtonModule],
+  imports: [CommonModule, ReactiveFormsModule, DirectiveModule, MatButtonModule],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RegisterComponent {

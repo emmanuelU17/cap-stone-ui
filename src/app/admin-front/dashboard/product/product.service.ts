@@ -10,15 +10,15 @@ import {environment} from "../../../../environments/environment";
 })
 export class ProductService {
 
-  private readonly HOST: string | undefined = environment.domain;
+  private readonly HOST: string | undefined = environment.domain + 'api/v1/worker/product';
   private readonly http = inject(HttpClient);
-
   private readonly productSubject = new ReplaySubject<Page<ProductResponse>>()
-  products$: Observable<Page<ProductResponse>> = this.productSubject.asObservable();
+
+  readonly products$ = this.productSubject.asObservable();
   products: ProductResponse[] = [];
 
   private readonly subject = new BehaviorSubject<SarreCurrency>(SarreCurrency.NGN);
-  currency$ = this.subject.asObservable();
+  readonly currency$ = this.subject.asObservable();
 
   setCurrencySubject(currency: SarreCurrency): void {
     this.subject.next(currency);
@@ -30,8 +30,7 @@ export class ProductService {
    * @return Observable of type HttpStatus
    * */
   updateProduct(obj: UpdateProduct): Observable<number> {
-    const url = `${this.HOST}api/v1/worker/product`
-    return this.http.put<UpdateProduct>(url, obj, {
+    return this.http.put<UpdateProduct>(`${this.HOST}`, obj, {
       headers: { 'content-type': 'application/json' },
       observe: 'response',
       withCredentials: true
@@ -45,8 +44,7 @@ export class ProductService {
    * @return Observable of type HttpStatus
    * */
   deleteProduct(id: string): Observable<number> {
-    const url: string = `${this.HOST}api/v1/worker/product`;
-    return this.http.delete<HttpResponse<any>>(url, {
+    return this.http.delete<HttpResponse<any>>(`${this.HOST}`, {
       observe: 'response',
       params: {id: id},
       withCredentials: true
@@ -61,8 +59,7 @@ export class ProductService {
     size: number = 20,
     currency: SarreCurrency
   ): Observable<Page<ProductResponse>> {
-    const url = `${this.HOST}api/v1/worker/product`;
-    return this.http.get<Page<ProductResponse>>(url, {
+    return this.http.get<Page<ProductResponse>>(`${this.HOST}`, {
       headers: { 'content-type': 'application/json' },
       responseType: 'json',
       params: { page: page, size: size, currency: currency },

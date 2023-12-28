@@ -116,7 +116,7 @@ export class SearchComponent {
 
   openSearchComponent$ = this.searchService.openSearchComponent$;
 
-  spinnerState = signal<boolean>(false);
+  readonly spinnerState = signal<boolean>(false);
 
   currency = (currency: string) => this.footerService.currency(currency);
 
