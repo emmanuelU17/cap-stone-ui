@@ -129,8 +129,7 @@ export class PaginatorComponent {
   onNext(): void {
     const container = this.render.selectRootElement('.slider', true);
     let dimension = container.getBoundingClientRect();
-    let width = dimension.width;
-    container.scrollLeft += width;
+    container.scrollLeft += dimension.width;
   }
 
 }

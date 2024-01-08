@@ -1,6 +1,5 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CategoryService} from "./shop/category/category.service";
-import {CollectionService} from "./shop/collection/collection.service";
 import {catchError, combineLatest, map, Observable, of, startWith, switchMap} from "rxjs";
 import {HttpErrorResponse} from "@angular/common/http";
 import {CommonModule} from "@angular/common";
@@ -53,7 +52,6 @@ export class StoreComponent {
 
   private readonly footerService = inject(FooterService);
   private readonly categoryService = inject(CategoryService);
-  private readonly collectionService = inject(CollectionService);
   private readonly homeService = inject(HomeService);
   private readonly cartService = inject(CartService);
 
@@ -63,11 +61,10 @@ export class StoreComponent {
     .pipe(switchMap((currency) => this.homeService.homeProducts(currency)));
 
   private readonly categories$ = this.categoryService.fetchCategories();
-  private readonly collections$ = this.collectionService.fetchCollections();
 
   // On load of storefront routes, get necessary data to improve user experience
   combine$: Observable<{ state: string, error?: string }> =
-    combineLatest([this.cartItems$, this.homeProducts$, this.categories$, this.collections$])
+    combineLatest([this.cartItems$, this.homeProducts$, this.categories$])
       .pipe(
         map(() => ({ state: 'LOADED' })),
         startWith({ state: 'LOADING' }),

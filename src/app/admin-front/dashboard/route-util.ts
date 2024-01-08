@@ -32,12 +32,7 @@ export const DASHBOARDLINKS: Display[] = [
         icon: 'flare',
         name: 'category',
         route: 'category'
-      },
-      {
-        icon: 'filter_center_focus',
-        name: 'collection',
-        route: 'collection',
-      },
+      }
     ]
   },
   {

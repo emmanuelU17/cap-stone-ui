@@ -1,5 +1,5 @@
 import {Routes} from '@angular/router';
-import {CLIENT_DASHBOARD_GUARD} from "./route.guard";
+import {CLIENT_DASHBOARD_GUARD} from "./profile.guard";
 
 export const PROFILE_ROUTES: Routes = [
   {

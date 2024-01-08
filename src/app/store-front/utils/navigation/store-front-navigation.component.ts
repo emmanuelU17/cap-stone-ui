@@ -1,7 +1,6 @@
 import {ChangeDetectionStrategy, Component, HostListener, inject} from '@angular/core';
 import {CommonModule} from "@angular/common";
 import {RouterLink, RouterLinkActive} from "@angular/router";
-import {CollectionService} from "../../shop/collection/collection.service";
 import {SearchComponent} from "../search/search.component";
 import {MobileNavigationComponent} from "../mobile-navigation/mobile-navigation.component";
 import {Link} from "../../../global-utils";
@@ -31,7 +30,6 @@ import {CartService} from "../../order/cart/cart.service";
           <div [style]="{ 'display': openNavMobile ? 'block' : 'none' }" class="fixed top-0 right-0 bottom-0 left-0">
             <app-mobile-navigation
               [links]="links"
-              [empty$]="collectionNotEmpty$"
               [openNavMobile]="openNavMobile"
               (emitter)="toggleNav($event)"
             ></app-mobile-navigation>
@@ -55,13 +53,6 @@ import {CartService} from "../../order/cart/cart.service";
                     <a routerLink="/shop/category" class="p-3 flex rounded-md whitespace-nowrap capitalize hover:text-[var(--active)] hover:bg-[var(--app-theme)]">
                       shop category
                     </a>
-
-                    <!-- Only display collection if Collection[] it is not empty -->
-                    @if (collectionNotEmpty$ | async; as col) {
-                      <a routerLink="/shop/collection" [style]="{ 'display': col ? 'block' : 'none' }" class="p-3 flex rounded-md whitespace-nowrap capitalize hover:text-[var(--active)] hover:bg-[var(--app-theme)]">
-                        shop collection
-                      </a>
-                    }
                   </div>
                 </a>
               } @else {
@@ -130,10 +121,8 @@ import {CartService} from "../../order/cart/cart.service";
 })
 export class StoreFrontNavigationComponent {
 
-  private readonly collectionService = inject(CollectionService);
   private readonly service = inject(CartService);
 
-  readonly collectionNotEmpty$ = this.collectionService.isEmpty$();
   count$ = this.service.count$;
 
   links: Link[] = [{ name: 'home', value: '', bool: false }, { name: 'shop', value: '', bool: true, }];

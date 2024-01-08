@@ -64,20 +64,6 @@
             </div>
           </div>
 
-          <!-- Form-Group Collection -->
-          <div class="mb-2">
-            <h3 class="capitalize pb-3.5">collection</h3>
-            <div class="grid grid-cols-2 md:flex md:flex-1 gap-1.5">
-              <p class="">{{ data.product.collection }}</p>
-              <select (change)="onChangeCollection($event)"
-                      class="p-1.5 rounded cursor-pointer border border-solid border-[var(--border-outline)]"
-              >
-                <option value="" disabled selected>change?</option>
-                <option *ngFor="let coll of collections$ | async" [value]="coll.collection">{{ coll.collection }}</option>
-              </select>
-            </div>
-          </div>
-
           <!-- Form-Group description -->
           <div class="flex flex-col gap-2">
             <h3 class="capitalize"><span class="text-red-500">*</span> description</h3>

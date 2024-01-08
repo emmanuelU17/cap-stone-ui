@@ -4,7 +4,6 @@ import {catchError, combineLatest, map, Observable, of, ReplaySubject, startWith
 import {
   CategoryResponse,
   CKEDITOR4CONFIG,
-  CollectionResponse,
   CustomRowMapper,
   ProductDetailResponse,
   ProductResponse,
@@ -17,7 +16,6 @@ import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from "@angula
 import {CKEditorModule} from "ckeditor4-angular";
 import {DirectiveModule} from "../../../../directive/directive.module";
 import {CategoryService} from "../../category/category.service";
-import {CollectionService} from "../../collection/collection.service";
 import {DynamicTableComponent} from "../../util/dynamictable/dynamic-table.component";
 import {Variant} from "../../../../global-utils";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -52,30 +50,26 @@ export class UpdateProductComponent implements OnInit {
   private readonly updateProductService = inject(UpdateProductService);
   private readonly productService = inject(ProductService);
   private readonly categoryService = inject(CategoryService);
-  private readonly collectionService = inject(CollectionService);
   private readonly dialog = inject(MatDialog);
   private readonly toastService = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
 
   // Get id from route
   private id: string | null = this.activeRoute.snapshot.paramMap.get('id');
-  private uuid: string = this.id ? this.id : '';
+  private uuid: string = this.id === null ? '' : this.id;
 
   // Custom object
   private product: ProductResponse | undefined = this.productService.products
     .find((value: ProductResponse) => value.product_id === this.uuid)
 
-  data: { categoryId?: string, collectionId?: string, product?: ProductResponse } = {
+  data: { categoryId?: string, product?: ProductResponse } = {
     categoryId: this.categoryService.categories
       .find(c => c.category === this.product?.category)?.category_id,
-    collectionId: this.collectionService.collections
-      .find(c => c.collection === this.product?.collection)?.collection_id,
     product: this.product
   }
 
   // Categories and Collections
   categories$: Observable<CategoryResponse[]> = this.categoryService.categories$;
-  collections$: Observable<CollectionResponse[]> = this.collectionService._collections$;
 
   // Table
   thead: Array<keyof CustomRowMapper> = ['index', 'url', 'colour', 'is_visible', 'sku', 'inventory', 'size', 'action'];
@@ -86,10 +80,9 @@ export class UpdateProductComponent implements OnInit {
   }> = this.updateProductService
     .fetchProductDetails(this.uuid)
     .pipe(
-      map((arr: ProductDetailResponse[]) => {
-        const mappers: CustomRowMapper[] = this.toCustomRowMapperArray(arr)
-        return { state: 'LOADED', data: mappers };
-      }),
+      map((arr: ProductDetailResponse[]) =>
+        ({ state: 'LOADED', data: this.toCustomRowMapperArray(arr) })
+      ),
       startWith({ state: 'LOADING' }),
       catchError((err: HttpErrorResponse) => of({state: 'ERROR', error: err.error}))
     );
@@ -211,24 +204,6 @@ export class UpdateProductComponent implements OnInit {
     }
   }
 
-  /** Updates data on change of collection */
-  onChangeCollection(event: Event): void {
-    const collection: string = (event.target as HTMLInputElement).value;
-
-    if (!this.data.product) {
-      return;
-    }
-
-    this.data.product.collection = collection;
-    const col: CollectionResponse | undefined = this.collectionService.collections
-      .find(c => c.collection === collection);
-
-    if (col) {
-      this.onChangeCategoryOrCollection = true;
-      this.data.collectionId = col.collection_id;
-    }
-  }
-
   /** Makes call to server to update product not product detail */
   onSubmit(): Observable<number> {
     // Reactive form
@@ -239,7 +214,6 @@ export class UpdateProductComponent implements OnInit {
     // Data
     const product = this.data.product;
     const cat = this.data.categoryId;
-    const col = this.data.collectionId ? this.data.collectionId : '';
 
     // Validation
     if (!name || !price || !desc || !product || !cat) {
@@ -252,14 +226,12 @@ export class UpdateProductComponent implements OnInit {
         // Create payload
         const payload: UpdateProduct = {
           category_id: cat,
-          collection_id: col,
           product_id: this.uuid,
           name: name,
           currency: currency,
           price: price,
           desc: desc.trim(),
           category: product.category,
-          collection: !product.collection ? '' : product.collection
         };
 
         return this.updateProduct(payload);
@@ -278,11 +250,10 @@ export class UpdateProductComponent implements OnInit {
             this.productService.allProducts(0, 20, currency))
           );
         const categories$ = this.categoryService.allCategories();
-        const collections$ = this.collectionService.allCollections();
 
         // If user changes category or collection, refresh the arrays else only refresh products
         return this.onChangeCategoryOrCollection
-          ? combineLatest([products$, categories$, collections$]).pipe(switchMap(() => res))
+          ? combineLatest([products$, categories$]).pipe(switchMap(() => res))
           : products$.pipe(switchMap(() => res));
       }),
       catchError((err: HttpErrorResponse) => {

@@ -125,21 +125,6 @@
             >{{ option.category }}</option>
           </select>
         </div>
-
-        <div class="mb-2" *ngIf="collections$ | async as collections">
-          <h4 class="cx-font-size capitalize">collection</h4>
-          <select
-            formControlName="collection"
-            class="w-full p-3 rounded-md cursor-pointer capitalize border border-solid border-[var(--active)]"
-          >
-            <option value="" disabled selected>select collection</option>
-            <option
-              [value]="option.collection"
-              *ngFor="let option of collections"
-            >{{ option.collection }}</option>
-          </select>
-        </div>
-
       </div>
       <!-- End of mat-card right -->
 

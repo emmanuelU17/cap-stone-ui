@@ -4,7 +4,6 @@ import {CKEDITOR4CONFIG, SizeInventory} from "../../../shared-util";
 import {catchError, Observable, of, switchMap} from "rxjs";
 import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
 import {CategoryService} from "../../category/category.service";
-import {CollectionService} from "../../collection/collection.service";
 import {NewProductService} from "./new-product.service";
 import {SizeInventoryComponent} from "../sizeinventory/size-inventory.component";
 import {CKEditorModule} from "ckeditor4-angular";
@@ -41,7 +40,6 @@ export class NewProductComponent {
 
   private readonly newProductService = inject(NewProductService);
   private readonly categoryService = inject(CategoryService);
-  private readonly collectionService = inject(CollectionService);
   private readonly productService = inject(ProductService);
   private readonly toastService = inject(ToastService);
   private readonly fb = inject(FormBuilder);
@@ -57,7 +55,6 @@ export class NewProductComponent {
   rows: SizeInventory[] = [];
 
   categories$ = this.categoryService.categories$;
-  collections$ = this.collectionService._collections$;
 
   form = this.fb.group({
     category: new FormControl('', [Validators.required]),

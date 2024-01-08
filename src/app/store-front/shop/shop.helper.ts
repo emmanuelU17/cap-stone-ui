@@ -12,11 +12,6 @@ export interface Category {
   category_id: string;
 }
 
-export interface Collection {
-  collection: string;
-  collection_id: string;
-}
-
 export interface ProductDetail {
   name: string;
   currency: string;

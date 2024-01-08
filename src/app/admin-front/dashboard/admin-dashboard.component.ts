@@ -1,10 +1,9 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {catchError, combineLatest, map, Observable, of, startWith, switchMap, tap} from "rxjs";
 import {CategoryService} from "./category/category.service";
-import {CategoryResponse, CollectionResponse} from "../shared-util";
+import {CategoryResponse} from "../shared-util";
 import {SarreCurrency} from "../../global-utils";
 import {HttpErrorResponse} from "@angular/common/http";
-import {CollectionService} from "./collection/collection.service";
 import {ProductService} from "./product/product.service";
 import {DASHBOARDLINKS, Display} from "./route-util";
 import {CommonModule} from "@angular/common";
@@ -143,7 +142,6 @@ export class AdminDashboardComponent {
 
   private readonly authService = inject(AuthService);
   private readonly categoryService = inject(CategoryService);
-  private readonly collectionService = inject(CollectionService);
   private readonly productService = inject(ProductService);
 
   protected readonly SarreCurrency = SarreCurrency;
@@ -163,14 +161,8 @@ export class AdminDashboardComponent {
       tap((arr: CategoryResponse[]) => arr.sort((a, b) => a.category.localeCompare(b.category)))
     );
 
-  // Collections
-  private readonly collection$ = this.collectionService.allCollections()
-    .pipe(
-      tap((arr: CollectionResponse[]) => arr.sort((a, b) => a.collection.localeCompare(b.collection)))
-    );
-
   combine$: Observable<{ state: string, error?: string }> =
-    combineLatest([this.products$, this.category$, this.collection$])
+    combineLatest([this.products$, this.category$])
       .pipe(
         map(() => ({ state: 'LOADED' })),
         startWith({ state: 'LOADING' }),

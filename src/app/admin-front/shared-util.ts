@@ -2,18 +2,15 @@ import {Variant} from "../global-utils";
 
 export interface UpdateProduct {
   category_id: string;
-  collection_id: string;
   product_id: string;
   name: string;
   desc: string;
   currency: string;
   price: number;
   category: string;
-  collection: string;
 }
 
 export interface ProductResponse {
-  collection: string;
   category: string;
   product_id: string;
   name: string;
@@ -60,26 +57,6 @@ export interface CategoryResponse {
 
 export interface UpdateCategory {
   category_id: string;
-  name: string;
-  visible: boolean;
-}
-
-export interface CollectionRequest {
-  name: string;
-  visible: boolean;
-}
-
-export interface CollectionResponse {
-  collection_id: string;
-  collection: string;
-  visible: boolean;
-  created_at: number;
-  modified_at: number;
-  action: string;
-}
-
-export interface UpdateCollection {
-  collection_id: string;
   name: string;
   visible: boolean;
 }

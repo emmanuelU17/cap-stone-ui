@@ -4,7 +4,6 @@ import {DynamicTableComponent} from "../../util/dynamictable/dynamic-table.compo
 import {MatDialog, MatDialogModule} from "@angular/material/dialog";
 import {ProductService} from "../product.service";
 import {CategoryService} from "../../category/category.service";
-import {CollectionService} from "../../collection/collection.service";
 import {Router, RouterLink} from "@angular/router";
 import {PageChange, ProductResponse, TableContent} from "../../../shared-util";
 import {catchError, combineLatest, map, Observable, of, startWith, switchMap} from "rxjs";
@@ -68,7 +67,6 @@ export class ProductImplComponent {
 
   private readonly productService = inject(ProductService);
   private readonly categoryService = inject(CategoryService);
-  private readonly collectionService = inject(CollectionService);
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
 
@@ -124,11 +122,10 @@ export class ProductImplComponent {
                   this.productService.allProducts(0, 20, currency))
                 );
               const categories$ = this.categoryService.allCategories();
-              const collections$ = this.collectionService.allCollections();
 
               return of(status).pipe(
                 switchMap((num: number) =>
-                  combineLatest([products$, categories$, collections$]).pipe(
+                  combineLatest([products$, categories$]).pipe(
                     map(() => ({ status: num, message: 'deleted!' }))
                   )
                 )

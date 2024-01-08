@@ -17,12 +17,6 @@ export const routes: Routes = [
     loadComponent: () => import('./category/category.component').then(m => m.CategoryComponent),
     loadChildren: () => import('./category/category-routes').then(m => m.routes)
   },
-  // Collection
-  {
-    path: 'collection',
-    loadComponent: () => import('./collection/collection.component').then(m => m.CollectionComponent),
-    loadChildren: () => import('./collection/collection-routes').then(m => m.routes)
-  },
   // Customer
   {
     path: 'customer',
