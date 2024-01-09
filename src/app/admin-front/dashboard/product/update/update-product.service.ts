@@ -12,7 +12,9 @@ export class UpdateProductService {
   private readonly HOST: string | undefined = environment.domain;
   private readonly http = inject(HttpClient);
 
-  /** Fetch ProductDetail based on id */
+  /**
+   * Fetch ProductDetail based on id
+   * */
   fetchProductDetails(id: string): Observable<ProductDetailResponse[]> {
     const url: string = `${this.HOST}api/v1/worker/product/detail`;
     return this.http.get<ProductDetailResponse[]>(url, {
@@ -22,7 +24,9 @@ export class UpdateProductService {
     });
   }
 
-  /** Delete Product Variant */
+  /**
+   * Delete Product Variant
+   * */
   deleteVariant(sku: string): Observable<number> {
     const url = `${this.HOST}api/v1/worker/product/detail/sku`;
     return this.http.delete<number>(url, {

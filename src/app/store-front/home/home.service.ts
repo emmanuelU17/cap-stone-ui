@@ -14,7 +14,7 @@ export class HomeService {
   private readonly http = inject(HttpClient);
 
   private readonly subject = new BehaviorSubject<Product[]>([]);
-  products$ = this.subject.asObservable()
+  readonly products$ = this.subject.asObservable()
 
   get bgImages(): string[] {
     return [

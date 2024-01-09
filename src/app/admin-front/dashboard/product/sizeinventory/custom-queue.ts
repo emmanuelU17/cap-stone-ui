@@ -2,15 +2,15 @@ import {BehaviorSubject} from "rxjs";
 
 export class CustomQueue<T> {
   private readonly arr: T[];
-  private subject = new BehaviorSubject<boolean>(false);
-  queue$ = this.subject.asObservable();
+  private readonly subject = new BehaviorSubject<boolean>(false);
+  readonly queue$ = this.subject.asObservable();
 
   constructor() {
     this.arr = [];
   }
 
   /**
-   * Adds to the end of the array
+   * adds to the end of the array
    * */
   addToQueue(data: T): void {
     this.arr.push(data);

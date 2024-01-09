@@ -11,6 +11,7 @@ import {VARIABLE_IS_NUMERIC} from "../../../../global-utils";
 @Component({
   selector: 'app-size-inventory',
   standalone: true,
+  imports: [CommonModule, MatButtonModule],
   template: `
     <div class="flex gap-1.5 mb-2 justify-between">
       <h4 class="cx-font-size capitalize"><span class="text-red-500">*</span>size & stock</h4>
@@ -28,7 +29,7 @@ import {VARIABLE_IS_NUMERIC} from "../../../../global-utils";
       </button>
     </div>
 
-    <ng-container *ngIf="queue.queue$ | async as bool">
+    @if (queue.queue$ | async; as bool) {
       <div [style]="{ 'display': bool ? 'block' : 'none' }">
 
         <div class="mb-1.5" *ngFor="let row of queue.toArray(); let i = index">
@@ -81,14 +82,12 @@ import {VARIABLE_IS_NUMERIC} from "../../../../global-utils";
             [disabled]="invalidInputImpl()"
             [style]="{ 'background-color': invalidInputImpl() ? 'var(--app-theme)' : 'var(--app-theme-hover)' }"
             (click)="informParent()"
-          >save
-          </button>
+          >save</button>
         </div>
 
       </div>
-    </ng-container>
+    }
   `,
-  imports: [CommonModule, MatButtonModule],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SizeInventoryComponent {
@@ -189,4 +188,5 @@ export class SizeInventoryComponent {
   informParent(): void {
     this.eventEmitter.emit(this.queue.toArray());
   }
+
 }

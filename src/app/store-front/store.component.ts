@@ -14,36 +14,40 @@ import {FooterService} from "./utils/footer/footer.service";
   selector: 'app-store',
   standalone: true,
   template: `
-    <ng-container *ngIf="combine$ | async as combine" [ngSwitch]="combine.state">
+    @if (combine$ | async; as combine) {
 
-      <ng-container *ngSwitchCase="'LOADING'">
-        <div class="lg-scr h-full p-20 flex justify-center items-center">
-          <h1 class="capitalize text-[var(--app-theme-hover)]">
-            loading...
-          </h1>
-        </div>
-      </ng-container>
+      @switch (combine.state) {
 
-      <ng-container *ngSwitchCase="'ERROR'">
-        <div class="lg-scr p-10 capitalize text-3xl text-red-500">
-          Error {{ combine.error }}
-        </div>
-      </ng-container>
+        @case ('LOADING') {
+          <div class="lg-scr h-full p-20 flex justify-center items-center">
+            <h1 class="capitalize text-[var(--app-theme-hover)]">
+              loading...
+            </h1>
+          </div>
+        }
+        @case ('ERROR') {
+          <div class="lg-scr p-10 capitalize text-3xl text-red-500">
+            Error {{ combine.error }}
+          </div>
+        }
 
-      <div class="w-full h-full flex flex-col" *ngSwitchCase="'LOADED'">
-        <div class="lg-scr z-10 border-b border-transparent fixed left-0 top-0 right-0">
-          <app-store-front-navigation-navigation></app-store-front-navigation-navigation>
-        </div>
+        @case ('LOADED') {
+          <div class="w-full h-full flex flex-col">
+            <div class="lg-scr z-10 border-b border-transparent fixed left-0 top-0 right-0">
+              <app-store-front-navigation-navigation></app-store-front-navigation-navigation>
+            </div>
 
-        <div class="flex-1">
-          <router-outlet></router-outlet>
-        </div>
+            <div class="flex-1">
+              <router-outlet></router-outlet>
+            </div>
 
-        <div class="lg-scr">
-          <app-footer></app-footer>
-        </div>
-      </div>
-    </ng-container>
+            <div class="lg-scr">
+              <app-footer></app-footer>
+            </div>
+          </div>
+        }
+      }
+    }
   `,
   imports: [CommonModule, StoreFrontNavigationComponent, RouterOutlet, FooterComponent],
   changeDetection: ChangeDetectionStrategy.OnPush

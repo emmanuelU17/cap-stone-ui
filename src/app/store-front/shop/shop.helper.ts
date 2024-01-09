@@ -9,7 +9,7 @@ export interface Filter<T> {
 
 export interface Category {
   category: string;
-  category_id: string;
+  category_id: number;
 }
 
 export interface ProductDetail {

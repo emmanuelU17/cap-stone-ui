@@ -14,8 +14,8 @@ export class CategoryService {
   private readonly HOST: string | undefined = environment.domain;
   private readonly http = inject(HttpClient);
 
-  private categories$ = new BehaviorSubject<Category[]>([]);
-  _categories$ = this.categories$.asObservable();
+  private readonly categories$ = new BehaviorSubject<Category[]>([]);
+  readonly _categories$ = this.categories$.asObservable();
 
   get categories(): Category[] {
     return this.categories$.getValue();
@@ -36,13 +36,13 @@ export class CategoryService {
   /**
    * Fetches products based on category name
    *
-   * @param id is the category uuid
+   * @param categoryId is the category id
    * @param page is the page number
    * @param size is the amount of items to be displayed on a page
    * @param currency
    * */
   productsBasedOnCategory(
-    id: string,
+    categoryId: number,
     currency: SarreCurrency,
     page: number = 0,
     size: number = 20,
@@ -50,25 +50,13 @@ export class CategoryService {
     const url: string = `${this.HOST}api/v1/client/category/products`;
     return this.http.get<Page<Product>>(url, {
       params: {
-        category_id: id,
+        category_id: categoryId,
         page: page,
         size: size,
         currency: currency
       },
       withCredentials: true
-    })
-    // .pipe(
-    //   map((page) => {
-    //     const arr = page.content;
-    //
-    //     for (let p of arr) {
-    //       const rand = Math.floor(Math.random() * DUMMY_IMAGES.length);
-    //       p.image = DUMMY_IMAGES[rand];
-    //     }
-    //
-    //     return page;
-    //   })
-    // );
+    });
   }
 
 }

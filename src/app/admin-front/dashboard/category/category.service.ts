@@ -12,12 +12,14 @@ export class CategoryService {
   private readonly HOST: string | undefined = environment.domain;
   private readonly http = inject(HttpClient);
 
-  private subject$ = new BehaviorSubject<CategoryResponse[]>([]);
-  categories$ = this.subject$.asObservable();
+  private readonly  subject$ = new BehaviorSubject<CategoryResponse[]>([]);
+   readonly categories$ = this.subject$.asObservable();
   categories: CategoryResponse[] = [];
 
-  // Delete category based on id
-  deleteCategory(id: string): Observable<number> {
+  /**
+   * Delete category based on id
+   * */
+  deleteCategory(id: number): Observable<number> {
     const url = `${this.HOST}api/v1/worker/category/${id}`;
     return this.http.delete<HttpResponse<any>>(url,{
       observe: 'response',
@@ -25,7 +27,9 @@ export class CategoryService {
     }).pipe(map((res: HttpResponse<any>) => res.status));
   }
 
-  // Fetch Categories
+  /**
+   * Fetch all Categories
+   * */
   allCategories(): Observable<CategoryResponse[]> {
     const url = `${this.HOST}api/v1/worker/category`
     return this.http.get<CategoryResponse[]>(url, {

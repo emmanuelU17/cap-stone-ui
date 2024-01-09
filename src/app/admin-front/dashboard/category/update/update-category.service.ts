@@ -15,7 +15,7 @@ export class UpdateCategoryService {
 
   /** Returns a Page of Product Response based on CategoryResponse id and pagination params */
   allProductsByCategory(
-    id: string,
+    categoryId: number,
     page: number = 0,
     size: number = 20,
     currency: SarreCurrency
@@ -24,7 +24,7 @@ export class UpdateCategoryService {
     return this.http.get<Page<ProductResponse>>(url, {
       headers: { 'content-type': 'application/json' },
       params: {
-        category_id: id,
+        category_id: categoryId,
         page: page,
         size: size,
         currency: currency

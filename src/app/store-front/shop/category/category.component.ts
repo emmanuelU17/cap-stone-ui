@@ -45,9 +45,9 @@ export class CategoryComponent {
     );
 
   private currentCategory$ = this.categoryService._categories$
-    .pipe(map((collections: Category[]) => collections[0]), take(1));
+    .pipe(map((cat: Category[]) => cat[0]), take(1));
 
-  // On load of shop/category, fetch products based on the first category
+  // on load of shop/category, fetch products based on the first category
   products$ = this.categoryImpl();
 
   /**
@@ -56,22 +56,25 @@ export class CategoryComponent {
   ascendingOrDescending = (arr: Product[]): Product[] => this.utilService.sortArray(this.filterByPrice, arr);
 
   categoryImpl(page: number = 0): Observable<{ state: string, error?: string, data?: Page<Product> }> {
-    return this.currentCategory$.pipe(
-      switchMap((category: Category) => this.footService.currency$
-        .pipe(
-          switchMap((currency) => this.categoryService
-            .productsBasedOnCategory(category.category_id, currency, page)
-            .pipe(map((arr: Page<Product>) => {
-              if (arr) {
-                this.totalElements = arr.content.length;
-              }
-              return { state: 'LOADED', data: arr };
-            }))
+    return this.currentCategory$
+      .pipe(
+        switchMap((category: Category) => this.footService.currency$
+          .pipe(
+            switchMap((currency) => this.categoryService
+              .productsBasedOnCategory(category.category_id, currency, page)
+              .pipe(map((arr: Page<Product>) => {
+                if (arr) {
+                  this.totalElements = arr.content.length;
+                }
+                return { state: 'LOADED', data: arr };
+              }))
+            )
           )
+        ),
+        startWith({ state: 'LOADING' }),
+        catchError((err: HttpErrorResponse) =>
+          of({ state: 'ERROR', error: err.error ? err.error.message : err.message })
         )
-      ),
-      startWith({ state: 'LOADING' }),
-      catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error.message }))
     );
   }
 

@@ -8,6 +8,30 @@ import {PaginatorComponent} from "../../../../shared-comp/paginator/paginator.co
   selector: 'app-dynamic-table',
   standalone: true,
   imports: [CommonModule, PaginatorComponent],
+  styles: [
+    `
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th {
+        text-transform: uppercase;
+      }
+
+      th, td {
+        text-align: left;
+        padding: 1rem;
+        border-bottom: var(--cards-border);
+      }
+
+      @media screen and (max-width: 768px) {
+        th, td, mat-icon {
+          font-size: calc(10px + 1vw);
+        }
+      }
+    `
+  ],
   template: `
     <!-- Product Template -->
     <ng-container *ngIf="paginationTable">
@@ -189,30 +213,6 @@ import {PaginatorComponent} from "../../../../shared-comp/paginator/paginator.co
       </table>
     </ng-container>
   `,
-  styles: [
-    `
-      table {
-        width: 100%;
-        border-collapse: collapse;
-      }
-
-      th {
-        text-transform: uppercase;
-      }
-
-      th, td {
-        text-align: left;
-        padding: 1rem;
-        border-bottom: var(--cards-border);
-      }
-
-      @media screen and (max-width: 768px) {
-        th, td, mat-icon {
-          font-size: calc(10px + 1vw);
-        }
-      }
-    `
-  ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DynamicTableComponent<T> {

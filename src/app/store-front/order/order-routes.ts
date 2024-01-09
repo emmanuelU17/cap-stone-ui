@@ -7,7 +7,7 @@ export const route: Routes = [
   {
     path: '',
     loadComponent: () => import('./payment/payment.component').then(m => m.PaymentComponent),
-    providers: [importProvidersFrom(Angular4PaystackModule.forRoot(''))]
+    providers: [importProvidersFrom(Angular4PaystackModule.forRoot('pk_test_xxxxxxxxxxxxxxxxxxxxxxxx'))]
   },
   {
     path: 'cart',

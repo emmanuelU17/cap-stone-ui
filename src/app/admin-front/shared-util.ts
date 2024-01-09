@@ -1,7 +1,7 @@
 import {Variant} from "../global-utils";
 
 export interface UpdateProduct {
-  category_id: string;
+  category_id: number;
   product_id: string;
   name: string;
   desc: string;
@@ -47,7 +47,7 @@ export interface CategoryRequest {
 }
 
 export interface CategoryResponse {
-  category_id: string;
+  category_id: number;
   category: string;
   created_at?: number;
   modified_at?: number;
@@ -56,7 +56,7 @@ export interface CategoryResponse {
 }
 
 export interface UpdateCategory {
-  category_id: string;
+  category_id: number;
   name: string;
   visible: boolean;
 }

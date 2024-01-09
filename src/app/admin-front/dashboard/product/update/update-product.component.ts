@@ -62,7 +62,7 @@ export class UpdateProductComponent implements OnInit {
   private product: ProductResponse | undefined = this.productService.products
     .find((value: ProductResponse) => value.product_id === this.uuid)
 
-  data: { categoryId?: string, product?: ProductResponse } = {
+  data: { categoryId?: number, product?: ProductResponse } = {
     categoryId: this.categoryService.categories
       .find(c => c.category === this.product?.category)?.category_id,
     product: this.product

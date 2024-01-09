@@ -44,7 +44,7 @@ export class UpdateCategoryComponent implements OnInit {
 
   // Get id from route
   private id: string | null = this.activeRoute.snapshot.paramMap.get('id');
-  private uuid: string = this.id ? this.id : '';
+  private uuid: number = this.id !== null ? Number(this.id) : -1;
 
   data: CategoryResponse | undefined = this.categoryService.categories
     .find(c => c.category_id === this.uuid);
