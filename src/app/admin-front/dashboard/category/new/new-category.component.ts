@@ -17,14 +17,15 @@ import {Router} from "@angular/router";
   standalone: true,
   imports: [CommonModule, MatButtonModule, MatRadioModule, ReactiveFormsModule, DirectiveModule],
   template: `
-    <form class="h-full flex flex-col py-0 px-2.5" [formGroup]="reactiveForm">
+    <form class="h-full flex flex-col py-0 px-2.5" [formGroup]="form">
       <!-- Title -->
       <div class="py-2.5 px-0 mb-4 flex">
         <button type="button"
                 class="mr-1.5 md:px-2.5 border-[var(--border-outline)] border"
                 (click)="routeToCategoryComponent()"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+               stroke="currentColor"
                class="w-6 h-6">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18"/>
           </svg>
@@ -63,7 +64,8 @@ import {Router} from "@angular/router";
 
             <div class="text-left">
               <div>
-                <h4 class="cx-font-size lowercase"><span [style]="'color: red'">*</span>visibility (include in store front)</h4>
+                <h4 class="cx-font-size lowercase"><span [style]="'color: red'">
+                  *</span>visibility (include in store front)</h4>
                 <mat-radio-group aria-label="Select an option" formControlName="visible">
                   <mat-radio-button [checked]='true' value="false">false</mat-radio-button>
                   <mat-radio-button value="true">true</mat-radio-button>
@@ -78,12 +80,14 @@ import {Router} from "@angular/router";
 
       <!-- Button container -->
       <div class="p-2.5 px-1.5 flex justify-between">
-        <button mat-stroked-button color="warn" [style.border-color]="'red'" type="button" (click)="clear()">Cancel</button>
+        <button mat-stroked-button color="warn" [style.border-color]="'red'" type="button" (click)="clear()">
+          Cancel
+        </button>
         <button
           type="submit"
           class="capitalize text-white font-bold py-2 px-4 rounded bg-[var(--app-theme)]"
-          [disabled]="!reactiveForm.valid"
-          [style]="{ 'background-color': reactiveForm.valid ? 'var(--app-theme-hover)' : 'var(--app-theme)' }"
+          [disabled]="!form.valid"
+          [style]="{ 'background-color': form.valid ? 'var(--app-theme-hover)' : 'var(--app-theme)' }"
           [asyncButton]="submit()"
         >create</button>
       </div>
@@ -98,7 +102,7 @@ export class NewCategoryComponent {
   private readonly toastService = inject(ToastService);
   private readonly router = inject(Router);
 
-  reactiveForm = new FormGroup({
+  form = new FormGroup({
     name: new FormControl('', [Validators.required, Validators.max(80)]),
     parent: new FormControl(''),
     visible: new FormControl(false, Validators.required)
@@ -108,10 +112,12 @@ export class NewCategoryComponent {
     this.router.navigate(['/admin/dashboard/category']);
   }
 
-  /** Clears reactiveForm */
+  /**
+   * Clears form
+   * */
   clear(): void {
-    this.reactiveForm.controls['name'].setValue('');
-    this.reactiveForm.controls['parent'].setValue('');
+    this.form.controls['name'].setValue('');
+    this.form.controls['parent'].setValue('');
   }
 
   /**
@@ -120,12 +126,12 @@ export class NewCategoryComponent {
    * @return Observable of type number
    * */
   submit(): Observable<number> {
-    const name = this.reactiveForm.controls['name'].value;
-    const parent = this.reactiveForm.controls['parent'].value
-    const visible = this.reactiveForm.controls['visible'].value;
+    const name = this.form.controls['name'].value;
+    const parent = this.form.controls['parent'].value
+    const visible = this.form.controls['visible'].value;
 
     if (!name || !parent || visible === null) {
-      return of();
+      return of(0);
     }
 
     const obj: CategoryRequest = { name: name,  parent: parent,  visible: visible };
@@ -140,7 +146,8 @@ export class NewCategoryComponent {
           .pipe(switchMap(() => of(status)));
       }),
       catchError((err: HttpErrorResponse) => {
-        this.toastService.toastMessage(err.error.message);
+        this.toastService
+          .toastMessage(err.error ? err.error.message : err.message);
         return of(err.status);
       })
     );
