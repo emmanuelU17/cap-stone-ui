@@ -2,27 +2,29 @@ import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {catchError, Observable, of, switchMap} from "rxjs";
-import {CategoryRequest} from "../../../shared-util";
-import {MatButtonModule} from "@angular/material/button";
 import {MatRadioModule} from "@angular/material/radio";
 import {DirectiveModule} from "../../../../directive/directive.module";
 import {CategoryService} from "../category.service";
 import {HttpErrorResponse} from "@angular/common/http";
 import {ToastService} from "../../../../shared-comp/toast/toast.service";
 import {Router} from "@angular/router";
+import {CategoryHierarchyComponent} from "../../util/hierarchy/category-hierarchy.component";
 
 @Component({
   selector: 'app-new-category',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatRadioModule, ReactiveFormsModule, DirectiveModule],
+  imports: [
+    CommonModule,
+    MatRadioModule,
+    ReactiveFormsModule,
+    DirectiveModule,
+    CategoryHierarchyComponent
+  ],
   template: `
     <form class="h-full flex flex-col py-0 px-2.5" [formGroup]="form">
       <!-- Title -->
       <div class="py-2.5 px-0 mb-4 flex">
-        <button type="button"
-                class="mr-1.5 md:px-2.5 border-[var(--border-outline)] border"
-                (click)="routeToCategoryComponent()"
-        >
+        <button (click)="routeToCategoryComponent()" type="button" class="mr-1.5 md:px-2.5 border-[var(--border-outline)] border">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                stroke="currentColor"
                class="w-6 h-6">
@@ -39,20 +41,33 @@ import {Router} from "@angular/router";
           <div class="p-2.5 rounded-md border border-solid border-[var(--active)] bg-[var(--white)]">
             <div class="py-1.5 px-0"><h2 class="cx-font-size capitalize">general</h2></div>
 
-            <div class="text-left">
-              <div class="flex flex-col gap-2.5">
-                <h4 class="cx-font-size capitalize">name <span class="border-red-600">*</span></h4>
-                <input
-                  formControlName="name"
-                  placeholder="category name"
-                  type="text"
-                  class="p-2.5 w-full flex-1 inline rounded-sm border border-solid border-[var(--border-outline)]"
-                />
+            <div class="grid gap-4">
+              <div class="text-left">
+                <div class="flex flex-col gap-2.5">
+                  <h4 class="cx-font-size capitalize">name <span class="border-red-600">*</span></h4>
+                  <input
+                    formControlName="name"
+                    placeholder="category name"
+                    type="text"
+                    class="p-2.5 w-full flex-1 inline rounded-sm border border-solid border-[var(--border-outline)]"
+                  />
+                </div>
+              </div>
+
+              <div class="text-left">
+                <div class="flex flex-col gap-2.5">
+                  <h4 class="cx-font-size capitalize">parent category</h4>
+
+                  @if (hierarchy$ | async; as hierarchy) {
+                    <div class="w-full flex gap-2 flex-col border border-[#c9cccf] bg-[#eff2f5]">
+                      <app-hierarchy [categories]="hierarchy" (emitter)="parentClicked($event)"></app-hierarchy>
+                    </div>
+                  }
+
+                </div>
               </div>
             </div>
-            <!-- End of content -->
           </div>
-          <!-- End of mat-card left -->
         </div>
 
         <!-- Right-column -->
@@ -63,8 +78,10 @@ import {Router} from "@angular/router";
 
             <div class="text-left">
               <div>
-                <h4 class="cx-font-size lowercase"><span [style]="'color: red'">
-                  *</span>visibility (include in store front)</h4>
+                <h4 class="cx-font-size lowercase">
+                  <span [style]="'color: red'">*</span>
+                  Visibility (include in store front)
+                </h4>
                 <mat-radio-group aria-label="Select an option" formControlName="visible">
                   <mat-radio-button [checked]='true' value="false">false</mat-radio-button>
                   <mat-radio-button value="true">true</mat-radio-button>
@@ -79,7 +96,8 @@ import {Router} from "@angular/router";
 
       <!-- Button container -->
       <div class="p-2.5 px-1.5 flex justify-between">
-        <button mat-stroked-button color="warn" [style.border-color]="'red'" type="button" (click)="clear()">
+        <button type="button" (click)="clear()"
+                class="capitalize py-2 px-4 rounded text-red-400 border border-red-400">
           Cancel
         </button>
         <button
@@ -100,9 +118,10 @@ export class NewCategoryComponent {
   private readonly toastService = inject(ToastService);
   private readonly router = inject(Router);
 
+  readonly hierarchy$ = this.categoryService.hierarchy$;
+
   form = new FormGroup({
     name: new FormControl('', [Validators.required, Validators.max(50)]),
-    parent: new FormControl(''),
     visible: new FormControl(false, Validators.required)
   });
 
@@ -115,7 +134,15 @@ export class NewCategoryComponent {
    * */
   clear(): void {
     this.form.controls['name'].setValue('');
-    this.form.controls['parent'].setValue('');
+  }
+
+  parent: { categoryId: number, name: string } | undefined = undefined;
+
+  /**
+   * Gets info emitter from {@code category-hierarchy.component.ts}
+   * */
+  parentClicked(obj: { categoryId: number, name: string }): void {
+    this.parent = obj;
   }
 
   /**
@@ -125,16 +152,14 @@ export class NewCategoryComponent {
    * */
   submit(): Observable<number> {
     const name = this.form.controls['name'].value;
-    const parent = this.form.controls['parent'].value
     const visible = this.form.controls['visible'].value;
 
-    if (!name || !parent || visible === null) {
+    if (!name || visible === null) {
       return of(0);
     }
 
-    const obj: CategoryRequest = { name: name, parent_id: Number(parent), visible: visible };
-
-    return this.categoryService.create(obj)
+    return this.categoryService
+      .create({ name: name, parent_id: this.parent?.categoryId, visible: visible })
       .pipe(
         switchMap((status: number): Observable<number> => {
           // Clear Input field

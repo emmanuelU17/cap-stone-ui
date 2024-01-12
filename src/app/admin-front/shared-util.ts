@@ -42,7 +42,7 @@ export interface CustomRowMapper {
 
 export interface CategoryRequest {
   name: string;
-  parent_id: number;
+  parent_id: number | undefined;
   visible: boolean;
 }
 
