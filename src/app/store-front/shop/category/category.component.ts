@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {catchError, map, Observable, of, startWith, switchMap, take} from "rxjs";
-import {Category, Filter} from "../shop.helper";
+import {Filter} from "../shop.helper";
 import {CategoryService} from "./category.service";
 import {Product} from "../../store-front-utils";
 import {CommonModule} from "@angular/common";
@@ -9,7 +9,7 @@ import {FilterComponent} from "../../utils/filter/filter.component";
 import {RouterLink} from "@angular/router";
 import {HttpErrorResponse} from "@angular/common/http";
 import {FooterService} from "../../utils/footer/footer.service";
-import {Page} from "../../../global-utils";
+import {Category, Page} from "../../../global-utils";
 import {PaginatorComponent} from "../../../shared-comp/paginator/paginator.component";
 import {UtilService} from "../../../service/util.service";
 
@@ -38,7 +38,7 @@ export class CategoryComponent {
   readonly categories$ = this.categoryService._categories$
     .pipe(
       map((arr: Category[]) => {
-        const category: string[] = arr.map(m => m.category);
+        const category: string[] = arr.map(m => m.name);
         const filter: Filter<string>[] = [{ isOpen: false, parent: 'categories', children: category }];
         return filter;
       })
@@ -86,7 +86,7 @@ export class CategoryComponent {
    * */
   filterProductsByCategory(str: string): void {
     const arr: Category[] = this.categoryService.categories;
-    const category = arr.find(c => c.category === str);
+    const category = arr.find(c => c.name === str);
 
     if (!category) {
       return;

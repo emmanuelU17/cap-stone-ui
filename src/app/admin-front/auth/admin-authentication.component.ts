@@ -85,11 +85,12 @@ export class AdminAuthenticationComponent {
     const password: string | null = this.loginForm.controls['password'].value;
     return (!principal || !password)
     ? of()
-    : this.authService.login(
-        { principal: principal, password: password },
-        'api/v1/worker/auth/login',
-        '/admin/dashboard'
-    );
+    : this.authService
+        .login(
+          { principal: principal, password: password },
+          'api/v1/worker/auth/login',
+          '/admin/dashboard'
+        );
   }
 
 }

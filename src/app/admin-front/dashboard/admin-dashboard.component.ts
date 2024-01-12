@@ -158,7 +158,7 @@ export class AdminDashboardComponent {
   // Categories
   private readonly category$ = this.categoryService.allCategories()
     .pipe(
-      tap((arr: CategoryResponse[]) => arr.sort((a, b) => a.category.localeCompare(b.category)))
+      tap((arr: CategoryResponse[]) => arr.sort((a, b) => a.name.localeCompare(b.name)))
     );
 
   combine$: Observable<{ state: string, error?: string }> =

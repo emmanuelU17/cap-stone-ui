@@ -6,7 +6,7 @@ import {CategoryService} from "../category.service";
 import {ProductService} from "../../product/product.service";
 import {Router, RouterLink} from "@angular/router";
 import {CategoryResponse, TableContent} from "../../../shared-util";
-import {catchError, combineLatest, map, Observable, of, switchMap} from "rxjs";
+import {catchError, of, switchMap} from "rxjs";
 import {HttpErrorResponse} from "@angular/common/http";
 import {DeleteComponent} from "../../util/delete/delete.component";
 
@@ -52,7 +52,8 @@ export class CategoryImplComponent {
   private readonly dialog = inject(MatDialog);
 
   data$ = this.categoryService.categories$;
-  tHead: Array<keyof CategoryResponse> = ['category_id', 'category', 'created_at', 'modified_at', 'visible', 'action'];
+  tHead: Array<keyof CategoryResponse> = ['category_id', 'parent_id', 'name', 'visible', 'children', 'action'];
+  columnsToShow = ['category_id', 'parent_id', 'name', 'visible', 'action'];
 
   infoFromTableComponent(content: TableContent<CategoryResponse>): void {
     switch (content.key) {
@@ -62,26 +63,12 @@ export class CategoryImplComponent {
         this.router.navigate([`/admin/dashboard/category/${content.data.category_id}`]);
         break;
       case 'delete':
-        const obs: Observable<{ status: number, message: string }> = this.categoryService
+        const obs = this.categoryService
           .deleteCategory(content.data.category_id)
           .pipe(
-            switchMap((status: number) => {
-              // Refresh Category and Product Array
-              const products$ = this.productService.currency$
-                .pipe(switchMap((currency) =>
-                  this.productService.allProducts(0, 20, currency))
-                );
-              const categories$ = this.categoryService.allCategories();
-
-              return of(status).pipe(
-                switchMap((num: number) =>
-                  combineLatest([products$, categories$])
-                    .pipe(
-                      map(() => ({ status: num, message: 'deleted!' }))
-                    )
-                )
-              );
-            }),
+            switchMap((status: number) =>
+              this.productService.action(status, this.categoryService.allCategories())
+            ),
             catchError((err: HttpErrorResponse) => of({ status: err.status, message: err.error.message }))
           );
 
@@ -91,7 +78,7 @@ export class CategoryImplComponent {
           maxWidth: '100%',
           height: 'fit-content',
           data: {
-            name: content.data.category,
+            name: content.data.name,
             asyncButton: obs
           }
         });

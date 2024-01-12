@@ -7,7 +7,6 @@ import {DynamicTableComponent} from "../../util/dynamictable/dynamic-table.compo
 import {catchError, combineLatest, map, Observable, of, startWith, switchMap} from "rxjs";
 import {MatButtonModule} from "@angular/material/button";
 import {DirectiveModule} from "../../../../directive/directive.module";
-import {UpdateCategoryService} from "./update-category.service";
 import {HttpErrorResponse} from "@angular/common/http";
 import {Page} from "../../../../global-utils";
 import {CategoryService} from "../category.service";
@@ -34,7 +33,6 @@ import {MatDialogModule} from "@angular/material/dialog";
 })
 export class UpdateCategoryComponent implements OnInit {
 
-  private readonly updateCategoryService = inject(UpdateCategoryService);
   private readonly productService = inject(ProductService);
   private readonly categoryService = inject(CategoryService);
   private readonly activeRoute = inject(ActivatedRoute);
@@ -55,12 +53,15 @@ export class UpdateCategoryComponent implements OnInit {
     state: string,
     error?: string,
     data?: Page<ProductResponse>
-  }> = this.productService.currency$.pipe(
-    switchMap((currency) => this.updateCategoryService
-      .allProductsByCategory(this.uuid, 0, 20, currency).pipe(
-        map((arr: Page<ProductResponse>) => ({ state: 'LOADED', data: arr })),
-        startWith({state: 'LOADING'}),
-        catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error.message }))
+  }> = this.productService.currency$
+    .pipe(
+      switchMap((currency) => this.categoryService
+        .allProductsByCategory(this.uuid, 0, 20, currency).pipe(
+          map((arr: Page<ProductResponse>) => ({ state: 'LOADED', data: arr })),
+          startWith({state: 'LOADING'}),
+          catchError((err: HttpErrorResponse) =>
+            of({ state: 'ERROR', error: err.error ? err.error.message : err.message })
+          )
       )
     )
   );
@@ -72,7 +73,7 @@ export class UpdateCategoryComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.data) {
-      this.reactiveForm.controls['name'].setValue(this.data.category);
+      this.reactiveForm.controls['name'].setValue(this.data.name);
       this.reactiveForm.controls['visible'].setValue(this.data.visible);
     }
   }
@@ -82,7 +83,9 @@ export class UpdateCategoryComponent implements OnInit {
     this.router.navigate(['/admin/dashboard/category']);
   }
 
-  /** Clear input field */
+  /**
+   * Clear input field
+   * */
   clear(): void {
     this.reactiveForm.reset();
     this.returnToCategoryComponent();
@@ -99,7 +102,7 @@ export class UpdateCategoryComponent implements OnInit {
   pageChange(page: PageChange): void {
     this.data$ = this.productService.currency$
       .pipe(
-        switchMap((currency) => this.updateCategoryService
+        switchMap((currency) => this.categoryService
           .allProductsByCategory(this.uuid, page.page, page.size, currency)
           .pipe(map((res) => ({ state: 'LOADED', data: res })))
         ),
@@ -108,7 +111,9 @@ export class UpdateCategoryComponent implements OnInit {
       );
   }
 
-  /** Updates category */
+  /**
+   * Updates category
+   * */
   update(): Observable<number> {
     const name = this.reactiveForm.controls['name'].value;
     const visible = this.reactiveForm.controls['visible'].value;
@@ -117,7 +122,7 @@ export class UpdateCategoryComponent implements OnInit {
       return of(0);
     }
 
-    return this.updateCategoryService
+    return this.categoryService
       .updateCategory({category_id: this.uuid, name: name, visible: visible})
       .pipe(
         switchMap((status: number): Observable<number> => {

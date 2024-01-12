@@ -7,11 +7,6 @@ export interface Filter<T> {
   children: T[];
 }
 
-export interface Category {
-  category: string;
-  category_id: number;
-}
-
 export interface ProductDetail {
   name: string;
   currency: string;

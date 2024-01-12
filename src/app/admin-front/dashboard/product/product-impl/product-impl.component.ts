@@ -101,6 +101,7 @@ export class ProductImplComponent {
 
   /**
    * Displays UpdateProduct component based on the product clicked from DynamicTable
+   *
    * @param content of custom interface TableContent
    * @return void
    * */
@@ -112,25 +113,12 @@ export class ProductImplComponent {
       }
 
       case 'delete': {
-        const obs: Observable<{ status: number, message: string }> = this.productService
+        const obs = this.productService
           .deleteProduct(content.data.product_id)
           .pipe(
-            switchMap((status: number) => {
-              // Refresh Product, Category and Collection array
-              const products$ = this.productService.currency$
-                .pipe(switchMap((currency) =>
-                  this.productService.allProducts(0, 20, currency))
-                );
-              const categories$ = this.categoryService.allCategories();
-
-              return of(status).pipe(
-                switchMap((num: number) =>
-                  combineLatest([products$, categories$]).pipe(
-                    map(() => ({ status: num, message: 'deleted!' }))
-                  )
-                )
-              );
-            }),
+            switchMap((status: number) =>
+              this.productService.action(status, this.categoryService.allCategories())
+            ),
             catchError((err: HttpErrorResponse) => of({ status: err.status, message: err.error.message }))
           );
 

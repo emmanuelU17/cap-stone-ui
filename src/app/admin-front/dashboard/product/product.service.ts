@@ -1,7 +1,7 @@
 import {inject, Injectable} from '@angular/core';
-import {BehaviorSubject, map, Observable, ReplaySubject, tap} from "rxjs";
+import {BehaviorSubject, combineLatest, map, Observable, of, ReplaySubject, switchMap, tap} from "rxjs";
 import {Page, SarreCurrency} from "../../../global-utils";
-import {ProductResponse, UpdateProduct} from "../../shared-util";
+import {CategoryResponse, ProductResponse, UpdateProduct} from "../../shared-util";
 import {HttpClient, HttpResponse} from "@angular/common/http";
 import {environment} from "../../../../environments/environment";
 
@@ -69,6 +69,29 @@ export class ProductService {
         this.productSubject.next(res);
         this.products = res.content
       })
+    );
+  }
+
+  /**
+   * Called on to refresh product or category after a successful delete
+   *
+   * @param status is the response from deleting a product or category.
+   * @param categories$
+   * @return Observable of type object
+   * */
+  action(
+    status: number,
+    categories$: Observable<CategoryResponse[]>
+  ): Observable<{ status: number, message: string }> {
+    // Refresh Category and Product Array
+    const products$ = this.currency$.pipe(
+      switchMap((currency) => this.allProducts(0, 20, currency))
+    );
+
+    return of(status).pipe(
+      switchMap((num: number) => combineLatest([products$, categories$])
+          .pipe(map(() => ({ status: num, message: 'deleted!' })))
+      )
     );
   }
 

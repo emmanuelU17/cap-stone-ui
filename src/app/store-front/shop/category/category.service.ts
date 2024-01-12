@@ -1,9 +1,8 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {BehaviorSubject, Observable, tap} from "rxjs";
-import {Category} from "../shop.helper";
 import {environment} from "../../../../environments/environment";
-import {Page, SarreCurrency} from "../../../global-utils";
+import {Category, Page, SarreCurrency} from "../../../global-utils";
 import {Product} from "../../store-front-utils";
 
 @Injectable({
@@ -40,6 +39,7 @@ export class CategoryService {
    * @param page is the page number
    * @param size is the amount of items to be displayed on a page
    * @param currency
+   * @return Observable of Page<Product>
    * */
   productsBasedOnCategory(
     categoryId: number,

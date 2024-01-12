@@ -1,4 +1,4 @@
-import {Variant} from "../global-utils";
+import {Category, Variant} from "../global-utils";
 
 export interface UpdateProduct {
   category_id: number;
@@ -42,16 +42,21 @@ export interface CustomRowMapper {
 
 export interface CategoryRequest {
   name: string;
-  parent: string;
+  parent_id: number;
   visible: boolean;
+}
+
+export interface WorkerCategoryResponse {
+  table: CategoryResponse[];
+  hierarchy: Category[];
 }
 
 export interface CategoryResponse {
   category_id: number;
-  category: string;
-  created_at?: number;
-  modified_at?: number;
+  parent_id: number;
+  name: string;
   visible: boolean;
+  children: CategoryResponse[];
   action: string;
 }
 

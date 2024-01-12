@@ -17,6 +17,8 @@ import {PaginatorComponent} from "../../../../shared-comp/paginator/paginator.co
 
       th {
         text-transform: uppercase;
+        text-align: left;
+
       }
 
       th, td {
@@ -121,16 +123,14 @@ import {PaginatorComponent} from "../../../../shared-comp/paginator/paginator.co
         <tr>
           <th *ngFor="let col of tHead" [ngSwitch]="col">
             <!-- Do not show Description and ID -->
-            <ng-container *ngSwitchCase="'category_id'">No.</ng-container>
-            <ng-container *ngSwitchCase="'collection_id'">No.</ng-container>
+            <ng-container *ngSwitchCase="'category_id'">Category Id</ng-container>
+            <ng-container *ngSwitchCase="'parent_id'">Parent Id</ng-container>
             <ng-container *ngSwitchCase="'index'">No.</ng-container>
-            <ng-container *ngSwitchCase="'collection'">Name</ng-container>
-            <ng-container *ngSwitchCase="'category'">Name</ng-container>
-            <ng-container *ngSwitchCase="'created_at'">Created Date</ng-container>
-            <ng-container *ngSwitchCase="'modified_at'">Modified Date</ng-container>
+            <ng-container *ngSwitchCase="'name'">Name</ng-container>
             <ng-container *ngSwitchCase="'action'">Delete</ng-container>
             <ng-container *ngSwitchCase="'is_visible'">visible</ng-container>
             <ng-container *ngSwitchCase="'visible'">visible</ng-container>
+            <ng-container *ngSwitchCase="'children'"></ng-container>
             <ng-container *ngSwitchDefault>{{ col }}</ng-container>
           </th>
         </tr>
@@ -159,16 +159,13 @@ import {PaginatorComponent} from "../../../../shared-comp/paginator/paginator.co
                 </button>
               </div>
 
-              <ng-container *ngSwitchCase="'category_id'">{{ i + 1 }}</ng-container>
-              <ng-container *ngSwitchCase="'collection_id'">{{ i + 1 }}</ng-container>
+              <ng-container *ngSwitchCase="'category_id'">{{ d[head] }}</ng-container>
+              <ng-container *ngSwitchCase="'parent_id'">{{ d[head] }}</ng-container>
               <ng-container *ngSwitchCase="'index'">{{ i + 1 }}</ng-container>
-
-              <!-- Created and Modified At -->
-              <ng-container *ngSwitchCase="'created_at'">{{ date(d[head]) }}</ng-container>
-              <ng-container *ngSwitchCase="'modified_at'">{{ date(d[head]) }}</ng-container>
 
               <!-- Do not show ID -->
               <div *ngSwitchCase="'id'"></div>
+              <div *ngSwitchCase="'children'"></div>
 
               <!-- Visible -->
               <div *ngSwitchCase="'is_visible'" [style]="{ 'color': d[head] === true ? 'green' : 'red' }">
@@ -181,15 +178,7 @@ import {PaginatorComponent} from "../../../../shared-comp/paginator/paginator.co
 
               <!-- Category -->
               <button
-                *ngSwitchCase="'category'"
-                (click)="onClick(d,'edit')"
-                type="button"
-                class="outline-none bg-transparent text-blue-400 hover:border-b hover:border-blue-500"
-              >{{ d[head] }}</button>
-
-              <!-- Collection -->
-              <button
-                *ngSwitchCase="'collection'"
+                *ngSwitchCase="'name'"
                 (click)="onClick(d,'edit')"
                 type="button"
                 class="outline-none bg-transparent text-blue-400 hover:border-b hover:border-blue-500"
@@ -231,7 +220,8 @@ export class DynamicTableComponent<T> {
   date = (d: any): string => d === 0 ? '' : new Date(d).toDateString();
 
   /**
-   * Informs Parent component. Note the table clicked on is the table that does not require pagination
+   * Informs Parent component. Note the table clicked on is the table
+   * that does not require pagination
    *
    * @param data represents the row details
    * @param key can either be detail, edit or delete

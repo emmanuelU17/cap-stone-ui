@@ -64,7 +64,7 @@ export class UpdateProductComponent implements OnInit {
 
   data: { categoryId?: number, product?: ProductResponse } = {
     categoryId: this.categoryService.categories
-      .find(c => c.category === this.product?.category)?.category_id,
+      .find(c => c.name === this.product?.category)?.category_id,
     product: this.product
   }
 
@@ -196,7 +196,7 @@ export class UpdateProductComponent implements OnInit {
 
     this.data.product.category = category;
     const cat: CategoryResponse | undefined = this.categoryService.categories
-      .find(c => c.category === category);
+      .find(c => c.name === category);
 
     if (cat) {
       this.onChangeCategoryOrCollection = true;

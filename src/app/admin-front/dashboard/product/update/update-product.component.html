@@ -59,7 +59,7 @@
               <p class="">{{ data.product.category }}</p>
               <select (change)="onChangeCategory($event)" class="p-1.5 rounded cursor-pointer border border-solid border-[var(--border-outline)]">
                 <option value="" disabled selected>change?</option>
-                <option *ngFor="let cat of categories$ | async" [value]="cat.category">{{ cat.category }}</option>
+                <option *ngFor="let cat of categories$ | async" [value]="cat.name">{{ cat.name }}</option>
               </select>
             </div>
           </div>

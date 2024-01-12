@@ -22,6 +22,14 @@ export interface State<T> {
   data?: T;
 }
 
+export interface Category {
+  name: string;
+  category_id: number;
+  parent_id: number;
+  visible: boolean;
+  children: Category[];
+}
+
 export interface Variant {
   sku: string;
   inventory: string;

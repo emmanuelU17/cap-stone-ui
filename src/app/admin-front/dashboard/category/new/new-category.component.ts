@@ -1,7 +1,6 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
-import {NewCategoryService} from "./new-category.service";
 import {catchError, Observable, of, switchMap} from "rxjs";
 import {CategoryRequest} from "../../../shared-util";
 import {MatButtonModule} from "@angular/material/button";
@@ -97,13 +96,12 @@ import {Router} from "@angular/router";
 })
 export class NewCategoryComponent {
 
-  private readonly newCategoryService = inject(NewCategoryService);
   private readonly categoryService = inject(CategoryService);
   private readonly toastService = inject(ToastService);
   private readonly router = inject(Router);
 
   form = new FormGroup({
-    name: new FormControl('', [Validators.required, Validators.max(80)]),
+    name: new FormControl('', [Validators.required, Validators.max(50)]),
     parent: new FormControl(''),
     visible: new FormControl(false, Validators.required)
   });
@@ -113,7 +111,7 @@ export class NewCategoryComponent {
   }
 
   /**
-   * Clears form
+   * clears form
    * */
   clear(): void {
     this.form.controls['name'].setValue('');
@@ -134,23 +132,23 @@ export class NewCategoryComponent {
       return of(0);
     }
 
-    const obj: CategoryRequest = { name: name,  parent: parent,  visible: visible };
+    const obj: CategoryRequest = { name: name, parent_id: Number(parent), visible: visible };
 
-    return this.newCategoryService.create(obj).pipe(
-      switchMap((status: number): Observable<number> => {
-        // Clear Input field
-        this.clear();
-
-        // Make call to server to update CategoryResponse[]
-        return this.categoryService.allCategories()
-          .pipe(switchMap(() => of(status)));
-      }),
-      catchError((err: HttpErrorResponse) => {
-        this.toastService
-          .toastMessage(err.error ? err.error.message : err.message);
-        return of(err.status);
-      })
-    );
+    return this.categoryService.create(obj)
+      .pipe(
+        switchMap((status: number): Observable<number> => {
+          // Clear Input field
+          this.clear();
+          // Make call to server to update CategoryResponse[]
+          return this.categoryService.allCategories()
+            .pipe(switchMap(() => of(status)));
+        }),
+        catchError((err: HttpErrorResponse) => {
+          this.toastService
+            .toastMessage(err.error ? err.error.message : err.message);
+          return of(err.status);
+        })
+      );
   }
 
 }
