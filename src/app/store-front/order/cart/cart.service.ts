@@ -29,7 +29,7 @@ export class CartService {
   /**
    * Returns the number of items in Cart[]
    * */
-  count$ = (): Observable<number> => this.cart$.pipe(map((arr: Cart[]) => arr.length));
+  readonly count$ = this.cart$.pipe(map((arr: Cart[]) => arr.length));
 
   /**
    * Returns an Observable of list of Cart

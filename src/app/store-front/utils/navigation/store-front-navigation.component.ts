@@ -1,15 +1,19 @@
-import {ChangeDetectionStrategy, Component, HostListener, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, HostListener, Input, Output} from '@angular/core';
 import {CommonModule} from "@angular/common";
-import {RouterLink, RouterLinkActive} from "@angular/router";
 import {SearchComponent} from "../search/search.component";
 import {MobileNavigationComponent} from "../mobile-navigation/mobile-navigation.component";
-import {Link} from "../../../global-utils";
-import {CartService} from "../../order/cart/cart.service";
+import {Category, Link} from "../../../global-utils";
+import {CategoryHierarchyComponent} from "../../../shared-comp/hierarchy/category-hierarchy.component";
 
 @Component({
   selector: 'app-store-front-navigation-navigation',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, SearchComponent, MobileNavigationComponent],
+  imports: [
+    CommonModule,
+    SearchComponent,
+    MobileNavigationComponent,
+    CategoryHierarchyComponent
+  ],
   template: `
     <nav class="w-full p-2.5 grid grid-cols-3 bg-transparent" [ngStyle]="navBg">
 
@@ -19,7 +23,8 @@ import {CartService} from "../../order/cart/cart.service";
         <!--  Mobile  -->
         <div class="block md:hidden">
           <!-- burger -->
-          <button (click)="openNavMobile = !openNavMobile" class="bg-transparent outline-none border-none cursor-pointer relative" type="button">
+          <button (click)="openNavMobile = !openNavMobile"
+                  class="bg-transparent outline-none border-none cursor-pointer relative" type="button">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                  stroke="currentColor"
                  class="w-6 h-6" style="color: var(--app-theme)">
@@ -31,7 +36,10 @@ import {CartService} from "../../order/cart/cart.service";
             <app-mobile-navigation
               [links]="links"
               [openNavMobile]="openNavMobile"
-              (emitter)="toggleNav($event)"
+              [hierarchy]="categories"
+              (toggleEmitter)="toggleNav($event)"
+              (routeEmitter)="route($event)"
+              (categoryEmitter)="categoryClicked($event)"
             ></app-mobile-navigation>
           </div>
 
@@ -45,20 +53,23 @@ import {CartService} from "../../order/cart/cart.service";
               @if (link.bool) {
                 <a class="group h-full relative flex items-center cursor-pointer uppercase text-[var(--app-theme)]">
                   shop
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                       stroke="currentColor" class="w-4 h-4">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/>
                   </svg>
 
                   <div class="absolute top-5 w-40 bg-white border hidden rounded-md group-hover:block">
-                    <a routerLink="/shop/category" class="p-3 flex rounded-md whitespace-nowrap capitalize hover:text-[var(--active)] hover:bg-[var(--app-theme)]">
-                      shop category
+                    <!-- hover:text-[var(--active)] hover:bg-[var(--app-theme)] -->
+                    <a class="w-full p-3 flex rounded-md whitespace-nowrap capitalize">
+                      <app-hierarchy [categories]="categories"
+                                     (emitter)="categoryClicked($event)"></app-hierarchy>
                     </a>
                   </div>
                 </a>
               } @else {
-                <a [routerLink]="link.value" routerLinkActive="active" class="uppercase flex text-[var(--app-theme)]" >
+                <button type="button" (click)="route(link.path)" class="uppercase flex text-[var(--app-theme)]">
                   {{ link.name }}
-                </a>
+                </button>
               }
             </li>
           </ul>
@@ -68,9 +79,9 @@ import {CartService} from "../../order/cart/cart.service";
 
       <!-- Center (logo) -->
       <div class="my-0 mx-auto cursor-pointer">
-        <a routerLink="">
+        <button type="button" (click)="route('')">
           <img src="assets/image/sara-the-brand.png" alt="logo" class="h-[2.5rem] w-[4.375rem] object-contain">
-        </a>
+        </button>
       </div>
 
       <!-- Right -->
@@ -84,7 +95,7 @@ import {CartService} from "../../order/cart/cart.service";
 
           <!--    Shopping cart    -->
           <li>
-            <a routerLink="/order/cart" class="uppercase flex">
+            <button type="button" (click)="route('/order/cart')" class="uppercase flex">
               <svg xmlns="http://www.w3.org/2000/svg"
                    fill="none"
                    viewBox="0 0 24 24"
@@ -95,22 +106,21 @@ import {CartService} from "../../order/cart/cart.service";
                       stroke-linejoin="round"
                       d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/>
               </svg>
-              <span *ngIf="count$() | async as count" [style]="{ 'display': count > 0 ? 'block' : 'none' }"
-                    class="text-xs text-red-600">
+              <span [style]="{ 'display': count > 0 ? 'block' : 'none' }" class="text-xs text-red-600">
                 {{ count }}
               </span>
-            </a>
+            </button>
           </li>
 
           <!--    Person icon    -->
           <li class="hidden md:block">
-            <a class="uppercase flex" routerLink="/account">
+            <button type="button" class="uppercase flex" (click)="route('/account')">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                    stroke="currentColor" class="w-6 h-6 cursor-pointer" style="color: var(--app-theme)">
                 <path stroke-linecap="round" stroke-linejoin="round"
                       d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/>
               </svg>
-            </a>
+            </button>
           </li>
         </ul>
       </div>
@@ -121,11 +131,13 @@ import {CartService} from "../../order/cart/cart.service";
 })
 export class StoreFrontNavigationComponent {
 
-  private readonly service = inject(CartService);
+  @Input() count = 0;
+  @Input() categories: Category[] = [];
 
-  count$ = this.service.count$;
+  @Output() routeEmitter = new EventEmitter<string>();
+  @Output() categoryEmitter = new EventEmitter<{ categoryId: number; name: string }>();
 
-  links: Link[] = [{ name: 'home', value: '', bool: false }, { name: 'shop', value: '', bool: true, }];
+  links: Link[] = [{ name: 'home', path: '/', bool: false }, { name: 'shop', path: '', bool: true, }];
   openNavMobile = false;
 
   navBg: any;
@@ -147,6 +159,13 @@ export class StoreFrontNavigationComponent {
 
   toggleNav(bool: boolean): void {
     this.openNavMobile = bool;
+  }
+
+  route = (path: string): void => this.routeEmitter.emit(path);
+
+  categoryClicked(obj: { categoryId: number; name: string }): void {
+    this.route('/shop/category');
+    this.categoryEmitter.emit(obj);
   }
 
 }

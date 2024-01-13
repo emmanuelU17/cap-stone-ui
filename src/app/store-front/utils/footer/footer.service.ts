@@ -8,7 +8,7 @@ import {SarreCurrency} from "../../../global-utils";
 export class FooterService {
 
   private readonly subject = new BehaviorSubject<SarreCurrency>(SarreCurrency.NGN);
-  currency$ = this.subject.asObservable();
+  readonly currency$ = this.subject.asObservable();
 
   activeCurrency(currency: SarreCurrency): void {
     this.subject.next(currency);

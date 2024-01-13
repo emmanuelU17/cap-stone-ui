@@ -1,90 +1,44 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output, Renderer2} from '@angular/core';
-import {Filter} from "../../shop/shop.helper";
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {CommonModule} from "@angular/common";
+import {CategoryHierarchyComponent} from "../../../shared-comp/hierarchy/category-hierarchy.component";
+import {Category} from "../../../global-utils";
 
 @Component({
   selector: 'app-filter',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, CategoryHierarchyComponent],
+  styles: [`
+    .f-fnt {
+      font-size: 20px;
+    }
+    @media (max-width: 768px) {
+      .f-fnt {
+        font-size: calc(12px + 1vw);
+      }
+    }
+  `],
   template: `
     <div class="flex w-full h-full">
       <div class="w-2/4 max-[600px]:w-full h-full p-8 bg-white overflow-y-auto">
-
         <button type="button" class="w-full pb-2 flex justify-between bg-transparent border-0" (click)="closeModal()">
-          <h1 class="text-2xl lg:text-4xl tracking-tight text-gray-900">{{ title }}</h1>
+          <h1 class="f-fnt tracking-tight text-gray-900">{{ title }}</h1>
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18" />
           </svg>
         </button>
 
-        <div class="border-t border-b border-gray-200 py-6" *ngFor="let filter of filters; let i = index">
-          <h3 class="flow-root bg-red-900">
-            <!-- Expand/collapse section button -->
-            <button (click)="toggleSection(i)" type="button" class="flex w-full items-center bg-white py-3 text-gray-400 hover:text-gray-500" aria-controls="filter-section-mobile-1" aria-expanded="false">
-              <span class="font-medium text-gray-900 capitalize">{{ filter.parent }}</span>
-              <span [style]="{ 'margin-left' : 'auto' }" class="ml-6 flex items-center">
-          <!-- Expand icon, show/hide based on section open state. -->
-          <svg
-            class="h-5 w-5"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            aria-hidden="true"
-            [style]="{'display': !filter.isOpen ? 'block' : 'none' }"
-          >
-            <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
-          </svg>
-                <!-- Collapse icon, show/hide based on section open state. -->
-          <svg
-            class="h-5 w-5"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            aria-hidden="true"
-            [style]="{'display': filter.isOpen ? 'block' : 'none' }"
-          >
-            <path fill-rule="evenodd" d="M4 10a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H4.75A.75.75 0 014 10z" clip-rule="evenodd" />
-          </svg>
-        </span>
-            </button>
-          </h3>
-
-          <!-- Filter section, show/hide based on section state. -->
-          <div class="pt-6" id="filter-section-mobile-{{ i }}" [style]="{ 'display': i === indexToOpen ? 'block' : 'none' }">
-            <div class="space-y-6">
-              <button
-                (click)="childClicked(child)"
-                type="button"
-                class="flex items-center bg-transparent"
-                *ngFor="let child of filter.children"
-              >
-                <input
-                  [id]="child"
-                  name="category[]"
-                  value="new-arrivals"
-                  type="radio"
-                  class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
-                >
-                <label
-                  [for]="child"
-                  class="ml-3 min-w-0 flex-1 text-gray-500 capitalize cursor-pointer"
-                >{{ child }}</label>
-              </button>
-            </div>
-          </div>
+        <div class="w-full py-6 flex gap-2 flex-col border-t border-b border-gray-200">
+          <app-hierarchy [categories]="categories" (emitter)="categoryClicked($event)"></app-hierarchy>
         </div>
 
         <div class="w-full flex flex-col">
-          <button
-            type="button"
-            (click)="closeModal()"
-            class="cx-font-size w-full p-3 mb-2 capitalize hover:uppercase border border-black hover:bg-black hover:text-white"
-          >clear all</button>
-          <button
-            type="button"
-            (click)="closeModal()"
-            class="cx-font-size w-full p-3 capitalize hover:uppercase border bg-black hover:bg-white text-white hover:text-black hover:border-black"
-          >show results</button>
+          <button type="button" (click)="closeModal()"
+                  class="f-fnt w-full p-3 mb-2 capitalize hover:uppercase border border-black hover:bg-black hover:text-white">
+            clear all</button>
+          <button type="button" (click)="closeModal()"
+                  class="f-fnt w-full p-3 capitalize hover:uppercase border bg-black hover:bg-white text-white hover:text-black hover:border-black">
+            show results</button>
         </div>
-
       </div>
 
       <!-- Right column which is a black screen -->
@@ -93,46 +47,26 @@ import {CommonModule} from "@angular/common";
   `,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FilterComponent<T> {
+export class FilterComponent {
 
-  private readonly render = inject(Renderer2);
+  @Input() title = '';
+  @Input() categories: Category[] = [];
 
-  @Input() title: string = '';
-  @Input() filters: Filter<T>[] = [];
-  @Input() data: T[] = [];
-  @Output() emitter = new EventEmitter<T>();
-
-  indexToOpen = -1;
+  @Output() toggleComponent = new EventEmitter<boolean>();
+  @Output() categoryEmitter = new EventEmitter<{ categoryId: number; name: string }>();
 
   /**
-   * Close filter component
+   * closes filter component
    * */
   closeModal(): void {
-    this.render
-      .selectRootElement('.filter-btn', true)
-      .style.display = 'none';
+    this.toggleComponent.emit(false);
   }
 
   /**
-   * Toggles contents of each row when clicked
-   * @param index is the index of Filter content in the array
-   * @return void
+   * updates parent on category clicked
    * */
-  toggleSection(index: number): void {
-    // Toggle + and - svg
-    this.filters[index].isOpen = !this.filters[index].isOpen;
-
-    // Close content if it is visible
-    this.indexToOpen = (index === this.indexToOpen ? -1 : index);
-  }
-
-  /**
-   * Updates parent component on what category or collection is clicked.
-   * @param generic is the value. It is a generic type because it can be of type string or number
-   * @return void
-   * */
-  childClicked(generic: T): void {
-    this.emitter.emit(generic);
+  categoryClicked(obj: { categoryId: number; name: string }): void {
+    this.categoryEmitter.emit(obj);
   }
 
 }

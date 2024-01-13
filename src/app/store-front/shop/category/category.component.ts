@@ -1,6 +1,5 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
-import {catchError, map, Observable, of, startWith, switchMap, take} from "rxjs";
-import {Filter} from "../shop.helper";
+import {catchError, map, Observable, of, startWith, switchMap} from "rxjs";
 import {CategoryService} from "./category.service";
 import {Product} from "../../store-front-utils";
 import {CommonModule} from "@angular/common";
@@ -9,7 +8,7 @@ import {FilterComponent} from "../../utils/filter/filter.component";
 import {RouterLink} from "@angular/router";
 import {HttpErrorResponse} from "@angular/common/http";
 import {FooterService} from "../../utils/footer/footer.service";
-import {Category, Page} from "../../../global-utils";
+import {Page} from "../../../global-utils";
 import {PaginatorComponent} from "../../../shared-comp/paginator/paginator.component";
 import {UtilService} from "../../../service/util.service";
 
@@ -26,89 +25,66 @@ export class CategoryComponent {
   private readonly categoryService = inject(CategoryService);
   private readonly utilService = inject(UtilService);
 
-  totalElements = 0; // current total elements rendered
-  iteration = (num: number): number[] => this.utilService.getRange(num);
-  currency = (str: string): string => this.footService.currency(str);
-
-  activeGridIcon = true; // Approves if products should be displayed x3 or x4 in the x-axis
+  totalElements = 0;
   filterByPrice = true; // A variable need to keep the state of price filter for future filtering
   displayFilter = false; // Displays filter button
 
-  // Categories
-  readonly categories$ = this.categoryService._categories$
-    .pipe(
-      map((arr: Category[]) => {
-        const category: string[] = arr.map(m => m.name);
-        const filter: Filter<string>[] = [{ isOpen: false, parent: 'categories', children: category }];
-        return filter;
-      })
-    );
+  currency = (str: string): string => this.footService.currency(str);
 
-  private currentCategory$ = this.categoryService._categories$
-    .pipe(map((cat: Category[]) => cat[0]), take(1));
-
-  // on load of shop/category, fetch products based on the first category
-  products$ = this.categoryImpl();
+  readonly categories$ = this.categoryService.categories$;
 
   /**
-   * Filters products array in ascending or descending order based on price
+   * filters products array in ascending or descending order based on price
    * */
   ascendingOrDescending = (arr: Product[]): Product[] => this.utilService.sortArray(this.filterByPrice, arr);
 
-  categoryImpl(page: number = 0): Observable<{ state: string, error?: string, data?: Page<Product> }> {
-    return this.currentCategory$
-      .pipe(
-        switchMap((category: Category) => this.footService.currency$
-          .pipe(
-            switchMap((currency) => this.categoryService
-              .productsBasedOnCategory(category.category_id, currency, page)
-              .pipe(map((arr: Page<Product>) => {
-                if (arr) {
-                  this.totalElements = arr.content.length;
-                }
-                return { state: 'LOADED', data: arr };
-              }))
-            )
-          )
-        ),
-        startWith({ state: 'LOADING' }),
-        catchError((err: HttpErrorResponse) =>
-          of({ state: 'ERROR', error: err.error ? err.error.message : err.message })
-        )
-    );
+  toggleFilter(bool: boolean): void {
+    this.displayFilter = bool;
   }
 
   /**
-   * Refreshes allProduct array with new contents which is based on category clicked.
-   *
-   * @param str is the category
-   * @return void
+   * load products from server on load of category component
    * */
-  filterProductsByCategory(str: string): void {
-    const arr: Category[] = this.categoryService.categories;
-    const category = arr.find(c => c.name === str);
-
-    if (!category) {
-      return;
-    }
-
-    this.currentCategory$ = of(category);
-
-    // Make call to server
-    this.products$ = this.footService.currency$
-      .pipe(
-        switchMap((currency) => this.categoryService
-          .productsBasedOnCategory(category.category_id, currency)
-          .pipe(map((arr: Page<Product>) => ({ state: 'LOADED', data: arr })))
+  categoryImpl = (page: number): Observable<{
+    state: string,
+    error?: string,
+    data?: Page<Product>
+  }> => this.categoryService
+    .category$
+    .pipe(
+      switchMap((categoryId: number) => this.footService.currency$
+        .pipe(
+          switchMap((currency) => this.categoryService
+            .productsBasedOnCategory(categoryId, currency, page)
+            .pipe(map((arr: Page<Product>) => {
+              if (arr) {
+                this.totalElements = arr.content.length;
+              }
+              return { state: 'LOADED', data: arr };
+            }))
+          )
         )
+      ),
+      startWith({ state: 'LOADING' }),
+      catchError((err: HttpErrorResponse) =>
+        of({ state: 'ERROR', error: err.error ? err.error.message : err.message })
       )
-  }
+    );
+
+  products$ = this.categoryImpl(0);
 
   /**
    * Re-renders products pages based on page number clicked
    * */
   pageNumberClick(num: number): void {
     this.products$ = this.categoryImpl(num);
+  }
+
+  /**
+   * Refresh products based on category clicked
+   * */
+  categoryClicked(obj: { categoryId: number; name: string }): void {
+    this.categoryService.currentCategorySubject.next(obj.categoryId);
   }
 
 }

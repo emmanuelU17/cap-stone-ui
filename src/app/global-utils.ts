@@ -8,7 +8,7 @@ export enum SarreCurrency {
 
 export interface Link {
   name: string;
-  value: string;
+  path: string;
   bool?: boolean;
 }
 

@@ -32,7 +32,7 @@ import {MobileFooterComponent} from "../mobilefooter/mobile-footer.component";
       <div class="w-full hidden md:grid md:grid-cols-3">
         <!-- info -->
         <div class="p-2">
-          <h2 class="uppercase text-base font-bold">legal</h2>
+          <h2 class="uppercase f-font font-bold">legal</h2>
           <ul class="list-none">
             <li class="py-2 text-sm"><a routerLink="/pages/about-us"  class="cursor-pointer">About Us</a></li>
             <li class="py-2 text-sm"><a routerLink="/pages/terms-of-service"  class="cursor-pointer">Terms of Service</a></li>
@@ -42,7 +42,7 @@ import {MobileFooterComponent} from "../mobilefooter/mobile-footer.component";
 
         <!-- help -->
         <div class="p-2">
-          <h2 class="uppercase text-base font-bold">help</h2>
+          <h2 class="uppercase f-font font-bold">help</h2>
           <ul class="list-none">
             <li class="py-2 text-sm"><a routerLink="/pages/faq"  class="cursor-pointer">FAQ</a></li>
             <li class="py-2 text-sm"><a routerLink="/pages/contact-us" class="cursor-pointer">Contact Us</a></li>
@@ -51,7 +51,7 @@ import {MobileFooterComponent} from "../mobilefooter/mobile-footer.component";
 
         <!-- socials -->
         <div class="p-2">
-          <h2 class="uppercase text-base font-bold">follow us</h2>
+          <h2 class="uppercase f-font font-bold">follow us</h2>
           <ul class="list-none">
             <!-- instagram -->
             <li class="py-2 text-sm">

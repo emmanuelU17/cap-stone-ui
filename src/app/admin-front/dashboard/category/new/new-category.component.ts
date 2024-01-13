@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {catchError, Observable, of, switchMap} from "rxjs";
@@ -8,7 +8,7 @@ import {CategoryService} from "../category.service";
 import {HttpErrorResponse} from "@angular/common/http";
 import {ToastService} from "../../../../shared-comp/toast/toast.service";
 import {Router} from "@angular/router";
-import {CategoryHierarchyComponent} from "../../util/hierarchy/category-hierarchy.component";
+import {CategoryHierarchyComponent} from "../../../../shared-comp/hierarchy/category-hierarchy.component";
 
 @Component({
   selector: 'app-new-category',
@@ -24,7 +24,8 @@ import {CategoryHierarchyComponent} from "../../util/hierarchy/category-hierarch
     <form class="h-full flex flex-col py-0 px-2.5" [formGroup]="form">
       <!-- Title -->
       <div class="py-2.5 px-0 mb-4 flex">
-        <button (click)="routeToCategoryComponent()" type="button" class="mr-1.5 md:px-2.5 border-[var(--border-outline)] border">
+        <button (click)="routeToCategoryComponent()" type="button"
+                class="mr-1.5 md:px-2.5 border-[var(--border-outline)] border">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                stroke="currentColor"
                class="w-6 h-6">
@@ -56,14 +57,32 @@ import {CategoryHierarchyComponent} from "../../util/hierarchy/category-hierarch
 
               <div class="text-left">
                 <div class="flex flex-col gap-2.5">
-                  <h4 class="cx-font-size capitalize">parent category</h4>
+                  <div>
+                    <h4 class="flex text-xs capitalize">
+                      parent category
+                      <button (click)="parent.set(undefined)" type="button"
+                              [style]="{ 'display' : !parent() ? 'none' : 'block' }"
+                              class="ml-1 lowercase text-red-400">clear
+                      </button>
+                    </h4>
 
-                  @if (hierarchy$ | async; as hierarchy) {
-                    <div class="w-full flex gap-2 flex-col border border-[#c9cccf] bg-[#eff2f5]">
-                      <app-hierarchy [categories]="hierarchy" (emitter)="parentClicked($event)"></app-hierarchy>
-                    </div>
+                    <button (click)="displayHierarchy = !displayHierarchy" type="button"
+                            class="text-xs capitalize text-[#2c6ecb]">
+                      @if (parent()) {
+                        selected {{ parent()?.name }}
+                      } @else {
+                        select category
+                      }
+                    </button>
+                  </div>
+
+                  @if (displayHierarchy) {
+                    @if (hierarchy$ | async; as hierarchy) {
+                      <div class="w-full p-2 flex gap-2 flex-col bg-[#eff2f5]">
+                        <app-hierarchy [categories]="hierarchy" (emitter)="parentClicked($event)"></app-hierarchy>
+                      </div>
+                    }
                   }
-
                 </div>
               </div>
             </div>
@@ -74,11 +93,9 @@ import {CategoryHierarchyComponent} from "../../util/hierarchy/category-hierarch
         <div class="flex-1">
           <div class="h-full p-2.5 rounded-md border border-[var(--active)] border-solid bg-[var(--white)]">
             <div class="py-1.5 px-0"><h2 class="cx-font-size capitalize">status</h2></div>
-            <!-- End of attribute-title -->
-
             <div class="text-left">
               <div>
-                <h4 class="cx-font-size lowercase">
+                <h4 class="cx-font-size">
                   <span [style]="'color: red'">*</span>
                   Visibility (include in store front)
                 </h4>
@@ -88,7 +105,6 @@ import {CategoryHierarchyComponent} from "../../util/hierarchy/category-hierarch
                 </mat-radio-group>
               </div>
             </div>
-            <!-- End of content -->
           </div>
         </div>
 
@@ -106,7 +122,8 @@ import {CategoryHierarchyComponent} from "../../util/hierarchy/category-hierarch
           [disabled]="!form.valid"
           [style]="{ 'background-color': form.valid ? 'var(--app-theme-hover)' : 'var(--app-theme)' }"
           [asyncButton]="submit()"
-        >create</button>
+        >create
+        </button>
       </div>
     </form>
   `,
@@ -114,13 +131,15 @@ import {CategoryHierarchyComponent} from "../../util/hierarchy/category-hierarch
 })
 export class NewCategoryComponent {
 
-  private readonly categoryService = inject(CategoryService);
+  private readonly service = inject(CategoryService);
   private readonly toastService = inject(ToastService);
   private readonly router = inject(Router);
 
-  readonly hierarchy$ = this.categoryService.hierarchy$;
+  readonly hierarchy$ = this.service.hierarchy$;
 
-  form = new FormGroup({
+  readonly parent = signal<{ categoryId: number, name: string } | undefined>(undefined);
+
+  readonly form = new FormGroup({
     name: new FormControl('', [Validators.required, Validators.max(50)]),
     visible: new FormControl(false, Validators.required)
   });
@@ -132,48 +151,47 @@ export class NewCategoryComponent {
   /**
    * clears form
    * */
-  clear(): void {
+  clear = (): void => {
     this.form.controls['name'].setValue('');
+    this.parent.set(undefined);
+    this.displayHierarchy = !this.displayHierarchy;
   }
 
-  parent: { categoryId: number, name: string } | undefined = undefined;
+  displayHierarchy = false;
 
   /**
    * Gets info emitter from {@code category-hierarchy.component.ts}
    * */
   parentClicked(obj: { categoryId: number, name: string }): void {
-    this.parent = obj;
+    this.parent.set(obj);
   }
 
   /**
    * Submit reactive form to our server.
    * The gotcha is on successful creation, we switch map to update categories array
+   *
    * @return Observable of type number
    * */
   submit(): Observable<number> {
     const name = this.form.controls['name'].value;
     const visible = this.form.controls['visible'].value;
 
-    if (!name || visible === null) {
-      return of(0);
-    }
-
-    return this.categoryService
-      .create({ name: name, parent_id: this.parent?.categoryId, visible: visible })
-      .pipe(
-        switchMap((status: number): Observable<number> => {
-          // Clear Input field
-          this.clear();
-          // Make call to server to update CategoryResponse[]
-          return this.categoryService.allCategories()
-            .pipe(switchMap(() => of(status)));
-        }),
-        catchError((err: HttpErrorResponse) => {
-          this.toastService
-            .toastMessage(err.error ? err.error.message : err.message);
-          return of(err.status);
-        })
-      );
+    return (!name || visible === null)
+      ? of(0)
+      : this.service
+        .create({ name: name, parent_id: this.parent()?.categoryId, visible: visible })
+        .pipe(
+          switchMap((status: number): Observable<number> => {
+            this.clear();
+            // make call to server to update CategoryResponse[]
+            return this.service.allCategories().pipe(switchMap(() => of(status)));
+          }),
+          catchError((err: HttpErrorResponse) => {
+            this.toastService
+              .toastMessage(err.error ? err.error.message : err.message);
+            return of(err.status);
+          })
+        );
   }
 
 }

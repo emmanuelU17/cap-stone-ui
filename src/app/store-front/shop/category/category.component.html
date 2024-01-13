@@ -1,136 +1,118 @@
-@if (categories$ | async; as categories) {
-  <div class="lg-scr mg-top relative flex flex-col px-2.5">
+<div class="lg-scr mg-top relative flex flex-col px-2.5">
 
-    <!-- Grid and Sort div -->
-    <div class="pb-1.5 flex items-baseline">
-      <!--  View div  -->
-      <div class="hidden min-[1000px]:flex">
-        <button type="button"
-                class="mr-3 flex gap-1 text-gray-400 hover:bg-gray-500"
-                (click)="activeGridIcon = true"
-                [style.background-color]="activeGridIcon ? 'var(--app-theme)' : 'var(--in-active)'"
-        >
-          <span *ngFor="let i of iteration(4)" class="h-1.5 w-1.5 p-1.5 m-0 border bg-transparent"></span>
-        </button>
-      </div>
-
-      <div class="w-full p-1.5 flex justify-center">
-        <h3 class="font-app-card w-fit uppercase border-b border-[var(--app-theme)]">{{ totalElements }} items</h3>
-      </div>
-
-      <!--  Sort Container  -->
-      <div [style]="{ 'margin-left' : 'auto' }" class="flex items-center">
-        <div class="inline-block text-left">
-          <button type="button"
-                  class="group relative inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900 border-b border-[var(--app-theme)]"
-                  aria-expanded="false"
-                  aria-haspopup="true"
-          >
-            Filter
-            <svg class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-              <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
-            </svg>
-
-            <ul
-              class="hidden group-hover:block absolute right-0 top-3 z-2 mt-2 w-40 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
-              role="menu"
-              aria-orientation="vertical"
-              aria-labelledby="menu-button"
-              tabindex="-1"
-            >
-              <li class="py-1">
-                <a
-                  (click)="filterByPrice = true"
-                  [style]="{ 'background-color': filterByPrice ? 'var(--app-theme)' : 'transparent' }"
-                  class="text-left text-gray-500 block px-4 py-2 text-sm hover:bg-[var(--app-theme)]"
-                  role="menuitem"
-                  tabindex="-1"
-                >Price: Low to High</a>
-              </li>
-              <li class="py-1">
-                <a
-                  (click)="filterByPrice = !filterByPrice"
-                  [style]="{ 'background-color': !filterByPrice ? 'var(--app-theme)' : 'transparent'}"
-                  class="text-left text-gray-500 block px-4 py-2 text-sm hover:bg-[var(--app-theme)]"
-                  role="menuitem"
-                  tabindex="-1"
-                >Price: High to Low</a>
-              </li>
-            </ul>
-
-          </button>
-        </div>
-      </div>
+  <!-- Grid and Sort div -->
+  <div class="pb-1.5 flex items-baseline">
+    <!--  View div  -->
+    <div class="">
+      <button (click)="displayFilter = !displayFilter" type="button" class="flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
+        </svg>
+        Filter
+      </button>
     </div>
 
-    <!-- Products -->
-    @if (categories.length > 0) {
-      @if (products$ | async; as products) {
-        @switch (products.state) {
-          @case ('LOADING') {
-            <div class="lg-scr h-full p-20 flex justify-center items-center">
-              <h1 class="capitalize text-[var(--app-theme-hover)]">
-                loading...
-              </h1>
-            </div>
-          }
+    <div class="w-full p-1.5 flex justify-center">
+      <button type="button" class="w-fit cursor-none capitalize border-b border-[var(--app-theme)]">
+        {{ totalElements }} items
+      </button>
+    </div>
 
-          @case ('ERROR') {
-            <div class="lg-scr mg-top p-10 capitalize text-3xl text-red-500">
-              Error {{ products.error }}
-            </div>
-          }
-
-          @case ('LOADED') {
-            <div class="max-h-full mt-3" *ngIf="products.data">
-              <div class="grid gap-x-2 gap-y-10 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:gap-x-8">
-                <div *ngFor="let product of ascendingOrDescending(products.data.content)" class="group relative cursor-pointer">
-                  <a routerLink="product/{{ product.product_id }}">
-                    <app-card
-                      [url]="product.image"
-                      [name]="product.name"
-                      [currency]="currency(product.currency)"
-                      [price]="product.price"
-                    ></app-card>
-                  </a>
-                </div>
-              </div>
-
-              <div class="w-full mt-6 p-1.5">
-                <app-paginator
-                  [currentPage]="products.data.number"
-                  [totalPages]="products.data.totalPages"
-                  [totalElements]="products.data.totalElements"
-                  (goTo)="pageNumberClick($event)"
-                ></app-paginator>
-              </div>
-
-            </div>
-          }
-        }
-      }
-
-      <!-- Button to Filter container -->
-      <div class="sticky w-fit bottom-2/4 bg-transparent">
-        <button class="p-3 rounded-full bg-[var(--app-theme)]" (click)="displayFilter = !displayFilter">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
+    <!--  Sort Container  -->
+    <div [style]="{ 'margin-left' : 'auto' }" class="flex items-center">
+      <div class="inline-block text-left">
+        <button type="button" class="group relative inline-flex justify-center text-gray-700 hover:text-gray-900"
+                aria-expanded="false" aria-haspopup="true">
+          Sort
+          <svg class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
           </svg>
+
+          <ul
+            class="hidden group-hover:block absolute right-0 top-3 z-2 mt-2 w-40 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
+            role="menu"
+            aria-orientation="vertical"
+            aria-labelledby="menu-button"
+            tabindex="-1"
+          >
+            <li class="py-1">
+              <a
+                (click)="filterByPrice = true"
+                [style]="{ 'background-color': filterByPrice ? 'var(--app-theme)' : 'transparent' }"
+                class="text-left text-gray-500 block px-4 py-2 text-sm hover:bg-[var(--app-theme)]"
+                role="menuitem"
+                tabindex="-1"
+              >Price: Low to High</a>
+            </li>
+            <li class="py-1">
+              <a
+                (click)="filterByPrice = !filterByPrice"
+                [style]="{ 'background-color': !filterByPrice ? 'var(--app-theme)' : 'transparent'}"
+                class="text-left text-gray-500 block px-4 py-2 text-sm hover:bg-[var(--app-theme)]"
+                role="menuitem"
+                tabindex="-1"
+              >Price: High to Low</a>
+            </li>
+          </ul>
+
         </button>
       </div>
-
-      <!-- Filter container -->
-      <div [style]="{ 'display': displayFilter ? 'block' : 'none' }" class="filter-btn bg-transparent hidden fixed top-0 right-0 bottom-0 left-0 z-15">
-        <app-filter
-          [title]="'Shop by Category'"
-          [filters]="categories"
-          (emitter)="filterProductsByCategory($event)"
-        ></app-filter>
-      </div>
-
-    } @else {
-      Categories is empty
-    }
-
+    </div>
   </div>
-}
+
+  <!-- Products -->
+  @if (products$ | async; as products) {
+    @switch (products.state) {
+      @case ('LOADING') {
+        <div class="lg-scr h-full p-20 flex justify-center items-center">
+          <h1 class="capitalize text-[var(--app-theme-hover)]">
+            loading...
+          </h1>
+        </div>
+      }
+
+      @case ('ERROR') {
+        <div class="lg-scr mg-top p-10 capitalize text-3xl text-red-500">
+          Error {{ products.error }}
+        </div>
+      }
+
+      @case ('LOADED') {
+        <div class="max-h-full mt-3" *ngIf="products.data">
+          <div class="grid gap-x-2 gap-y-10 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:gap-x-8">
+            <div *ngFor="let product of ascendingOrDescending(products.data.content)" class="group relative cursor-pointer">
+              <a routerLink="product/{{ product.product_id }}">
+                <app-card
+                  [url]="product.image"
+                  [name]="product.name"
+                  [currency]="currency(product.currency)"
+                  [price]="product.price"
+                ></app-card>
+              </a>
+            </div>
+          </div>
+
+          <div class="w-full mt-6 p-1.5">
+            <app-paginator
+              [currentPage]="products.data.number"
+              [totalPages]="products.data.totalPages"
+              [totalElements]="products.data.totalElements"
+              (goTo)="pageNumberClick($event)"
+            ></app-paginator>
+          </div>
+        </div>
+      }
+    }
+  }
+
+  <!-- filter container -->
+  <div [style]="{ 'display': displayFilter ? 'block' : 'none' }"
+       class="filter-btn bg-transparent hidden fixed top-0 right-0 bottom-0 left-0 z-15">
+    <app-filter
+      [title]="'Shop by Category'"
+      [categories]="(categories$ | async) || []"
+      (toggleComponent)="toggleFilter($event)"
+      (categoryEmitter)="categoryClicked($event)"
+    ></app-filter>
+  </div>
+</div>

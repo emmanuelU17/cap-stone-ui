@@ -1,6 +1,6 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {BehaviorSubject, Observable, tap} from "rxjs";
+import {BehaviorSubject, Observable, of, switchMap, tap} from "rxjs";
 import {environment} from "../../../../environments/environment";
 import {Category, Page, SarreCurrency} from "../../../global-utils";
 import {Product} from "../../store-front-utils";
@@ -13,27 +13,30 @@ export class CategoryService {
   private readonly HOST: string | undefined = environment.domain;
   private readonly http = inject(HttpClient);
 
-  private readonly categories$ = new BehaviorSubject<Category[]>([]);
-  readonly _categories$ = this.categories$.asObservable();
+  private readonly subject = new BehaviorSubject<Category[]>([]);
+  readonly categories$ = this.subject.asObservable();
 
-  get categories(): Category[] {
-    return this.categories$.getValue();
-  }
+  readonly currentCategorySubject = new BehaviorSubject<number | undefined>(undefined);
+  readonly category$: Observable<number> = this.currentCategorySubject
+    .asObservable()
+    .pipe(
+      switchMap((num) =>
+        num ? of(num) : this.categories$.pipe(switchMap((arr) => of(arr[0].category_id))))
+    );
 
   /**
    * Returns all categories from server that are marked as visible
    *
    * @return Observable of Category array
    * */
-  fetchCategories(): Observable<Category[]> {
+  allCategories(): Observable<Category[]> {
     const url: string = `${this.HOST}api/v1/client/category`;
-    return this.http.get<Category[]>(url, {
-      withCredentials: true
-    }).pipe(tap((arr: Category[]) => this.categories$.next(arr)));
+    return this.http.get<Category[]>(url, { withCredentials: true })
+      .pipe(tap((arr: Category[]): void => this.subject.next(arr)));
   }
 
   /**
-   * Fetches products based on category name
+   * Fetches products based on categoryId
    *
    * @param categoryId is the category id
    * @param page is the page number
