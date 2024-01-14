@@ -16,13 +16,11 @@ export class HomeService {
   private readonly subject = new BehaviorSubject<Product[]>([]);
   readonly products$ = this.subject.asObservable()
 
-  get bgImages(): string[] {
-    return [
-      'assets/image/sarre1.jpg',
-      'assets/image/sarre2.jpg',
-      'assets/image/sarre3.jpg',
-    ]
-  }
+  readonly bgImages = [
+    'assets/image/sarre1.jpg',
+    'assets/image/sarre2.jpg',
+    'assets/image/sarre3.jpg'
+   ];
 
   /**
    * Returns 6 products to the home page.

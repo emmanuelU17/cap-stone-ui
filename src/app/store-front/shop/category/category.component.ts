@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
-import {catchError, map, Observable, of, startWith, switchMap} from "rxjs";
+import {catchError, map, Observable, of, startWith, switchMap, tap} from "rxjs";
 import {CategoryService} from "./category.service";
 import {Product} from "../../store-front-utils";
 import {CommonModule} from "@angular/common";
@@ -8,7 +8,7 @@ import {FilterComponent} from "../../utils/filter/filter.component";
 import {RouterLink} from "@angular/router";
 import {HttpErrorResponse} from "@angular/common/http";
 import {FooterService} from "../../utils/footer/footer.service";
-import {Page} from "../../../global-utils";
+import {Page, SarreCurrency} from "../../../global-utils";
 import {PaginatorComponent} from "../../../shared-comp/paginator/paginator.component";
 import {UtilService} from "../../../service/util.service";
 
@@ -45,24 +45,17 @@ export class CategoryComponent {
   /**
    * load products from server on load of category component
    * */
-  categoryImpl = (page: number): Observable<{
-    state: string,
-    error?: string,
-    data?: Page<Product>
-  }> => this.categoryService
-    .category$
+  categoryImpl = (page: number) => this.footService
+    .currency$
     .pipe(
-      switchMap((categoryId: number) => this.footService.currency$
+      switchMap((currency) => this.categoryService.category$
+        .pipe(map((categoryId) => ({ id: categoryId, currency: currency })))
+      ),
+      switchMap((obj: { id: number, currency: SarreCurrency }) => this.categoryService
+        .productsBasedOnCategory(obj.id, obj.currency, page)
         .pipe(
-          switchMap((currency) => this.categoryService
-            .productsBasedOnCategory(categoryId, currency, page)
-            .pipe(map((arr: Page<Product>) => {
-              if (arr) {
-                this.totalElements = arr.content.length;
-              }
-              return { state: 'LOADED', data: arr };
-            }))
-          )
+          tap((p: Page<Product>): void => { this.totalElements = p.content.length; }),
+          map((p: Page<Product>) => ({ state: 'LOADED', data: p }))
         )
       ),
       startWith({ state: 'LOADING' }),
@@ -71,7 +64,7 @@ export class CategoryComponent {
       )
     );
 
-  products$ = this.categoryImpl(0);
+  products$: Observable<{ state: string, error?: string, data?: Page<Product> }> = this.categoryImpl(0);
 
   /**
    * Re-renders products pages based on page number clicked
