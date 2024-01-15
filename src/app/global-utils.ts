@@ -16,12 +16,6 @@ export interface AuthResponse {
   principal: string;
 }
 
-export interface State<T> {
-  state: string;
-  error?: string;
-  data?: T;
-}
-
 export interface Category {
   name: string;
   category_id: number;

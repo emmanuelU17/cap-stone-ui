@@ -28,21 +28,15 @@
             <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
           </svg>
 
-          <ul
-            class="hidden group-hover:block absolute right-0 top-3 z-2 mt-2 w-40 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
-            role="menu"
-            aria-orientation="vertical"
-            aria-labelledby="menu-button"
-            tabindex="-1"
+          <ul role="menu" tabindex="-1" aria-orientation="vertical" aria-labelledby="menu-button"
+              class="hidden group-hover:block absolute right-0 top-3 z-2 mt-2 w-40 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
           >
             <li class="py-1">
-              <a
-                (click)="filterByPrice = true"
-                [style]="{ 'background-color': filterByPrice ? 'var(--app-theme)' : 'transparent' }"
-                class="text-left text-gray-500 block px-4 py-2 text-sm hover:bg-[var(--app-theme)]"
-                role="menuitem"
-                tabindex="-1"
-              >Price: Low to High</a>
+              <a (click)="filterByPrice = true"
+                 [style]="{ 'background-color': filterByPrice ? 'var(--app-theme)' : 'transparent' }"
+                 class="text-left text-gray-500 block px-4 py-2 text-sm hover:bg-[var(--app-theme)]"
+                 role="menuitem"
+                 tabindex="-1">Price: Low to High</a>
             </li>
             <li class="py-1">
               <a

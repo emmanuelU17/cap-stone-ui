@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, OnInit, signal} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {CategoryResponse, PageChange, ProductResponse, TableContent} from "../../../shared-util";
 import {FormBuilder, FormControl, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
@@ -14,6 +14,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {ProductService} from "../../product/product.service";
 import {ToastService} from "../../../../shared-comp/toast/toast.service";
 import {MatDialogModule} from "@angular/material/dialog";
+import {CategoryHierarchyComponent} from "../../../../shared-comp/hierarchy/category-hierarchy.component";
 
 @Component({
   selector: 'app-update-category',
@@ -26,7 +27,8 @@ import {MatDialogModule} from "@angular/material/dialog";
     DynamicTableComponent,
     MatButtonModule,
     DirectiveModule,
-    MatDialogModule
+    MatDialogModule,
+    CategoryHierarchyComponent
   ],
   templateUrl: 'update-category.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -44,6 +46,10 @@ export class UpdateCategoryComponent implements OnInit {
   private id: string | null = this.activeRoute.snapshot.paramMap.get('id');
   private uuid: number = this.id !== null ? Number(this.id) : -1;
 
+  readonly hierarchy$ = this.categoryService.hierarchy$;
+
+  readonly parent = signal<{ categoryId: number, name: string } | undefined>(undefined);
+
   data: CategoryResponse | undefined = this.categoryService.categories
     .find(c => c.category_id === this.uuid);
 
@@ -56,7 +62,8 @@ export class UpdateCategoryComponent implements OnInit {
   }> = this.productService.currency$
     .pipe(
       switchMap((currency) => this.categoryService
-        .allProductsByCategory(this.uuid, 0, 20, currency).pipe(
+        .allProductsByCategory(this.uuid, 0, 20, currency)
+        .pipe(
           map((arr: Page<ProductResponse>) => ({ state: 'LOADED', data: arr })),
           startWith({state: 'LOADING'}),
           catchError((err: HttpErrorResponse) =>
@@ -66,15 +73,15 @@ export class UpdateCategoryComponent implements OnInit {
     )
   );
 
-  reactiveForm = this.fb.group({
+  readonly form = this.fb.group({
     name: new FormControl('', [Validators.required, Validators.max(50)]),
     visible: new FormControl(false, [Validators.required]),
   });
 
   ngOnInit(): void {
     if (this.data) {
-      this.reactiveForm.controls['name'].setValue(this.data.name);
-      this.reactiveForm.controls['visible'].setValue(this.data.visible);
+      this.form.controls['name'].setValue(this.data.name);
+      this.form.controls['visible'].setValue(this.data.visible);
     }
   }
 
@@ -87,13 +94,22 @@ export class UpdateCategoryComponent implements OnInit {
    * Clear input field
    * */
   clear(): void {
-    this.reactiveForm.reset();
+    this.form.reset();
     this.returnToCategoryComponent();
   }
 
   /** Onclick of product title in table, routes client to update product component */
   eventEmitter(content: TableContent<ProductResponse>): void {
     this.router.navigate([`/admin/dashboard/product/${content.data.product_id}`]);
+  }
+
+  displayHierarchy = false;
+
+  /**
+   * Gets info emitter from {@code category-hierarchy.component.ts}
+   * */
+  parentClicked(obj: { categoryId: number, name: string }): void {
+    this.parent.set(obj);
   }
 
   /**
@@ -115,15 +131,15 @@ export class UpdateCategoryComponent implements OnInit {
    * Updates category
    * */
   update(): Observable<number> {
-    const name = this.reactiveForm.controls['name'].value;
-    const visible = this.reactiveForm.controls['visible'].value;
+    const name = this.form.controls['name'].value;
+    const visible = this.form.controls['visible'].value;
 
     if (!name || visible === null) {
       return of(0);
     }
 
     return this.categoryService
-      .updateCategory({category_id: this.uuid, name: name, visible: visible})
+      .updateCategory({ category_id: this.uuid, name: name, visible: visible, parent_id: this.parent()?.categoryId })
       .pipe(
         switchMap((status: number): Observable<number> => {
           const res = of(status);

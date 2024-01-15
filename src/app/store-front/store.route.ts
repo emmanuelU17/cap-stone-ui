@@ -1,7 +1,4 @@
 import {Routes} from "@angular/router";
-import {checkoutGuard} from "./order/checkout/checkout.guard";
-import {importProvidersFrom} from "@angular/core";
-import {Angular4PaystackModule} from "angular4-paystack";
 
 export const route: Routes = [
   {

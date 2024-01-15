@@ -1,17 +1,16 @@
-import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, inject, Output, signal} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {SearchService} from "./search.service";
 import {catchError, debounceTime, distinctUntilChanged, map, of, switchMap, tap} from "rxjs";
 import {FooterService} from "../footer/footer.service";
 import {CardComponent} from "../card/card.component";
-import {RouterLink} from "@angular/router";
 import {SarreCurrency} from "../../../global-utils";
 import {FormControl, ReactiveFormsModule} from "@angular/forms";
 
 @Component({
   selector: 'app-search',
   standalone: true,
-  imports: [CommonModule, CardComponent, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, CardComponent, ReactiveFormsModule],
   template: `
     <button (click)="openSearchBar()">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -62,12 +61,13 @@ import {FormControl, ReactiveFormsModule} from "@angular/forms";
 
         <!-- search results -->
         <div class="p-4 bg-white">
-          <ng-container *ngIf="products$ | async as products">
 
-            <ng-container [ngSwitch]="spinnerState()">
+          @if (products$ | async; as products) {
+
+            @switch (spinnerState()) {
 
               <!-- spinner -->
-              <ng-container *ngSwitchCase="true">
+              @case (true) {
                 <div class="w-full flex justify-center">
                   <div role="status"
                        class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-r-[var(--app-theme)] align-[-0.125em] text-primary motion-reduce:animate-[spin_1.5s_linear_infinite] ">
@@ -77,28 +77,21 @@ import {FormControl, ReactiveFormsModule} from "@angular/forms";
                       </span>
                   </div>
                 </div>
-              </ng-container>
+              }
 
               <!-- server results -->
-              <ng-container *ngSwitchDefault>
-                <div
-                  class="w-full bg-white p-2 xl:p-0 grid gap-3 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
-                  <a (click)="closeSearchBar()" *ngFor="let p of products"
-                     [routerLink]="'/shop/category/product/' + p.product_id" class="cursor-pointer">
-                    <app-card
-                      [url]="p.image"
-                      [name]="p.name"
-                      [currency]="currency(p.currency)"
-                      [price]="p.price"
-                    ></app-card>
-                  </a>
+              @case (false) {
+                <div class="w-full bg-white p-2 xl:p-0 grid gap-3 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+                  @for (p of products; track p.product_id) {
+                    <a (click)="closeSearchBar('/shop/product/' + p.product_id)" class="cursor-pointer">
+                      <app-card [url]="p.image" [name]="p.name" [currency]="currency(p.currency)"
+                                [price]="p.price"></app-card>
+                    </a>
+                  }
                 </div>
-              </ng-container>
-
-            </ng-container>
-            <!-- end of switch -->
-
-          </ng-container>
+              }
+            }
+          }
         </div>
 
         <div class="w-full flex-1 bg-black opacity-50"></div>
@@ -110,18 +103,24 @@ import {FormControl, ReactiveFormsModule} from "@angular/forms";
 })
 export class SearchComponent {
 
+  @Output() routeEmitter = new EventEmitter<string>();
+
   private readonly searchService = inject(SearchService);
   private readonly footerService = inject(FooterService);
 
-  openSearchComponent$ = this.searchService.openSearchComponent$;
+  readonly openSearchComponent$ = this.searchService.openSearchComponent$;
 
   readonly spinnerState = signal<boolean>(false);
 
   currency = (currency: string) => this.footerService.currency(currency);
 
-  closeSearchBar(): void {
+  closeSearchBar(path?: string): void {
     this.spinnerState.set(false);
     this.searchService.openComponent(false);
+
+    if (path) {
+      this.routeEmitter.emit(`${path}`)
+    }
   }
 
   openSearchBar(): void {
@@ -132,8 +131,8 @@ export class SearchComponent {
    * Makes call to server to search for item based on user input and currency
    * https://stackoverflow.com/questions/44183519/cant-make-debouncetime-or-throttletime-to-work-on-an-angular-http-request
    * */
-  formControl = new FormControl();
-  products$ = this.formControl.valueChanges
+  readonly formControl = new FormControl();
+  readonly products$ = this.formControl.valueChanges
     .pipe(
       tap((str: string): void => this.spinnerState.set(str.trim().length > 0)),
       switchMap((value: string) => this.footerService.currency$

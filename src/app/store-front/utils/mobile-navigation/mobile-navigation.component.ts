@@ -101,7 +101,7 @@ export class MobileNavigationComponent {
   route = (path: string): void => this.routeEmitter.emit(path);
 
   categoryClicked(obj: { categoryId: number; name: string }): void {
-    this.route('/shop/category');
+    this.route('/shop');
     this.categoryEmitter.emit(obj);
     this.toggleEmitter.emit(this.openNavMobile = !this.openNavMobile);
   }

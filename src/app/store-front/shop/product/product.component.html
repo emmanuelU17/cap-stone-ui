@@ -1,118 +1,110 @@
-<div *ngIf="productDetails$ | async as detail" [ngSwitch]="detail.state">
-  <ng-container *ngSwitchCase="'LOADING'">
-    <div class="lg-scr h-full p-20 flex justify-center items-center">
-      <h1 class="capitalize text-[var(--app-theme-hover)]">
-        loading...
-      </h1>
-    </div>
-  </ng-container>
+@if (productDetails$ | async; as detail) {
 
-  <ng-container *ngSwitchCase="'ERROR'">
-    <div class="lg-scr mg-top p-10 text-3xl text-red-500">
-      Error {{ detail.error }}
-    </div>
-  </ng-container>
+  @switch (detail.state) {
 
-  <ng-container *ngSwitchCase="'LOADED'">
+    @case ('LOADING') {
+      <div class="lg-scr h-full p-20 flex justify-center items-center">
+        <h1 class="capitalize text-[var(--app-theme-hover)]">
+          loading...
+        </h1>
+      </div>
+    }
 
-    <!-- Product Details  -->
-    <div class="lg-scr mg-top w-full h-full" *ngIf="detail.data as details">
+    @case ('ERROR') {
+      <div class="lg-scr mg-top p-10 text-3xl text-red-500">
+        Error {{ detail.error }}
+      </div>
+    }
 
-      <div class="grid grid-cols-1 md:grid-cols-2">
+    @case ('LOADED') {
+      <!-- Product Details  -->
+      <div class="lg-scr mg-top w-full h-full" *ngIf="detail.data as details">
 
-        <!-- Images container -->
-        <div *ngIf="currentProductDetail" class="p-2.5 flex flex-col gap-1.5">
+        <div class="grid grid-cols-1 md:grid-cols-2">
 
-          <!-- image -->
-          <div class="md:h-[560px] w-full aspect-h-1 aspect-w-1 overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75">
-            <img [src]="currentProductDetail.currImage"
-                 alt="image"
-                 class="h-full w-full object-cover object-center lg:h-full lg:w-full">
-          </div>
+          <!-- Images container -->
+          <div *ngIf="currentProductDetail" class="p-2.5 flex flex-col gap-1.5">
 
-          <!-- image carousel -->
-          <ul class="p-2 flex gap-1.5 overflow-auto">
-            <li
-              *ngFor="let img of currentProductDetail.detail.url"
-              (click)="currentProductDetail.currImage = img"
-              class="border-none outline-none cursor-pointer bg-transparent min-h-[64px] min-w-[64px] max-h-[75px] max-w-[75px]"
-            >
-              <img class="w-full h-full object-cover object-center" [src]="img" alt="image">
-            </li>
-          </ul>
-
-        </div>
-
-        <!-- product detail -->
-        <div class="p-2.5 flex flex-col gap-2">
-          <h1 class="capitalize text-3xl font-bold">{{ details[0].name }}</h1>
-          <h2 class="text-xl font-bold">{{ currency(details[0].currency) }}{{ details[0].price }}</h2>
-          <h4 class="text-xl font-bold">
-            Sku <span class="text-xs opacity-50">{{ sku }}</span>
-          </h4>
-
-          <!-- Form -->
-          <form class="flex flex-col gap-2" [formGroup]="form">
-
-            <!-- Form Contents -->
-            <div class="flex gap-1.5 flex-col md:flex-row">
-              <!-- Colour -->
-              <div>
-                <select
-                  name="colour"
-                  formControlName="colour"
-                  class="w-full p-2 rounded-md cursor-pointer border border-solid border-[var(--app-theme)]"
-                  (change)="onclickColour($event)"
-                >
-                  <option value="" disabled [selected]="true">colour</option>
-                  <option *ngFor="let d of detail.data" [value]="d.colour">
-                    {{ d.colour }}
-                  </option>
-                </select>
-              </div>
-
-              <!-- Size -->
-              <div class="flex flex-1 gap-1.5" *ngIf="currentProductDetail">
-                <select (change)="onselectSize($event)" formControlName="size" name="size" class="w-full p-2 rounded-md cursor-pointer border border-solid border-[var(--app-theme)]">
-                  <option value="" disabled selected>size</option>
-                  <option *ngFor="let variants of currentProductDetail.detail.variants">
-                    {{ variants.size }}
-                  </option>
-                </select>
-              </div>
-
+            <!-- image -->
+            <div class="md:h-[560px] w-full aspect-h-1 aspect-w-1 overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75">
+              <img [src]="currentProductDetail.currImage"
+                   alt="image"
+                   class="h-full w-full object-cover object-center lg:h-full lg:w-full">
             </div>
 
-            <button
-              class="w-full p-3 uppercase border border-black hover:bg-black hover:text-white"
-              type="submit"
-              [disabled]="form.invalid"
-              [asyncButton]="addToCart()"
-            >add to cart</button>
-          </form>
+            <!-- image carousel -->
+            <ul class="p-2 flex gap-1.5 overflow-auto">
+              <li *ngFor="let img of currentProductDetail.detail.url" (click)="currentProductDetail.currImage = img"
+                class="border-none outline-none cursor-pointer bg-transparent min-h-[64px] min-w-[64px] max-h-[75px] max-w-[75px]"
+              >
+                <img class="w-full h-full object-cover object-center" [src]="img" alt="image">
+              </li>
+            </ul>
 
-          <!-- Description -->
-          <div class="w-full break-words">
-            <h2 class="w-fit capitalize border-b border-[var(--app-theme)]">description</h2>
-            <div
-              class="w-full pt-3.5 inline-flex break-all text-sm"
-              [innerHTML]="details[0].desc" [class.show]="showMore"
-            ></div>
+          </div>
 
-            <!-- *ngIf="details[0].desc.length > 0" -->
-            <button class="mt-2 outline-none border-none bg-transparent"
-                    (click)="showMore = !showMore">
+          <!-- product detail -->
+          <div class="p-2.5 flex flex-col gap-2">
+            <h1 class="capitalize text-3xl font-bold">{{ details[0].name }}</h1>
+            <h2 class="text-xl font-bold">{{ currency(details[0].currency) }}{{ details[0].price }}</h2>
+            <h4 class="text-xl font-bold">
+              Sku <span class="text-xs opacity-50">{{ sku }}</span>
+            </h4>
+
+            <!-- Form -->
+            <form class="flex flex-col gap-2" [formGroup]="form">
+
+              <!-- Form Contents -->
+              <div class="flex gap-1.5 flex-col md:flex-row">
+                <!-- Colour -->
+                <div>
+                  <select (change)="onclickColour($event)" name="colour" formControlName="colour"
+                    class="w-full p-2 rounded-md cursor-pointer border border-solid border-[var(--app-theme)]"
+                  >
+                    <option value="" disabled [selected]="true">colour</option>
+                    <option *ngFor="let d of detail.data" [value]="d.colour">
+                      {{ d.colour }}
+                    </option>
+                  </select>
+                </div>
+
+                <!-- Size -->
+                <div class="flex flex-1 gap-1.5" *ngIf="currentProductDetail">
+                  <select (change)="onselectSize($event)" formControlName="size" name="size" class="w-full p-2 rounded-md cursor-pointer border border-solid border-[var(--app-theme)]">
+                    <option value="" disabled selected>size</option>
+                    <option *ngFor="let variants of currentProductDetail.detail.variants">
+                      {{ variants.size }}
+                    </option>
+                  </select>
+                </div>
+
+              </div>
+
+              <button type="submit" [disabled]="form.invalid" [asyncButton]="addToCart$"
+                      class="w-full p-3 uppercase border border-black hover:bg-black hover:text-white">
+                add to cart</button>
+            </form>
+
+            <!-- Description -->
+            <div class="w-full break-words">
+              <h2 class="w-fit capitalize border-b border-[var(--app-theme)]">description</h2>
+              <div [innerHTML]="details[0].desc" [class.show]="showMore"
+                   class="w-full pt-3.5 inline-flex break-all text-sm"></div>
+
+              <button (click)="showMore = !showMore" class="mt-2 outline-none border-none bg-transparent">
               <span class="lowercase text-[var(--app-theme-hover)]">
                 {{ showMore ? 'Show less' : 'Show More' }}
               </span>
-            </button>
+              </button>
+            </div>
+
           </div>
 
         </div>
 
       </div>
+    }
 
-    </div>
+  }
 
-  </ng-container>
-</div>
+}

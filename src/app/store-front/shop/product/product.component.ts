@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {ProductDetail} from "../shop.helper";
-import {State, Variant} from "../../../global-utils";
+import {Variant} from "../../../global-utils";
 import {catchError, map, Observable, of, startWith, switchMap} from "rxjs";
 import {ActivatedRoute, Params, RouterLink} from "@angular/router";
 import {ProductService} from "./product.service";
@@ -89,14 +89,16 @@ export class ProductComponent {
             return { state: 'LOADED', data: arr };
           }),
           startWith({ state: 'LOADING' }),
-          catchError((e: HttpErrorResponse) => of({ state: 'ERROR', error: e.error ? e.error.message : e.message }))
+          catchError((e: HttpErrorResponse) =>
+            of({ state: 'ERROR', error: e.error ? e.error.message : e.message })
+          )
         )
       )
     );
 
   showMore = false; // Show more paragraph
 
-  form = this.fb.group({
+  readonly form = this.fb.group({
     colour: new FormControl('', [Validators.required]),
     size: new FormControl({ value: '', disabled: true }, [Validators.required]),
   });
@@ -157,16 +159,9 @@ export class ProductComponent {
   /**
    * Makes call to server to persist item to user's cart
    * */
-  addToCart(): Observable<number> {
-    const detail = this.productDetailArray
-      .find(d => d.variants.find(v => v.sku === this.sku));
-
-    if (!detail) {
-      return of();
-    }
-
-    // Api call to add to cart
-    return this.cartService.createCart({ sku: this.sku, qty: 1 });
-  }
+  addToCart$ = !this.productDetailArray
+    .find(d => d.variants.find(v => v.sku === this.sku))
+    ? of()
+    : this.cartService.createCart({ sku: this.sku, qty: 1 });
 
 }

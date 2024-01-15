@@ -20,8 +20,10 @@ export class CategoryService {
   readonly category$: Observable<number> = this.currentCategorySubject
     .asObservable()
     .pipe(
-      switchMap((num) =>
-        num ? of(num) : this.categories$.pipe(switchMap((arr) => of(arr[0].category_id))))
+      switchMap((num) => num
+        ? of(num)
+        : this.categories$.pipe(switchMap((arr) => of(arr[0].category_id)))
+      ),
     );
 
   /**
@@ -30,13 +32,13 @@ export class CategoryService {
    * @return Observable of Category array
    * */
   allCategories(): Observable<Category[]> {
-    const url: string = `${this.HOST}api/v1/client/category`;
+    const url = `${this.HOST}api/v1/client/category`;
     return this.http.get<Category[]>(url, { withCredentials: true })
       .pipe(tap((arr: Category[]): void => this.subject.next(arr)));
   }
 
   /**
-   * Fetches products based on categoryId
+   * returns all products based on categoryId
    *
    * @param categoryId is the category id
    * @param page is the page number
@@ -50,16 +52,9 @@ export class CategoryService {
     page: number = 0,
     size: number = 20,
   ): Observable<Page<Product>> {
-    const url: string = `${this.HOST}api/v1/client/category/products`;
-    return this.http.get<Page<Product>>(url, {
-      params: {
-        category_id: categoryId,
-        page: page,
-        size: size,
-        currency: currency
-      },
-      withCredentials: true
-    });
+    const url = `${this.HOST}api/v1/client/category/products?category_id=${categoryId}&currency=${currency}&page=${page}&size=${size}`;
+    return this.http
+      .get<Page<Product>>(url, { withCredentials: true });
   }
 
 }

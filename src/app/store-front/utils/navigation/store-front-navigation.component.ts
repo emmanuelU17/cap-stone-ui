@@ -56,7 +56,7 @@ import {CategoryHierarchyComponent} from "../../../shared-comp/hierarchy/categor
             </svg>
           </button>
 
-          <button (click)="route('/shop/category')" type="button"
+          <button (click)="route('/shop')" type="button"
                   class="h-full relative flex gap-1 items-center cursor-pointer uppercase text-[var(--app-theme)]">
             shop
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -81,7 +81,7 @@ import {CategoryHierarchyComponent} from "../../../shared-comp/hierarchy/categor
 
           <!--    Search    -->
           <li>
-            <app-search></app-search>
+            <app-search (routeEmitter)="route($event)"></app-search>
           </li>
 
           <!--    Shopping cart    -->
@@ -150,7 +150,7 @@ export class StoreFrontNavigationComponent {
   route = (path: string): void => this.routeEmitter.emit(path);
 
   categoryClicked(obj: { categoryId: number; name: string }): void {
-    this.route('/shop/category');
+    this.route('/shop');
     this.categoryEmitter.emit(obj);
   }
 

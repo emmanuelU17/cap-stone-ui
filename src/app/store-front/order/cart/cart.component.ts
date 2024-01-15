@@ -48,7 +48,7 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
                   <div class="ml-4 flex flex-1 flex-col">
                     <div>
                       <div class="flex justify-between text-base font-medium text-gray-900">
-                        <h3 (click)="route('/shop/category/product/' + detail.product_id)"
+                        <h3 (click)="route('/shop/product/' + detail.product_id)"
                             class="font-app-card cursor-pointer hover:border-b hover:border-black"
                         >{{ detail.product_name }}</h3>
                         <p class="font-app-card ml-4">{{ currency(detail.currency) }}{{ detail.price }}</p>
@@ -109,7 +109,7 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
           <div class="mt-6 flex justify-center text-center text-sm text-gray-500">
             <p>
               or
-              <button (click)="route('/shop/category')" type="button" class="font-medium text-[var(--app-theme-hover)]">
+              <button (click)="route('/shop')" type="button" class="font-medium text-[var(--app-theme-hover)]">
                 Continue Shopping
                 <span aria-hidden="true"> &rarr;</span>
               </button>
@@ -127,7 +127,7 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
           <div class="p-2 xl:p-0 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             <button
               *ngFor="let product of products$ | async; let i = index"
-              (click)="route('/shop/category/product/' + product.product_id)"
+              (click)="route('/shop/product/' + product.product_id)"
             >
               <app-card
                 [url]="product.image"
@@ -145,7 +145,7 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
             <h1 class="capitalize text-2xl text-[var(--app-theme)]">Your cart</h1>
           </div>
           <h5 class="text-xs">Your cart is currently empty</h5>
-          <button (click)="route('/shop/category')" type="button" class="p-2 uppercase bg-[var(--app-theme)]">
+          <button (click)="route('/shop')" type="button" class="p-2 uppercase bg-[var(--app-theme)]">
             continue shopping
           </button>
         </div>

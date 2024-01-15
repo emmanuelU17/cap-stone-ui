@@ -10,12 +10,11 @@ import {Product} from "../../store-front-utils";
 })
 export class SearchService {
 
-  HOST: string | undefined = environment.domain;
-
+  private readonly HOST: string | undefined = environment.domain;
   private readonly http = inject(HttpClient);
 
   private readonly subject = new BehaviorSubject<boolean>(false);
-  openSearchComponent$ = this.subject.asObservable();
+  readonly openSearchComponent$ = this.subject.asObservable();
 
   /**
    * Opens search.component.ts

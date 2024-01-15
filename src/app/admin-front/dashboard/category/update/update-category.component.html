@@ -19,7 +19,7 @@
         <h1 class="capitalize">details</h1>
       </div>
 
-      <form class="w-full flex flex-col gap-2.5" [formGroup]="reactiveForm">
+      <form class="w-full flex flex-col gap-2.5" [formGroup]="form">
 
         <!-- Input box -->
         <div
@@ -31,6 +31,37 @@
             type="text"
             class="p-2.5 w-full flex-1 inline rounded-sm border border-solid border-[var(--border-outline)]"
           />
+        </div>
+
+        <div class="p-6 flex flex-col gap-2.5 text-left rounded-md border border-[var(--active)] border-solid bg-[var(--white)]">
+          <div class="flex flex-col gap-2.5">
+            <div>
+              <h4 class="flex text-xs capitalize">
+                parent category
+                <button (click)="parent.set(undefined)" type="button"
+                        [style]="{ 'display' : !parent() ? 'none' : 'block' }"
+                        class="ml-1 lowercase text-red-400">clear
+                </button>
+              </h4>
+
+              <button (click)="displayHierarchy = !displayHierarchy" type="button"
+                      class="text-xs capitalize text-[#2c6ecb]">
+                @if (parent()) {
+                  selected {{ parent()?.name }}
+                } @else {
+                  select category
+                }
+              </button>
+            </div>
+
+            @if (displayHierarchy) {
+              @if (hierarchy$ | async; as hierarchy) {
+                <div class="w-full p-2 flex gap-2 flex-col bg-[#eff2f5]">
+                  <app-hierarchy [categories]="hierarchy" (emitter)="parentClicked($event)"></app-hierarchy>
+                </div>
+              }
+            }
+          </div>
         </div>
 
         <!-- Radio -->
@@ -51,8 +82,8 @@
           <button
             type="submit"
             class="capitalize text-white font-bold py-2 px-4 rounded bg-[var(--app-theme)]"
-            [disabled]="!reactiveForm.valid"
-            [style]="{ 'background-color': reactiveForm.valid ? 'var(--app-theme-hover)' : 'var(--app-theme)' }"
+            [disabled]="!form.valid"
+            [style]="{ 'background-color': form.valid ? 'var(--app-theme-hover)' : 'var(--app-theme)' }"
             [asyncButton]="update()"
           >update</button>
         </div>

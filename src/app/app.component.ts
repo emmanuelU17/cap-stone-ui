@@ -24,7 +24,6 @@ import {AuthService} from "./service/auth.service";
         @case ('LOADED') {
           <router-outlet></router-outlet>
         }
-
       }
     }
   `,

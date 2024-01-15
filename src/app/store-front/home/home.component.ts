@@ -40,7 +40,7 @@ import {FooterService} from "../utils/footer/footer.service";
         <div class="lg-scr self-end pb-10 px-2 lg:px-0 flex flex-col gap-y-3 lg:gap-y-10">
           <h1 class="bg-font uppercase font-bold text-white">clothing apparel for the confident women</h1>
 
-          <button (click)="route('/shop/category')" type="button"
+          <button (click)="route('/shop')" type="button"
                   class="w-fit text-sm md:text-3xl capitalize text-white cursor-pointer border-b border-b-white">
             shop now
           </button>
@@ -81,7 +81,7 @@ export class HomeComponent {
           <div class="lg-scr">
             <h1 class="bg-font uppercase font-bold text-white">clothing apparel for the confident women</h1>
 
-            <button (click)="route('/shop/category')" type="button"
+            <button (click)="route('/shop')" type="button"
                     class="text-sm md:text-lg capitalize text-white cursor-pointer border-b border-b-white">
               shop now
             </button>
@@ -144,5 +144,6 @@ export class HomeComponent {
   /**
    * Route to product page
    * */
-  clicked = (p: Product): void => this.route(`/shop/category/product/${p.product_id}`);
+  clicked = (p: Product): void => this.route(`/shop/product/${p.product_id}`);
+
 }

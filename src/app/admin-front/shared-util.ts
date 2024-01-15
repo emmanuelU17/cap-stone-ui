@@ -64,6 +64,7 @@ export interface UpdateCategory {
   category_id: number;
   name: string;
   visible: boolean;
+  parent_id: number | undefined;
 }
 
 export interface TableContent<T> {

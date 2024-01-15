@@ -113,17 +113,11 @@ import {CategoryHierarchyComponent} from "../../../../shared-comp/hierarchy/cate
       <!-- Button container -->
       <div class="p-2.5 px-1.5 flex justify-between">
         <button type="button" (click)="clear()"
-                class="capitalize py-2 px-4 rounded text-red-400 border border-red-400">
-          Cancel
-        </button>
-        <button
-          type="submit"
-          class="capitalize text-white font-bold py-2 px-4 rounded bg-[var(--app-theme)]"
-          [disabled]="!form.valid"
+                class="capitalize py-2 px-4 rounded text-red-400 border border-red-400">Cancel</button>
+        <button [disabled]="!form.valid" [asyncButton]="submit()" type="submit"
           [style]="{ 'background-color': form.valid ? 'var(--app-theme-hover)' : 'var(--app-theme)' }"
-          [asyncButton]="submit()"
-        >create
-        </button>
+          class="capitalize text-white font-bold py-2 px-4 rounded bg-[var(--app-theme)]"
+        >create</button>
       </div>
     </form>
   `,
@@ -136,7 +130,6 @@ export class NewCategoryComponent {
   private readonly router = inject(Router);
 
   readonly hierarchy$ = this.service.hierarchy$;
-
   readonly parent = signal<{ categoryId: number, name: string } | undefined>(undefined);
 
   readonly form = new FormGroup({
