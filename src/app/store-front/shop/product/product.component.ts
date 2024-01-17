@@ -159,9 +159,11 @@ export class ProductComponent {
   /**
    * Makes call to server to persist item to user's cart
    * */
-  addToCart$ = !this.productDetailArray
-    .find(d => d.variants.find(v => v.sku === this.sku))
-    ? of()
-    : this.cartService.createCart({ sku: this.sku, qty: 1 });
+  addToCart = () => {
+    return !this.productDetailArray
+      .find(d => d.variants.find(v => v.sku === this.sku))
+      ? of(0)
+      : this.cartService.createCart({ sku: this.sku, qty: 1 });
+  }
 
 }

@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, DestroyRef, inject, Renderer2, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {DirectiveModule} from "../../../directive/directive.module";
 import {CardComponent} from "../../utils/card/card.component";
@@ -6,14 +6,14 @@ import {CartService} from "./cart.service";
 import {FooterService} from "../../utils/footer/footer.service";
 import {Router} from "@angular/router";
 import {HomeService} from "../../home/home.service";
-import {debounceTime, distinctUntilChanged, fromEvent, map, Observable, of, switchMap, tap} from "rxjs";
+import {catchError, debounceTime, distinctUntilChanged, map, Observable, of, startWith, switchMap} from "rxjs";
 import {SarreCurrency, VARIABLE_IS_NUMERIC} from "../../../global-utils";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {FormControl, ReactiveFormsModule} from "@angular/forms";
 
 @Component({
   selector: 'app-cart',
   standalone: true,
-  imports: [CommonModule, DirectiveModule, CardComponent],
+  imports: [CommonModule, DirectiveModule, CardComponent, ReactiveFormsModule],
   styles: [`
     /* Chrome, Safari, Edge, Opera */
     input::-webkit-outer-spin-button,
@@ -41,48 +41,55 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
           <div class="mt-8">
             <div class="flow-root">
               <ul role="list" class="relative -my-6 divide-y divide-gray-200">
-                <li class="flex py-6" *ngFor="let detail of carts$ | async; let i = index">
-                  <div class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-                    <img [src]="detail.url" alt="product image{{ i }}" class="h-full w-full object-cover object-center">
-                  </div>
-                  <div class="ml-4 flex flex-1 flex-col">
-                    <div>
-                      <div class="flex justify-between text-base font-medium text-gray-900">
-                        <h3 (click)="route('/shop/product/' + detail.product_id)"
-                            class="font-app-card cursor-pointer hover:border-b hover:border-black"
-                        >{{ detail.product_name }}</h3>
-                        <p class="font-app-card ml-4">{{ currency(detail.currency) }}{{ detail.price }}</p>
-                      </div>
-                      <p class="mt-1 text-sm text-gray-500">{{ detail.colour }}</p>
+
+                @for (detail of carts$ | async; track detail.product_id; let i = $index) {
+                  <li class="flex py-6">
+                    <div class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
+                      <img [src]="detail.url" alt="product image{{ i }}" class="h-full w-full object-cover object-center">
                     </div>
-                    <div class="flex flex-1 items-end justify-between text-sm">
+                    <div class="ml-4 flex flex-1 flex-col">
                       <div>
-                        <p class="text-gray-500">{{ detail.size }}</p>
-                        <input type="number"
-                               [value]="detail.qty"
-                               (click)="qtyChange(detail.sku)"
-                               class="qty-box p-2.5 flex-1 w-full rounded-sm border border-solid border-[var(--border-outline)]">
+                        <div class="flex justify-between text-base font-medium text-gray-900">
+                          <h3 (click)="route('/shop/product/' + detail.product_id)"
+                              class="font-app-card cursor-pointer hover:border-b hover:border-black">
+                            {{ detail.product_name }}
+                          </h3>
+                          <p class="font-app-card ml-4">{{ currency(detail.currency) }}{{ detail.price }}</p>
+                        </div>
+                        <p class="mt-1 text-sm text-gray-500">{{ detail.colour }}</p>
                       </div>
+                      <div class="flex flex-1 items-end justify-between text-sm">
+                        <div>
+                          <p class="text-gray-500">{{ detail.size }}</p>
+                          <input type="number"
+                                 [value]="detail.qty"
+                                 (click)="qtyChange(detail.sku)"
+                                 [formControl]="formControl"
+                                 class="qty-box p-2.5 flex-1 w-full rounded-sm border border-solid border-[var(--border-outline)]">
+                        </div>
 
-                      <div class="flex">
-                        <button [asyncButton]="remove(detail.sku)" type="submit"
-                                class="font-medium text-[var(--app-theme-hover)]">
-                          Remove
-                        </button>
+                        <div class="flex">
+                          <button [asyncButton]="remove(detail.sku)" type="submit"
+                                  class="font-medium text-[var(--app-theme-hover)]">
+                            Remove
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                </li>
+                  </li>
+                }
 
                 <!-- spinner -->
-                <div *ngIf="spinner() as spin" [style]="{ 'display': spin ? 'flex' : 'none' }" class="absolute top-0 right-0 bottom-0 left-0 flex justify-center items-center bg-black opacity-50">
-                  <div role="status" class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-r-[var(--app-theme)] align-[-0.125em] text-primary motion-reduce:animate-[spin_1.5s_linear_infinite]">
-                    <span class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
-                      Loading...
-                    </span>
+                @if (bool$ | async; as spin) {
+                  <div class="absolute top-0 right-0 bottom-0 left-0 flex justify-center items-center bg-black opacity-50">
+                    <div role="status" class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-r-[var(--app-theme)] align-[-0.125em] text-primary motion-reduce:animate-[spin_1.5s_linear_infinite]">
+                      <span class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
+                        Loading...
+                      </span>
+                    </div>
                   </div>
-                </div>
+                }
               </ul>
             </div>
 
@@ -125,17 +132,14 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
           </div>
 
           <div class="p-2 xl:p-0 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-            <button
-              *ngFor="let product of products$ | async; let i = index"
-              (click)="route('/shop/product/' + product.product_id)"
-            >
-              <app-card
-                [url]="product.image"
-                [name]="product.name"
-                [currency]="currency(product.currency)"
-                [price]="product.price"
-              ></app-card>
-            </button>
+
+            @for (product of products$ | async; track product.product_id; let i = $index) {
+              <button type="button" (click)="route('/shop/product/' + product.product_id)">
+                <app-card [url]="product.image" [name]="product.name" [price]="product.price"
+                          [currency]="currency(product.currency)"></app-card>
+              </button>
+            }
+
           </div>
         </div>
 
@@ -159,15 +163,12 @@ export class CartComponent {
 
   private readonly cartService = inject(CartService);
   private readonly footService = inject(FooterService);
-  private readonly render = inject(Renderer2);
   private readonly router = inject(Router);
-  private readonly destroyRef = inject(DestroyRef);
   private readonly homeService = inject(HomeService);
 
   readonly products$ = this.homeService.products$;
-  readonly spinner = signal<boolean>(false);
 
-  carts$ = this.cartService.cart$;
+  readonly carts$ = this.cartService.cart$;
   currency$ = this.footService.currency$
     .pipe(switchMap((c: SarreCurrency) => this.currency(c)));
 
@@ -183,32 +184,48 @@ export class CartComponent {
   readonly total$ = this.cartService.total$;
 
   /**
-   * Makes call to server on change of qty
+   * updates sku based on input button clicked
    * */
+  private sku = '';
   qtyChange(sku: string): void {
-    const element = this.render.selectRootElement('.qty-box', true);
-
-    fromEvent<KeyboardEvent>(element, 'keyup')
-      .pipe(
-        debounceTime(700),
-        distinctUntilChanged(),
-        map((val: KeyboardEvent) => (val.target as HTMLInputElement).value),
-        switchMap((value: string) => {
-          if (!VARIABLE_IS_NUMERIC(value)) {
-            return of(0);
-          }
-
-          const qty = Number(value);
-
-          this.spinner.set(true);
-          return qty < 1
-            ? this.remove(sku).pipe(tap(() => this.spinner.set(false)))
-            : this.cartService.createCart({ sku: sku, qty: qty })
-              .pipe(tap(() => this.spinner.set(false)));
-        }),
-        takeUntilDestroyed(this.destroyRef)
-      )
-      .subscribe();
+    this.sku = sku;
   }
+
+  /**
+   * {@code $bool} basically receives a users input using {@code FormControl} and
+   * maps to a custom object { sku: string, qty: number }. If qty which is the users
+   * input is less than 0 do nothing. But if it is zero, make a delete call to the
+   * server else if it is greater than zero, make call to server to update.
+   *
+   * @return {@code Observable} of type boolean where if it is true, a loading modal
+   * is displayed else modal is removed.
+   * */
+  readonly formControl = new FormControl();
+  readonly bool$ = this.formControl.valueChanges
+    .pipe(
+      distinctUntilChanged(),
+      debounceTime(700),
+      // validate value is numeric else return -1
+      // if value is numeric but less than 0 return -1 else return num
+      map((value: string) => VARIABLE_IS_NUMERIC(value)
+        ? (
+          Number(value) < 0
+            ? { sku : this.sku, qty: -1 }
+            : { sku : this.sku, qty: Number(value) }
+        )
+        : { sku : this.sku, qty: -1 }
+      ),
+      switchMap((obj: { sku: string, qty: number }) => obj.qty < 0
+        ? of(false)
+        : (
+          obj.qty === 0
+            ? this.remove(obj.sku)
+              .pipe(map(() => false), startWith(true))
+            : this.cartService.createCart({ sku: obj.sku, qty: obj.qty })
+              .pipe(map(() => false), startWith(true))
+        )
+      ),
+      catchError(() => of(false))
+    );
 
 }
