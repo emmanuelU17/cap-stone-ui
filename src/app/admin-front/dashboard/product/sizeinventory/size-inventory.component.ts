@@ -14,7 +14,7 @@ import {VARIABLE_IS_NUMERIC} from "../../../../global-utils";
   imports: [CommonModule, MatButtonModule],
   template: `
     <div class="flex gap-1.5 mb-2 justify-between">
-      <h4 class="cx-font-size capitalize"><span class="text-red-500">*</span>size & stock</h4>
+      <h4 class="cx-font-size capitalize"><span class="text-red-500">*</span> size & stock</h4>
       <button type="button" [disabled]="invalidInputImpl()" (click)="addInputRow()">
         <svg
           xmlns="http://www.w3.org/2000/svg"

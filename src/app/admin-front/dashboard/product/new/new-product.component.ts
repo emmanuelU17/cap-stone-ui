@@ -1,12 +1,11 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {CKEDITOR4CONFIG, SizeInventory} from "../../../shared-util";
+import {SizeInventory} from "../../../shared-util";
 import {catchError, Observable, of, switchMap} from "rxjs";
 import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
 import {CategoryService} from "../../category/category.service";
 import {NewProductService} from "./new-product.service";
 import {SizeInventoryComponent} from "../sizeinventory/size-inventory.component";
-import {CKEditorModule} from "ckeditor4-angular";
 import {MatButtonModule} from "@angular/material/button";
 import {MatIconModule} from "@angular/material/icon";
 import {MatRadioModule} from "@angular/material/radio";
@@ -17,21 +16,29 @@ import {ToastService} from "../../../../shared-comp/toast/toast.service";
 import {SizeInventoryService} from "../sizeinventory/size-inventory.service";
 import {Router} from "@angular/router";
 import {SarreCurrency} from "../../../../global-utils";
+import {CKEditorModule} from "@ckeditor/ckeditor5-angular";
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import {CategoryHierarchyComponent} from "../../../../shared-comp/hierarchy/category-hierarchy.component";
 
 @Component({
   selector: 'app-new-product',
   standalone: true,
+  styles: [`
+    :host ::ng-deep .ck-editor__editable_inline {
+      min-height: 100px;
+    }
+  `],
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    CKEditorModule,
     SizeInventoryComponent,
     CKEditorModule,
     MatButtonModule,
     MatIconModule,
     MatRadioModule,
     ReactiveFormsModule,
-    DirectiveModule
+    DirectiveModule,
+    CategoryHierarchyComponent
   ],
   templateUrl: './new-product.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -46,20 +53,21 @@ export class NewProductComponent {
   private readonly sizeInventoryService = inject(SizeInventoryService);
   private readonly router = inject(Router);
 
-  // Converts from file to string
+  // converts from file to string
   toString = (file: File): string => URL.createObjectURL(file);
 
-  config = CKEDITOR4CONFIG;
+  config = ClassicEditor;
   content: string = '';
   files: File[] = []; // Images
   rows: SizeInventory[] = [];
 
-  categories$ = this.categoryService.categories$;
+  toggle = true;
+  readonly hierarchy$ = this.categoryService.hierarchy$;
 
-  form = this.fb.group({
-    category: new FormControl('', [Validators.required]),
+  readonly form = this.fb.group({
     collection: new FormControl(''),
     name: new FormControl('', [Validators.required, Validators.max(50)]),
+    weight: new FormControl('', Validators.required),
     ngn: new FormControl('', Validators.required),
     usd: new FormControl('', Validators.required),
     desc: new FormControl('', [Validators.required, Validators.max(1000)]),
@@ -96,6 +104,7 @@ export class NewProductComponent {
     });
     this.files = [];
     this.sizeInventoryService.setSubject(true);
+    this.currentCategory = undefined;
   }
 
   /**
@@ -111,10 +120,15 @@ export class NewProductComponent {
   }
 
   /**
-   * Sets Size and Inventory to FormGroup
+   * Updates SizeInventory[]
    * */
   sizeInv(arr: SizeInventory[]): void {
     this.rows = arr;
+  }
+
+  currentCategory: { categoryId: number; name: string } | undefined = undefined;
+  categoryClicked(obj: { categoryId: number; name: string }): void {
+    this.currentCategory = obj;
   }
 
   /**
@@ -123,26 +137,28 @@ export class NewProductComponent {
    * @return void
    * */
   submit(): Observable<number> {
+    if (!this.currentCategory) {
+      return of(0);
+    }
+
     const formData = new FormData();
 
     const dto = {
-      category: this.form.controls['category'].value,
-      collection: this.form.controls['collection'].value,
+      category_id: this.currentCategory.categoryId,
       name: this.form.controls['name'].value,
       priceCurrency: [
         { currency: SarreCurrency.NGN, price: this.form.controls['ngn'].value },
         { currency: SarreCurrency.USD , price: this.form.controls['usd'].value }
       ],
+      weight: this.form.controls['weight'].value,
       desc: this.form.controls['desc'].value?.trim(),
       visible: this.form.controls['visible'].value,
       colour: this.form.controls['colour'].value,
       sizeInventory: this.rows,
     }
 
-    const blob = new Blob([JSON.stringify(dto)], {
-      type: 'application/json'
-    });
-    formData.append('dto', blob);
+    formData
+      .append('dto', new Blob([JSON.stringify(dto)], { type: 'application/json' }));
 
     // append files
     this.files.forEach((file: File) => formData.append('files', file));
@@ -154,24 +170,24 @@ export class NewProductComponent {
    * Creates a new Product and fetches new products to updates product table
    * */
   private create(data: FormData): Observable<number> {
-    return this.newProductService.create(data).pipe(
-      switchMap((status: number) => {
-        this.sizeInventoryService.setSubject(true);
-        this.clear();
-        return this.productService.currency$
-          .pipe(
-            switchMap((currency) => this.productService
-              .allProducts(0, 20, currency)
-              .pipe(switchMap(() => of(status)))
-            )
-          );
-      }),
-      catchError((err: HttpErrorResponse) => {
-        const message = err.error ? err.error.message : err.message;
-        this.toastService.toastMessage(message);
-        return of(err.status);
-      })
-    );
+    return this.newProductService.create(data)
+      .pipe(
+        switchMap((status: number) => {
+          this.sizeInventoryService.setSubject(true);
+          this.clear();
+          return this.productService.currency$
+            .pipe(
+              switchMap((currency) => this.productService
+                .allProducts(0, 20, currency)
+                .pipe(switchMap(() => of(status)))
+              )
+            );
+        }),
+        catchError((err: HttpErrorResponse) => {
+          this.toastService.toastMessage(err.error ? err.error.message : err.message);
+          return of(err.status);
+        })
+      );
   }
 
 }

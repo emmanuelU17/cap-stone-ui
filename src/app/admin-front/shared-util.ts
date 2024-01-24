@@ -83,7 +83,7 @@ export interface SizeInventory {
 }
 
 // https://stackoverflow.com/questions/13499025/how-to-show-ckeditor-with-basic-toolbar
-export const CKEDITOR4CONFIG = {
+export const CkEditorConfig = {
   toolbar: [
     ['Format', 'Font', 'FontSize'],
     ['Bold', 'Italic', 'Underline', 'StrikeThrough'],

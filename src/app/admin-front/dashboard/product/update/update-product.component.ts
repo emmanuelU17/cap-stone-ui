@@ -2,8 +2,6 @@ import {ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit} from '@a
 import {CommonModule} from '@angular/common';
 import {catchError, combineLatest, map, Observable, of, ReplaySubject, startWith, switchMap, tap} from "rxjs";
 import {
-  CategoryResponse,
-  CKEDITOR4CONFIG,
   CustomRowMapper,
   ProductDetailResponse,
   ProductResponse,
@@ -13,31 +11,39 @@ import {
 import {HttpErrorResponse} from "@angular/common/http";
 import {ProductService} from "../product.service";
 import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
-import {CKEditorModule} from "ckeditor4-angular";
 import {DirectiveModule} from "../../../../directive/directive.module";
 import {CategoryService} from "../../category/category.service";
 import {DynamicTableComponent} from "../../util/dynamictable/dynamic-table.component";
 import {Variant} from "../../../../global-utils";
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {MatDialog, MatDialogModule} from "@angular/material/dialog";
 import {UpdateVariantComponent} from "../product-variant/updatevariant/update-variant.component";
 import {ToastService} from "../../../../shared-comp/toast/toast.service";
 import {CreateVariantComponent} from "../product-variant/create-variant/create-variant.component";
 import {UpdateProductService} from "./update-product.service";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {takeUntilDestroyed, toSignal} from "@angular/core/rxjs-interop";
 import {DeleteComponent} from "../../util/delete/delete.component";
 import {CustomUpdateVariant} from "../product-variant";
+import {CKEditorModule} from "@ckeditor/ckeditor5-angular";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import {CategoryHierarchyComponent} from "../../../../shared-comp/hierarchy/category-hierarchy.component";
 
 @Component({
   selector: 'app-update-product',
   standalone: true,
+  styles: [`
+    :host ::ng-deep .ck-editor__editable_inline {
+      min-height: 100px;
+    }
+  `],
   imports: [
     CommonModule,
     ReactiveFormsModule,
     CKEditorModule,
     DirectiveModule,
     DynamicTableComponent,
-    MatDialogModule
+    MatDialogModule,
+    CategoryHierarchyComponent
   ],
   templateUrl: './update-product.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -53,52 +59,56 @@ export class UpdateProductComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly toastService = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly productUUID = toSignal(
+    this.activeRoute.params.pipe(map((p: Params) => p as { id: string })),
+    { initialValue: { id: '' } }
+  );
 
-  // Get id from route
-  private id: string | null = this.activeRoute.snapshot.paramMap.get('id');
-  private uuid: string = this.id === null ? '' : this.id;
+  // custom object
+  private readonly product: ProductResponse | undefined = this.productService.products
+    .find((value: ProductResponse) => value.product_id === this.productUUID().id)
 
-  // Custom object
-  private product: ProductResponse | undefined = this.productService.products
-    .find((value: ProductResponse) => value.product_id === this.uuid)
+  categoryName = this.categoryService.categories
+    .find(c => c.name === this.product?.category)?.name;
 
-  data: { categoryId?: number, product?: ProductResponse } = {
+  readonly data: { categoryId?: number, product?: ProductResponse } = {
     categoryId: this.categoryService.categories
       .find(c => c.name === this.product?.category)?.category_id,
     product: this.product
   }
 
-  // Categories and Collections
-  categories$: Observable<CategoryResponse[]> = this.categoryService.categories$;
+  toggle = true;
+  readonly hierarchy$ = this.categoryService.hierarchy$;
 
-  // Table
-  thead: Array<keyof CustomRowMapper> = ['index', 'url', 'colour', 'is_visible', 'sku', 'inventory', 'size', 'action'];
+  // table
+  readonly thead: Array<keyof CustomRowMapper> = ['index', 'url', 'colour', 'is_visible', 'sku', 'inventory', 'size', 'action'];
   productVariants$: Observable<{
     state: string,
     error?: string,
     data?: CustomRowMapper[]
   }> = this.updateProductService
-    .fetchProductDetails(this.uuid)
+    .fetchProductDetails(this.productUUID().id)
     .pipe(
       map((arr: ProductDetailResponse[]) =>
         ({ state: 'LOADED', data: this.toCustomRowMapperArray(arr) })
       ),
       startWith({ state: 'LOADING' }),
-      catchError((err: HttpErrorResponse) => of({state: 'ERROR', error: err.error}))
+      catchError((err: HttpErrorResponse) =>
+        of({ state: 'ERROR', error: err.error ? err.error.message : err.message })
+      )
     );
 
   // Initially the product variant displayed and when user clicks on variant table
-  private productSubject$ = new ReplaySubject<CustomRowMapper>();
+  private readonly productSubject$ = new ReplaySubject<CustomRowMapper>();
   currentProduct$ = this.productSubject$.asObservable();
 
   // CKEditor
-  config = CKEDITOR4CONFIG;
+  readonly config = ClassicEditor;
 
   // Needed if a cx wants to create a product variant of the same colour
   private colours: string[] = [];
 
-  // FormGroup
-  form = this.fb.group({
+  readonly form = this.fb.group({
     name: new FormControl('', [Validators.required, Validators.max(50)]),
     sku: new FormControl({value: '', disabled: true}, [Validators.required]),
     price: new FormControl(0, Validators.required),
@@ -148,32 +158,28 @@ export class UpdateProductComponent implements OnInit {
       return data;
     });
 
-  private afterComponentClose<T extends { arr: ProductDetailResponse[] }> (obj: Observable<T>): void {
+  private afterComponentClose = <T extends { arr: ProductDetailResponse[] }> (obj: Observable<T>) =>
     obj.pipe(
-      tap((arr: { arr: ProductDetailResponse[] }): void => {
+      tap((arr: { arr: ProductDetailResponse[] }) => {
         if (!arr || !(arr.arr && arr.arr.length > 0)) {
-          return;
+          return
         }
-        const mapper = this.toCustomRowMapperArray(arr.arr);
-        this.productVariants$ = of({ state: 'LOADED', data: mapper });
+        this.productVariants$ = of({ state: 'LOADED', data: this.toCustomRowMapperArray(arr.arr) });
       }),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe();
-  }
+    );
 
   /**
    * Opens CreateVariantComponent
    * */
-  openCreateVariantComponent(): void {
+  openCreateVariantComponent(): Observable<number> {
     const open = this.dialog.open(CreateVariantComponent, {
       height: '450px',
       width: '900px',
       maxWidth: '100%',
       maxHeight: '100%',
-      data: { id: this.uuid, colours: this.colours }
+      data: { id: this.productUUID().id, colours: this.colours }
     });
-
-    this.afterComponentClose(open.afterClosed());
+    return this.afterComponentClose(open.afterClosed()).pipe(map(() => 0));
   }
 
   /** Return back to product component */
@@ -181,37 +187,18 @@ export class UpdateProductComponent implements OnInit {
     this.router.navigate(['/admin/dashboard/product']);
   }
 
-  // validates if we need to refresh categories and collections array
-  private onChangeCategoryOrCollection = false;
-
-  /**
-   * Updates data on change of category
-   * https://angular.io/guide/user-input
-   * */
-  onChangeCategory(event: Event): void {
-    const category: string = (event.target as HTMLInputElement).value;
-    if (!this.data.product) {
-      return;
-    }
-
-    this.data.product.category = category;
-    const cat: CategoryResponse | undefined = this.categoryService.categories
-      .find(c => c.name === category);
-
-    if (cat) {
-      this.onChangeCategoryOrCollection = true;
-      this.data.categoryId = cat.category_id
-    }
+  currentCategory: { categoryId: number; name: string } | undefined = undefined;
+  categoryClicked(obj: { categoryId: number; name: string }): void {
+    this.categoryName = obj.name;
+    this.currentCategory = obj;
   }
 
   /** Makes call to server to update product not product detail */
   onSubmit(): Observable<number> {
-    // Reactive form
     const name = this.form.controls['name'].value;
     const price = this.form.controls['price'].value;
     const desc = this.form.controls['desc'].value;
 
-    // Data
     const product = this.data.product;
     const cat = this.data.categoryId;
 
@@ -220,46 +207,49 @@ export class UpdateProductComponent implements OnInit {
       return of();
     }
 
-    // Make call to server
-    return this.productService.currency$.pipe(
-      switchMap((currency) => {
-        // Create payload
-        const payload: UpdateProduct = {
-          category_id: cat,
-          product_id: this.uuid,
-          name: name,
-          currency: currency,
-          price: price,
-          desc: desc.trim(),
-          category: product.category,
-        };
+    return this.productService.currency$
+      .pipe(
+        switchMap((currency) => {
+          // Create payload
+          const payload: UpdateProduct = {
+            category_id: this.currentCategory !== undefined && this.currentCategory.categoryId !== cat
+              ? this.currentCategory.categoryId : cat,
+            product_id: this.productUUID().id,
+            name: name,
+            currency: currency,
+            price: price,
+            desc: desc.trim(),
+            category: product.category,
+          };
 
-        return this.updateProduct(payload);
-      })
-    );
+          return this.updateProduct(
+            payload,
+            this.currentCategory !== undefined && this.currentCategory.categoryId !== cat
+          );
+        })
+      );
   }
 
   /** Makes a call to our server to update a Product */
-  private updateProduct(obj: UpdateProduct): Observable<number> {
-    return this.productService.updateProduct(obj).pipe(
-      switchMap((status: number) => {
-        const res = of(status);
-
-        const products$ = this.productService.currency$
-          .pipe(switchMap((currency) =>
-            this.productService.allProducts(0, 20, currency))
-          );
-        const categories$ = this.categoryService.allCategories();
-
-        // If user changes category or collection, refresh the arrays else only refresh products
-        return this.onChangeCategoryOrCollection
-          ? combineLatest([products$, categories$]).pipe(switchMap(() => res))
-          : products$.pipe(switchMap(() => res));
-      }),
-      catchError((err: HttpErrorResponse) => {
-        this.toastService.toastMessage(err.error.message);
-        return of(err.status);
-      })
+  private updateProduct(obj: UpdateProduct, bool: boolean): Observable<number> {
+    return this.productService.updateProduct(obj)
+      .pipe(
+        switchMap((status: number) => {
+          const res = of(status);
+          const products$ = this.productService.currency$
+            .pipe(switchMap((currency) =>
+              this.productService.allProducts(0, 20, currency))
+            );
+          const categories$ = this.categoryService.allCategories();
+          // If user changes category or collection, refresh the arrays else only refresh products
+          return bool
+            ? combineLatest([products$, categories$]).pipe(switchMap(() => res))
+            : products$.pipe(switchMap(() => res));
+        }),
+        catchError((err: HttpErrorResponse) => {
+          this.toastService.toastMessage(err.error ? err.error.message : err.message);
+          return of(err.status);
+        })
     );
   }
 
@@ -283,7 +273,7 @@ export class UpdateProductComponent implements OnInit {
         }
 
         const v: CustomUpdateVariant = {
-          productId: this.uuid,
+          productId: this.productUUID().id,
           productName: this.product.name,
           variant: {
             sku: content.data.sku,
@@ -302,7 +292,7 @@ export class UpdateProductComponent implements OnInit {
           data: v,
         })
 
-        this.afterComponentClose(open.afterClosed());
+        // this.afterComponentClose(open.afterClosed());
         break;
       }
 
@@ -313,7 +303,7 @@ export class UpdateProductComponent implements OnInit {
           .pipe(
             switchMap((status: number) => {
               return this.updateProductService
-                .fetchProductDetails(this.uuid)
+                .fetchProductDetails(this.productUUID().id)
                 .pipe(
                   tap((arr: ProductDetailResponse[]) => {
                     // On successful deletion, update productVariants$

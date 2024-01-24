@@ -1,10 +1,10 @@
-# Sarre The Brand UI
+# Ecommerce Application UI
 
 ## Technologies
 * Angular 17
 * Tailwind CSS
 * Material UI
-* CKEditor 4
+* CKEditor5
 
 ## Getting Started
 * NPM installed

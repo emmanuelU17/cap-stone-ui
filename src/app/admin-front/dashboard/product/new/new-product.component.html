@@ -59,7 +59,7 @@
         <!-- Description -->
         <div class="mb-2">
           <h4 class="capitalize">description <span class="text-red-500">*</span></h4>
-          <ckeditor [config]="config" formControlName="desc"></ckeditor>
+          <ckeditor [editor]="config" formControlName="desc"></ckeditor>
         </div>
       </div>
 
@@ -112,18 +112,31 @@
           </mat-radio-group>
         </div>
 
-        <div class="mb-2" *ngIf="categories$ | async as categories">
-          <h4 class="cx-font-size capitalize"><span class="text-red-500">*</span>category</h4>
-          <select
-            formControlName="category"
-            class="w-full p-3 rounded-md cursor-pointer capitalize border border-solid border-[var(--active)]"
-          >
-            <option value="" disabled selected>select category</option>
-            <option
-              [value]="option.name"
-              *ngFor="let option of categories"
-            >{{ option.name }}</option>
-          </select>
+        <div class="mb-2">
+          <div class="flex gap-1">
+            <h4 class="cx-font-size">
+              <span class="text-red-500">*</span>
+              Category <span class="text-xs text-blue-300">{{ currentCategory?.name }}</span>
+            </h4>
+
+            <button type="button" (click)="toggle = !toggle">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                   stroke="currentColor" class="w-4 h-4">
+                @if (toggle) {
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                } @else {
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14" />
+                }
+              </svg>
+            </button>
+          </div>
+
+          @if (!toggle) {
+            <div class="w-full p-2 flex gap-2 flex-col bg-[#eff2f5]">
+              <app-hierarchy [categories]="(hierarchy$ | async) || []"
+                             (emitter)="categoryClicked($event)"></app-hierarchy>
+            </div>
+          }
         </div>
       </div>
       <!-- End of mat-card right -->
@@ -132,21 +145,23 @@
       <div class="bg-[var(--white)] mb-2.5 p-2.5 rounded-md border border-solid border-[var(--active)]">
         <div class="py-1.5"><h2 class="cx-font-size capitalize">Attributes</h2></div>
 
+        <!-- weight -->
+        <div class="mb-2">
+          <h4 class="cx-font-size"><span class="text-red-500">*</span> Weight <span class="text-xs">kg</span></h4>
+          <input formControlName="weight" placeholder="kg" type="number"
+                 class="p-2.5 w-full flex-1 inline rounded-sm border border-solid border-[var(--border-outline)]"/>
+        </div>
+
         <!-- Colour -->
         <div class="mb-2">
-          <h4 class="cx-font-size capitalize"><span class="text-red-500">*</span>colour</h4>
-          <input
-            formControlName="colour"
-            placeholder="colour"
-            type="text"
-            class="p-2.5 w-full flex-1 inline rounded-sm border border-solid border-[var(--border-outline)]"
-          />
+          <h4 class="cx-font-size capitalize"><span class="text-red-500">*</span> colour</h4>
+          <input formControlName="colour" placeholder="colour" type="text"
+                 class="p-2.5 w-full flex-1 inline rounded-sm border border-solid border-[var(--border-outline)]"/>
         </div>
 
         <!-- Size and Inventory -->
         <div class="pt-2.5">
-          <app-size-inventory
-            (eventEmitter)="sizeInv($event)"></app-size-inventory>
+          <app-size-inventory (eventEmitter)="sizeInv($event)"></app-size-inventory>
         </div>
       </div>
 
@@ -158,13 +173,12 @@
     <button mat-stroked-button color="warn" [style.border-color]="'red'" type="button" (click)="clear()">
       cancel
     </button>
-    <button
-      class="text-white font-bold py-2 px-4 rounded bg-[var(--app-theme)]"
-      type="submit"
-      [disabled]="!form.valid || files.length === 0 || rows.length === 0"
-      [style]="{ 'background-color': form.valid && files.length > 0 && rows.length > 0 ? 'var(--app-theme-hover)' : 'var(--app-theme)' }"
-      [asyncButton]="submit()"
-    >create</button>
+    <button type="submit" [asyncButton]="submit()"
+            [disabled]="!form.valid || files.length === 0 || rows.length === 0 || !currentCategory"
+            [style]="{ 'background-color': form.valid && files.length > 0 && rows.length > 0 && currentCategory ? 'var(--app-theme-hover)' : 'var(--app-theme)' }"
+            class="text-white font-bold py-2 px-4 rounded bg-[var(--app-theme)]">
+      create
+    </button>
   </div>
 
 </form>

@@ -1,7 +1,7 @@
 @if (data.product && data.categoryId) {
   <!-- Title -->
   <div class="w-full flex py-2.5 px-0 gap-2.5">
-    <button type="button" class="md:px-2.5 border-[var(--border-outline)] border" (click)="returnToProductComponent()">
+    <button type="button" (click)="returnToProductComponent()" class="md:px-2.5 border-[var(--border-outline)] border">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
            class="w-6 h-6">
         <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18"/>
@@ -52,36 +52,57 @@
             </div>
           </div>
 
-          <!-- Form-Group Category -->
+          <!-- category -->
           <div class="mb-2">
-            <h3 class="capitalize pb-3.5"><span class="text-red-500">*</span> category</h3>
-            <div class="grid grid-cols-2 md:flex md:flex-1 gap-1.5">
-              <p class="">{{ data.product.category }}</p>
-              <select (change)="onChangeCategory($event)" class="p-1.5 rounded cursor-pointer border border-solid border-[var(--border-outline)]">
-                <option value="" disabled selected>change?</option>
-                <option *ngFor="let cat of categories$ | async" [value]="cat.name">{{ cat.name }}</option>
-              </select>
+            <div class="flex gap-1">
+              <h4 class="cx-font-size">
+                <span class="text-red-500">*</span>
+                Category <span class="text-xs text-blue-300">{{ categoryName }}</span>
+              </h4>
+
+              <button type="button" (click)="toggle = !toggle">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                     stroke="currentColor" class="w-4 h-4">
+                  @if (toggle) {
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                  } @else {
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14" />
+                  }
+                </svg>
+              </button>
             </div>
+
+            @if (!toggle) {
+              <div class="w-full p-2 flex gap-2 flex-col bg-[#eff2f5]">
+                <app-hierarchy [categories]="(hierarchy$ | async) || []"
+                               (emitter)="categoryClicked($event)"></app-hierarchy>
+              </div>
+            }
+
+          </div>
+
+          <!-- weight -->
+          <div class="mb-2">
+            <h4 class="cx-font-size"><span class="text-red-500">*</span> Weight <span class="text-xs">kg</span></h4>
+            <!-- formControlName="weight" -->
+            <input  placeholder="kg" type="number"
+                   class="p-2.5 w-full flex-1 inline rounded-sm border border-solid border-[var(--border-outline)]"/>
           </div>
 
           <!-- Form-Group description -->
           <div class="flex flex-col gap-2">
             <h3 class="capitalize"><span class="text-red-500">*</span> description</h3>
-            <ckeditor [config]="config" formControlName="desc"></ckeditor>
+            <ckeditor [editor]="config" formControlName="desc" data="<p>Hello, world!</p>"></ckeditor>
           </div>
-
         </div>
 
         <div class="mb-2.5 p-2.5 rounded-md border border-solid border-[var(--active)] bg-[var(--white)]">
           <div class="mb-1.5"><h2 class="cx-font-size capitalize"><span class="text-red-500">*</span> media</h2></div>
           <div class="flex flex-row flex-wrap items-center gap-2.5">
-            <div
-              class="basis-1/4 aspect-h-1 aspect-w-1 overflow-hidden rounded-md bg-gray-200 lg:aspect-none"
-              *ngFor="let image of currentDetails.urls; let i = index"
-              [style]="{ 'flex-grow': i == 0 ? '1' : '0' }"
-            >
-              <img [src]="image" class="h-full w-full rounded-md object-cover object-center lg:h-full lg:w-full"
-                   alt="image">
+            <div *ngFor="let image of currentDetails.urls; let i = index" [style]="{ 'flex-grow': i == 0 ? '1' : '0' }"
+              class="basis-1/4 aspect-h-1 aspect-w-1 overflow-hidden rounded-md bg-gray-200 lg:aspect-none">
+              <img [src]="image" alt="image"
+                   class="h-full w-full rounded-md object-cover object-center lg:h-full lg:w-full">
             </div>
           </div>
         </div>
@@ -91,12 +112,9 @@
       <div class="flex justify-between py-2.5 px-1.5">
         <button (click)="returnToProductComponent()" type="button"
                 class="text-white font-bold py-2 px-4 rounded border bg-red-500">cancel</button>
-
-        <button type="submit"
-                class="text-white font-bold py-2 px-4 rounded bg-[var(--app-theme)]"
-                [disabled]="!form.valid"
+        <button type="submit" [disabled]="!form.valid" [asyncButton]="onSubmit()"
                 [style]="{ 'background-color': form.valid ? 'var(--app-theme-hover)' : 'var(--app-theme)' }"
-                [asyncButton]="onSubmit()">update</button>
+                class="text-white font-bold py-2 px-4 rounded bg-[var(--app-theme)]">update</button>
       </div>
     </form>
 
@@ -134,14 +152,11 @@
           }
         }
       }
-
     </div>
-
   </div>
-
 } @else {
   <div class="lg-scr p-10 text-3xl text-red-500">
-    <button type="button" class="md:px-2.5 border-[var(--border-outline)] border" (click)="returnToProductComponent()">
+    <button (click)="returnToProductComponent()" type="button" class="md:px-2.5 border-[var(--border-outline)] border">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
            class="w-6 h-6">
         <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18"/>
