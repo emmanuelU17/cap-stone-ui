@@ -128,14 +128,12 @@ import {SarreCurrency, VARIABLE_IS_NUMERIC} from "../../../global-utils";
           </div>
 
           <div class="p-2 xl:p-0 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-
             @for (product of products$ | async; track product.product_id; let i = $index) {
               <button type="button" (click)="route('/shop/product/' + product.product_id)">
                 <app-card [url]="product.image" [name]="product.name" [price]="product.price"
                           [currency]="currency(product.currency)"></app-card>
               </button>
             }
-
           </div>
         </div>
 
@@ -199,10 +197,10 @@ export class CartComponent {
 
     this.objSignal.set({ sku: sku, qty: num === qty ? qty : num })
 
-    this.bool$ = of(this.objSignal())
+    this.bool$ = this.bool$
       .pipe(
-        switchMap((obj: { sku: string, qty: number }) => of(obj).pipe(delay(1070))),
-        switchMap((obj) => obj.qty === 0
+        switchMap(() => of(this.objSignal()).pipe(delay(1070))),
+        switchMap((obj: { sku: string, qty: number }) => obj.qty === 0
           ? this.remove(obj.sku)
             .pipe(map(() => false), startWith(true))
           : this.cartService.createCart({ sku: obj.sku, qty: obj.qty })

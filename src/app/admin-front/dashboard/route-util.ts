@@ -1,12 +1,10 @@
-interface List {
-  icon: string,
-  name: string,
-  route: string
-}
-
 export interface Display {
   title: string;
-  array: List[];
+  array: {
+    icon: string,
+    name: string,
+    route: string
+  }[];
 }
 
 export const DASHBOARDLINKS: Display[] = [
