@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {DirectiveModule} from "../../../directive/directive.module";
 import {CardComponent} from "../../utils/card/card.component";
@@ -6,14 +6,13 @@ import {CartService} from "./cart.service";
 import {FooterService} from "../../utils/footer/footer.service";
 import {Router} from "@angular/router";
 import {HomeService} from "../../home/home.service";
-import {catchError, debounceTime, distinctUntilChanged, map, Observable, of, startWith, switchMap} from "rxjs";
+import {catchError, delay, map, Observable, of, startWith, switchMap} from "rxjs";
 import {SarreCurrency, VARIABLE_IS_NUMERIC} from "../../../global-utils";
-import {FormControl, ReactiveFormsModule} from "@angular/forms";
 
 @Component({
   selector: 'app-cart',
   standalone: true,
-  imports: [CommonModule, DirectiveModule, CardComponent, ReactiveFormsModule],
+  imports: [CommonModule, DirectiveModule, CardComponent],
   styles: [`
     /* Chrome, Safari, Edge, Opera */
     input::-webkit-outer-spin-button,
@@ -61,7 +60,7 @@ import {FormControl, ReactiveFormsModule} from "@angular/forms";
                       <div class="flex flex-1 items-end justify-between text-sm">
                         <div>
                           <p class="text-gray-500">{{ detail.size }}</p>
-                          <input type="number" [value]="detail.qty" (click)="qtyChange(detail.sku)"
+                          <input type="number" [value]="detail.qty" (keyup)="qtyChange($event, detail.sku, detail.qty)"
                                  class="qty-box p-2.5 flex-1 w-full rounded-sm border border-solid border-[var(--border-outline)]">
                         </div>
 
@@ -166,7 +165,7 @@ export class CartComponent {
   readonly products$ = this.homeService.products$;
 
   readonly carts$ = this.cartService.cart$;
-  currency$ = this.footService.currency$
+  readonly currency$ = this.footService.currency$
     .pipe(switchMap((c: SarreCurrency) => this.currency(c)));
 
   currency = (str: string): string => this.footService.currency(str);
@@ -174,55 +173,43 @@ export class CartComponent {
   route = (route: string): void => { this.router.navigate([`${route}`]); }
 
   /**
-   * Removes Item from Cart
+   * removes item from a users cart
    * */
   remove = (sku: string): Observable<number> => this.cartService.removeFromCart(sku);
 
   readonly total$ = this.cartService.total$;
 
-  /**
-   * updates sku based on input button clicked
-   * */
-  private sku = '';
-  qtyChange(sku: string): void {
-    this.sku = sku;
-  }
+  private readonly objSignal =
+    signal<{ sku: string, qty: number  }>({ sku: '', qty: -1 });
 
   /**
-   * {@code $bool} basically receives a users input using {@code FormControl} and
-   * maps to a custom object { sku: string, qty: number }. If qty which is the users
-   * input is less than 0 do nothing. But if it is zero, make a delete call to the
-   * server else if it is greater than zero, make call to server to update.
-   *
-   * @return {@code Observable} of type boolean where if it is true, a loading modal
-   * is displayed else modal is removed.
+   * Updates qty based on a {@code Product} sku. As far as bool,
+   * it displays a loading screen 1070 ms after a user enters their input.
    * */
-  readonly formControl = new FormControl();
-  readonly bool$ = this.formControl.valueChanges
-    .pipe(
-      distinctUntilChanged(),
-      debounceTime(700),
-      // validate value is numeric else return -1
-      // if value is numeric but less than 0 return -1 else return num
-      map((value: string) => VARIABLE_IS_NUMERIC(value)
-        ? (
-          Number(value) < 0
-            ? { sku : this.sku, qty: -1 }
-            : { sku : this.sku, qty: Number(value) }
-        )
-        : { sku : this.sku, qty: -1 }
-      ),
-      switchMap((obj: { sku: string, qty: number }) => obj.qty < 0
-        ? of(false)
-        : (
-          obj.qty === 0
-            ? this.remove(obj.sku)
-              .pipe(map(() => false), startWith(true))
-            : this.cartService.createCart({ sku: obj.sku, qty: obj.qty })
-              .pipe(map(() => false), startWith(true))
-        )
-      ),
-      catchError(() => of(false))
-    );
+  bool$ = of(false);
+  qtyChange(e: KeyboardEvent, sku: string, qty: number): void {
+    const eventQty = (e.target as HTMLInputElement).value;
+
+    if (!VARIABLE_IS_NUMERIC(eventQty))
+      return;
+    else if (VARIABLE_IS_NUMERIC(eventQty) && Number(eventQty) < 0)
+      return;
+
+    const num = Number(eventQty);
+
+    this.objSignal.set({ sku: sku, qty: num === qty ? qty : num })
+
+    this.bool$ = of(this.objSignal())
+      .pipe(
+        switchMap((obj: { sku: string, qty: number }) => of(obj).pipe(delay(1070))),
+        switchMap((obj) => obj.qty === 0
+          ? this.remove(obj.sku)
+            .pipe(map(() => false), startWith(true))
+          : this.cartService.createCart({ sku: obj.sku, qty: obj.qty })
+            .pipe(map(() => false), startWith(true))
+        ),
+        catchError(() => of(false))
+      );
+  }
 
 }
