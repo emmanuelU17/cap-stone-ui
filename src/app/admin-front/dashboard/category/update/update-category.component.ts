@@ -10,11 +10,13 @@ import {DirectiveModule} from "../../../../directive/directive.module";
 import {HttpErrorResponse} from "@angular/common/http";
 import {Page} from "../../../../global-utils";
 import {CategoryService} from "../category.service";
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {ProductService} from "../../product/product.service";
 import {ToastService} from "../../../../shared-comp/toast/toast.service";
 import {MatDialogModule} from "@angular/material/dialog";
 import {CategoryHierarchyComponent} from "../../../../shared-comp/hierarchy/category-hierarchy.component";
+import {toSignal} from "@angular/core/rxjs-interop";
+import {mapper, ProductMapper} from "../../util/mapper";
 
 @Component({
   selector: 'app-update-category',
@@ -41,31 +43,34 @@ export class UpdateCategoryComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly toastService = inject(ToastService);
   private readonly router = inject(Router);
-
-  // Get id from route
-  private id: string | null = this.activeRoute.snapshot.paramMap.get('id');
-  private uuid: number = this.id !== null ? Number(this.id) : -1;
+  private readonly categoryId = toSignal(
+    this.activeRoute.params.pipe(
+      map((p: Params) => p as { id: string }),
+      map((obj) => Number(obj.id))
+    ),
+    { initialValue: -1 }
+  );
 
   readonly hierarchy$ = this.categoryService.hierarchy$;
 
   readonly parent = signal<{ categoryId: number, name: string } | undefined>(undefined);
 
   data: CategoryResponse | undefined = this.categoryService.categories
-    .find(c => c.category_id === this.uuid);
+    .find(c => c.category_id === this.categoryId());
 
   // Table
-  thead: Array<keyof ProductResponse> = ['image', 'product_id', 'name', 'desc', 'currency', 'price'];
+  thead: Array<keyof ProductMapper> = ['index', 'image', 'name', 'currency', 'price'];
   data$: Observable<{
     state: string,
     error?: string,
-    data?: Page<ProductResponse>
+    data?: Page<ProductMapper>
   }> = this.productService.currency$
     .pipe(
       switchMap((currency) => this.categoryService
-        .allProductsByCategory(this.uuid, 0, 20, currency)
+        .allProductsByCategory(this.categoryId(), 0, 20, currency)
         .pipe(
-          map((arr: Page<ProductResponse>) => ({ state: 'LOADED', data: arr })),
-          startWith({state: 'LOADING'}),
+          map((res: Page<ProductResponse>) => ({ state: 'LOADED', data: mapper(res) })),
+          startWith({ state: 'LOADING' }),
           catchError((err: HttpErrorResponse) =>
             of({ state: 'ERROR', error: err.error ? err.error.message : err.message })
           )
@@ -99,8 +104,8 @@ export class UpdateCategoryComponent implements OnInit {
   }
 
   /** Onclick of product title in table, routes client to update product component */
-  eventEmitter(content: TableContent<ProductResponse>): void {
-    this.router.navigate([`/admin/dashboard/product/${content.data.product_id}`]);
+  eventEmitter(content: TableContent<ProductMapper>): void {
+    this.router.navigate([`/admin/dashboard/product/${content.data.productId}`]);
   }
 
   displayHierarchy = false;
@@ -119,8 +124,8 @@ export class UpdateCategoryComponent implements OnInit {
     this.data$ = this.productService.currency$
       .pipe(
         switchMap((currency) => this.categoryService
-          .allProductsByCategory(this.uuid, page.page, page.size, currency)
-          .pipe(map((res) => ({ state: 'LOADED', data: res })))
+          .allProductsByCategory(this.categoryId(), page.page, page.size, currency)
+          .pipe(map((res) => ({ state: 'LOADED', data: mapper(res) })))
         ),
         startWith({ state: 'LOADING' }),
         catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error.message }))
@@ -139,20 +144,20 @@ export class UpdateCategoryComponent implements OnInit {
     }
 
     return this.categoryService
-      .updateCategory({ category_id: this.uuid, name: name, visible: visible, parent_id: this.parent()?.categoryId })
+      .updateCategory({ category_id: this.categoryId(), name: name, visible: visible, parent_id: this.parent()?.categoryId })
       .pipe(
         switchMap((status: number): Observable<number> => {
-          const res = of(status);
-
-          // Update ProductResponse and CategoryResponse array
+          // update ProductResponse and CategoryResponse array
           const product$ = this.productService.currency$
             .pipe(switchMap((currency) =>
               this.productService.allProducts(0, 20, currency))
             );
+
           const categories$ = this.categoryService.allCategories();
 
           // combineLatest as we need both responses
-          return combineLatest([product$, categories$]).pipe(switchMap(() => res));
+          return combineLatest([product$, categories$])
+            .pipe(switchMap(() => of(status)));
         }),
         catchError((err: HttpErrorResponse) => {
           this.toastService.toastMessage(err.error.message);

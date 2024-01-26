@@ -12,7 +12,7 @@ export class ProductService {
 
   private readonly HOST: string | undefined = environment.domain + 'api/v1/worker/product';
   private readonly http = inject(HttpClient);
-  private readonly productSubject = new ReplaySubject<Page<ProductResponse>>()
+  private readonly productSubject = new ReplaySubject<Page<ProductResponse>>();
 
   readonly products$ = this.productSubject.asObservable();
   products: ProductResponse[] = [];
@@ -46,7 +46,7 @@ export class ProductService {
   deleteProduct(id: string): Observable<number> {
     return this.http.delete<HttpResponse<any>>(`${this.HOST}`, {
       observe: 'response',
-      params: {id: id},
+      params: { id: id },
       withCredentials: true
     }).pipe(map((res: HttpResponse<any>) => res.status));
   }
@@ -83,16 +83,16 @@ export class ProductService {
     status: number,
     categories$: Observable<CategoryResponse[]>
   ): Observable<{ status: number, message: string }> {
-    // Refresh Category and Product Array
-    const products$ = this.currency$.pipe(
-      switchMap((currency) => this.allProducts(0, 20, currency))
-    );
+    // refresh Category and Product Array
+    const products$ = this.currency$
+      .pipe(switchMap((currency) => this.allProducts(0, 20, currency)));
 
-    return of(status).pipe(
-      switchMap((num: number) => combineLatest([products$, categories$])
+    return of(status)
+      .pipe(
+        switchMap((num: number) => combineLatest([products$, categories$])
           .pipe(map(() => ({ status: num, message: 'deleted!' })))
-      )
-    );
+        )
+      );
   }
 
 }

@@ -1,8 +1,7 @@
-import {ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {catchError, combineLatest, map, Observable, of, ReplaySubject, startWith, switchMap, tap} from "rxjs";
 import {
-  CustomRowMapper,
   ProductDetailResponse,
   ProductResponse,
   TableContent,
@@ -21,12 +20,24 @@ import {UpdateVariantComponent} from "../product-variant/updatevariant/update-va
 import {ToastService} from "../../../../shared-comp/toast/toast.service";
 import {CreateVariantComponent} from "../product-variant/create-variant/create-variant.component";
 import {UpdateProductService} from "./update-product.service";
-import {takeUntilDestroyed, toSignal} from "@angular/core/rxjs-interop";
+import {toSignal} from "@angular/core/rxjs-interop";
 import {DeleteComponent} from "../../util/delete/delete.component";
 import {CustomUpdateVariant} from "../product-variant";
 import {CKEditorModule} from "@ckeditor/ckeditor5-angular";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import {CategoryHierarchyComponent} from "../../../../shared-comp/hierarchy/category-hierarchy.component";
+
+interface CustomRowMapper {
+  index: number;
+  colour: string;
+  visible: boolean;
+  image: string;
+  urls?: string[];
+  sku: string;
+  inventory: number;
+  size: string;
+  action: string
+}
 
 @Component({
   selector: 'app-update-product',
@@ -58,7 +69,6 @@ export class UpdateProductComponent implements OnInit {
   private readonly categoryService = inject(CategoryService);
   private readonly dialog = inject(MatDialog);
   private readonly toastService = inject(ToastService);
-  private readonly destroyRef = inject(DestroyRef);
   private readonly productUUID = toSignal(
     this.activeRoute.params.pipe(map((p: Params) => p as { id: string })),
     { initialValue: { id: '' } }
@@ -81,13 +91,13 @@ export class UpdateProductComponent implements OnInit {
   readonly hierarchy$ = this.categoryService.hierarchy$;
 
   // table
-  readonly thead: Array<keyof CustomRowMapper> = ['index', 'url', 'colour', 'is_visible', 'sku', 'inventory', 'size', 'action'];
+  readonly thead: Array<keyof CustomRowMapper> = ['index', 'image', 'colour', 'visible', 'sku', 'inventory', 'size', 'action'];
   productVariants$: Observable<{
     state: string,
     error?: string,
     data?: CustomRowMapper[]
   }> = this.updateProductService
-    .fetchProductDetails(this.productUUID().id)
+    .productDetailsByProductUUID(this.productUUID().id)
     .pipe(
       map((arr: ProductDetailResponse[]) =>
         ({ state: 'LOADED', data: this.toCustomRowMapperArray(arr) })
@@ -112,17 +122,17 @@ export class UpdateProductComponent implements OnInit {
     name: new FormControl('', [Validators.required, Validators.max(50)]),
     sku: new FormControl({value: '', disabled: true}, [Validators.required]),
     price: new FormControl(0, Validators.required),
+    weight: new FormControl(0, [Validators.required]),
     desc: new FormControl('', [Validators.required, Validators.max(1000)]),
   });
 
   ngOnInit(): void {
-    if (!this.data.product) {
-      return;
+    if (this.data.product) {
+      this.form.controls['name'].setValue(this.data.product.name);
+      this.form.controls['price'].setValue(this.data.product.price);
+      this.form.controls['desc'].setValue(this.data.product.desc);
+      this.form.controls['weight'].setValue(this.data.product.weight);
     }
-
-    this.form.controls['name'].setValue(this.data.product.name);
-    this.form.controls['price'].setValue(this.data.product.price);
-    this.form.controls['desc'].setValue(this.data.product.desc);
   }
 
   /**
@@ -139,10 +149,10 @@ export class UpdateProductComponent implements OnInit {
       res.variants.forEach((variant: Variant, index: number): void => {
         const obj: CustomRowMapper = {
           index: index,
-          url: res.url[0],
+          image: res.url[0],
           urls: res.url,
           colour: res.colour,
-          is_visible: res.is_visible,
+          visible: res.is_visible,
           sku: variant.sku,
           inventory: Number(variant.inventory),
           size: variant.size,
@@ -198,19 +208,19 @@ export class UpdateProductComponent implements OnInit {
     const name = this.form.controls['name'].value;
     const price = this.form.controls['price'].value;
     const desc = this.form.controls['desc'].value;
+    const weight = this.form.controls['weight'].value;
 
     const product = this.data.product;
     const cat = this.data.categoryId;
 
     // Validation
-    if (!name || !price || !desc || !product || !cat) {
+    if (!name || !price || !desc || !product || !cat || !weight) {
       return of();
     }
 
     return this.productService.currency$
       .pipe(
         switchMap((currency) => {
-          // Create payload
           const payload: UpdateProduct = {
             category_id: this.currentCategory !== undefined && this.currentCategory.categoryId !== cat
               ? this.currentCategory.categoryId : cat,
@@ -220,6 +230,7 @@ export class UpdateProductComponent implements OnInit {
             price: price,
             desc: desc.trim(),
             category: product.category,
+            weight: weight
           };
 
           return this.updateProduct(
@@ -230,7 +241,7 @@ export class UpdateProductComponent implements OnInit {
       );
   }
 
-  /** Makes a call to our server to update a Product */
+  /** Make a call to our server to update a Product */
   private updateProduct(obj: UpdateProduct, bool: boolean): Observable<number> {
     return this.productService.updateProduct(obj)
       .pipe(
@@ -250,7 +261,7 @@ export class UpdateProductComponent implements OnInit {
           this.toastService.toastMessage(err.error ? err.error.message : err.message);
           return of(err.status);
         })
-    );
+      );
   }
 
   /**
@@ -278,7 +289,7 @@ export class UpdateProductComponent implements OnInit {
           variant: {
             sku: content.data.sku,
             colour: content.data.colour,
-            is_visible: content.data.is_visible,
+            is_visible: content.data.visible,
             qty: content.data.inventory,
             size: content.data.size
           }
@@ -292,18 +303,18 @@ export class UpdateProductComponent implements OnInit {
           data: v,
         })
 
-        // this.afterComponentClose(open.afterClosed());
+        this.afterComponentClose(open.afterClosed());
         break;
       }
 
       case 'delete': {
         // Delete Observable/Request
         const obs = this.updateProductService
-          .deleteVariant(content.data.sku)
+          .deleteVariantBySku(content.data.sku)
           .pipe(
             switchMap((status: number) => {
               return this.updateProductService
-                .fetchProductDetails(this.productUUID().id)
+                .productDetailsByProductUUID(this.productUUID().id)
                 .pipe(
                   tap((arr: ProductDetailResponse[]) => {
                     // On successful deletion, update productVariants$

@@ -5,10 +5,18 @@ import {MatDialog, MatDialogModule} from "@angular/material/dialog";
 import {CategoryService} from "../category.service";
 import {ProductService} from "../../product/product.service";
 import {Router, RouterLink} from "@angular/router";
-import {CategoryResponse, TableContent} from "../../../shared-util";
-import {catchError, of, switchMap} from "rxjs";
+import {TableContent} from "../../../shared-util";
+import {catchError, map, of, switchMap} from "rxjs";
 import {HttpErrorResponse} from "@angular/common/http";
 import {DeleteComponent} from "../../util/delete/delete.component";
+
+interface CategoryResponseMapper {
+  index: number;
+  categoryId: number;
+  name: string;
+  visible: boolean;
+  delete: string;
+}
 
 @Component({
   selector: 'app-category-impl',
@@ -51,20 +59,31 @@ export class CategoryImplComponent {
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
 
-  data$ = this.categoryService.categories$;
-  tHead: Array<keyof CategoryResponse> = ['category_id', 'parent_id', 'name', 'visible', 'children', 'action'];
-  columnsToShow = ['category_id', 'parent_id', 'name', 'visible', 'action'];
+  readonly data$ = this.categoryService.categories$
+    .pipe(
+      map((arr) => arr
+        .map((obj) => ({
+          index: 0,
+          categoryId: obj.category_id,
+          name: obj.name,
+          visible: obj.visible,
+          delete: ''
+        }))
+      )
+    );
 
-  infoFromTableComponent(content: TableContent<CategoryResponse>): void {
+  readonly tHead: Array<keyof CategoryResponseMapper> = ['index', 'name', 'visible', 'delete'];
+
+  infoFromTableComponent(content: TableContent<CategoryResponseMapper>): void {
     switch (content.key) {
       case 'view':
         break;
       case 'edit':
-        this.router.navigate([`/admin/dashboard/category/${content.data.category_id}`]);
+        this.router.navigate([`/admin/dashboard/category/${content.data.categoryId}`]);
         break;
       case 'delete':
         const obs = this.categoryService
-          .deleteCategory(content.data.category_id)
+          .deleteCategory(content.data.categoryId)
           .pipe(
             switchMap((status: number) =>
               this.productService.action(status, this.categoryService.allCategories())

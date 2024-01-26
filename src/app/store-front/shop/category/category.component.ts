@@ -1,6 +1,5 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {catchError, map, Observable, of, startWith, switchMap, tap} from "rxjs";
-import {CategoryService} from "./category.service";
 import {Product} from "../../store-front-utils";
 import {CommonModule} from "@angular/common";
 import {CardComponent} from "../../utils/card/card.component";
@@ -11,6 +10,7 @@ import {FooterService} from "../../utils/footer/footer.service";
 import {Page, SarreCurrency} from "../../../global-utils";
 import {PaginatorComponent} from "../../../shared-comp/paginator/paginator.component";
 import {UtilService} from "../../../service/util.service";
+import {ShopService} from "../shop.service";
 
 @Component({
   selector: 'app-category',
@@ -22,7 +22,7 @@ import {UtilService} from "../../../service/util.service";
 export class CategoryComponent {
 
   private readonly footService = inject(FooterService);
-  private readonly categoryService = inject(CategoryService);
+  private readonly shopService = inject(ShopService);
   private readonly utilService = inject(UtilService);
 
   totalElements = 0;
@@ -31,7 +31,7 @@ export class CategoryComponent {
 
   currency = (str: string): string => this.footService.currency(str);
 
-  readonly categories$ = this.categoryService.categories$;
+  readonly categories$ = this.shopService.categories$;
 
   /**
    * filters products array in ascending or descending order based on price
@@ -48,11 +48,11 @@ export class CategoryComponent {
   categoryImpl = (page: number) => this.footService
     .currency$
     .pipe(
-      switchMap((currency) => this.categoryService.category$
+      switchMap((currency) => this.shopService.category$
         .pipe(map((categoryId) => ({ id: categoryId, currency: currency })))
       ),
-      switchMap((obj: { id: number, currency: SarreCurrency }) => this.categoryService
-        .productsBasedOnCategory(obj.id, obj.currency, page)
+      switchMap((obj: { id: number, currency: SarreCurrency }) => this.shopService
+        .productsBasedOnCategoryId(obj.id, obj.currency, page)
         .pipe(
           tap((p: Page<Product>): void => { this.totalElements = p.content.length; }),
           map((p: Page<Product>) => ({ state: 'LOADED', data: p }))
@@ -77,7 +77,7 @@ export class CategoryComponent {
    * Refresh products based on category clicked
    * */
   categoryClicked(obj: { categoryId: number; name: string }): void {
-    this.categoryService.currentCategorySubject.next(obj.categoryId);
+    this.shopService.currentCategorySubject.next(obj.categoryId);
   }
 
 }

@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {PageChange, TableContent} from "../../../shared-util";
 import {Page} from "../../../../global-utils";
@@ -35,179 +35,91 @@ import {PaginatorComponent} from "../../../../shared-comp/paginator/paginator.co
     `
   ],
   template: `
-    <!-- Product Template -->
-    <ng-container *ngIf="paginationTable">
-      <div class="w-full rounded-md overflow-x-auto bg-[var(--white)]">
-        <table>
-          <thead>
-          <tr>
-            <th *ngFor="let col of tHead" [ngSwitch]="col">
-              <!-- Do not show Description and ID -->
-              <ng-container *ngSwitchCase="'product_id'">No.</ng-container>
-              <ng-container *ngSwitchCase="'action'">Delete</ng-container>
-              <ng-container *ngSwitchCase="'desc'"></ng-container>
-              <ng-container *ngSwitchDefault>{{ col }}</ng-container>
-            </th>
-          </tr>
-          </thead>
-
-          <tbody>
-          <tr *ngFor="let data of pageData.content; let i = index;">
-            <td *ngFor="let head of tHead">
-              <ng-container [ngSwitch]="head">
-
-                <ng-container *ngSwitchCase="'product_id'">
-                  {{ (i + 1) + (currentPage() * 10) }}
-                </ng-container>
-
-                <!-- Image -->
-                <div *ngSwitchCase="'image'" class="rounded overflow-hidden min-w-[2.75rem] min-h-[2.75rem] max-w-[7rem] max-h-[4rem]">
-                  <img [src]="data[head]" alt="image" class="w-full h-full object-cover object-center">
-                </div>
-
-                <!-- Product Name -->
-                <ng-container *ngSwitchCase="'name'">
-                  <div>
-                    <button
-                      (click)="onclickProduct(data,'product')"
-                      class="outline-none bg-transparent text-blue-400 hover:border-b hover:border-blue-500"
-                      type="button"
-                    >{{ data[head] }}</button>
-                  </div>
-                </ng-container>
-
-                <div *ngSwitchCase="'action'">
-                  <!-- Delete button -->
-                  <button type="button" (click)="onclickProduct(data,'delete')" class="outline-none border-none bg-transparent text-red-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                         stroke="currentColor" class="w-6 h-6">
-                      <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/>
-                    </svg>
-                  </button>
-                </div>
-
-                <!-- Do not show Description -->
-                <ng-container *ngSwitchCase="'desc'"></ng-container>
-
-                <!-- Visible -->
-                <div *ngSwitchCase="'is_visible'" [style]="{ 'color': data[head] === true ? 'green' : 'red' }">
-                  {{ data[head] }}
-                </div>
-
-                <!-- Default -->
-                <div *ngSwitchDefault>{{ data[head] }}</div>
-              </ng-container>
-            </td>
-
-          </tr>
-          </tbody>
-        </table>
-
-        <div class="w-full mt-6 p-1.5">
-          <app-paginator
-            [currentPage]="pageData.number"
-            [totalPages]="pageData.size"
-            [totalElements]="pageData.totalElements"
-            (goTo)="onPageNumber($event)"
-          ></app-paginator>
-        </div>
-
-      </div>
-    </ng-container>
-
-    <!-- None Product Template (no need for pagination) -->
-    <ng-container *ngIf="!paginationTable">
+    <div class="w-full rounded-md overflow-x-auto bg-[var(--white)]">
       <table class="table-auto">
         <thead>
         <tr>
-          <th *ngFor="let col of tHead" [ngSwitch]="col">
-            <!-- Do not show Description and ID -->
-            <ng-container *ngSwitchCase="'category_id'">Category Id</ng-container>
-            <ng-container *ngSwitchCase="'parent_id'">Parent Id</ng-container>
-            <ng-container *ngSwitchCase="'index'">No.</ng-container>
-            <ng-container *ngSwitchCase="'name'">Name</ng-container>
-            <ng-container *ngSwitchCase="'action'">Delete</ng-container>
-            <ng-container *ngSwitchCase="'is_visible'">visible</ng-container>
-            <ng-container *ngSwitchCase="'visible'">visible</ng-container>
-            <ng-container *ngSwitchCase="'children'"></ng-container>
-            <ng-container *ngSwitchDefault>{{ col }}</ng-container>
-          </th>
+          @for (col of tHead; track col) {
+            <th [ngSwitch]="col">{{ col }}</th>
+          }
         </tr>
         </thead>
 
         <tbody>
-        <tr *ngFor="let d of data; let i = index">
-          <td class="cursor-pointer" *ngFor="let head of tHead" (click)="onClick(d,'view')">
-            <ng-container [ngSwitch]="head">
+        <tr *ngFor="let data of paginationTable ? pageData.content : data; let i = index;">
+          @for (head of tHead; track head) {
+            <td class="cursor-pointer">
+              @switch (head) {
+                @case ('index') {
+                  {{ i + 1 }}
+                }
 
-              <!-- Image -->
-              <div class="rounded overflow-hidden min-w-[2.75rem] min-h-[2.75rem] max-w-[7rem] max-h-[4rem]"
-                   *ngSwitchCase="'url'">
-                <img [src]="d[head]" alt="image" class="w-full h-full object-cover object-center">
-              </div>
+                @case ('image') {
+                  <div class="rounded overflow-hidden min-w-[2.75rem] min-h-[2.75rem] max-w-[7rem] max-h-[4rem]">
+                    <img [src]="data[head]" alt="image" class="w-full h-full object-cover object-center">
+                  </div>
+                }
 
-              <!-- Buttons -->
-              <div class="flex" *ngSwitchCase="'action'">
-                <!-- Delete button -->
-                <button type="button" (click)="onClick(d,'delete')" class="outline-none border-none bg-transparent text-red-500">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                       stroke="currentColor" class="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                          d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/>
-                  </svg>
-                </button>
-              </div>
+                @case ('name') {
+                  <button type="button" (click)="paginationTable ? onClick(data, 'product') : onClick(data, 'edit')"
+                          class="outline-none bg-transparent text-blue-400 hover:border-b hover:border-blue-500">
+                    {{ data[head] }}
+                  </button>
+                }
 
-              <ng-container *ngSwitchCase="'category_id'">{{ d[head] }}</ng-container>
-              <ng-container *ngSwitchCase="'parent_id'">{{ d[head] }}</ng-container>
-              <ng-container *ngSwitchCase="'index'">{{ i + 1 }}</ng-container>
+                @case ('delete') {
+                  <button type="button" (click)="onClick(data, 'delete')"
+                          class="outline-none border-none bg-transparent text-red-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                         stroke="currentColor" class="w-4 h-4">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/>
+                    </svg>
+                  </button>
+                }
 
-              <!-- Do not show ID -->
-              <div *ngSwitchCase="'id'"></div>
-              <div *ngSwitchCase="'children'"></div>
+                @case ('sku') {
+                  @if (!paginationTable) {
+                    <button (click)="onClick(data, 'edit')" type="button"
+                            class="outline-none bg-transparent text-blue-400 hover:border-b hover:border-blue-500">
+                      {{ data[head] }}
+                    </button>
+                  } @else {
+                    {{ data[head] }}
+                  }
+                }
 
-              <!-- Visible -->
-              <div *ngSwitchCase="'is_visible'" [style]="{ 'color': d[head] === true ? 'green' : 'red' }">
-                {{ d[head] }}
-              </div>
+                @case ('visible') {
+                  <div [style]="{ 'color': data[head] === true ? 'green' : 'red' }">
+                    {{ data[head] }}
+                  </div>
+                }
 
-              <div *ngSwitchCase="'visible'" [style]="{ 'color': d[head] === true ? 'green' : 'red' }">
-                {{ d[head] }}
-              </div>
-
-              <!-- Category -->
-              <button
-                *ngSwitchCase="'name'"
-                (click)="onClick(d,'edit')"
-                type="button"
-                class="outline-none bg-transparent text-blue-400 hover:border-b hover:border-blue-500"
-              >{{ d[head] }}</button>
-
-              <!-- SKU -->
-              <button
-                *ngSwitchCase="'sku'"
-                (click)="onClick(d,'edit')"
-                type="button"
-                class="outline-none bg-transparent text-blue-400 hover:border-b hover:border-blue-500"
-              >{{ d[head] }}</button>
-
-              <!-- Default -->
-              <div *ngSwitchDefault>{{ d[head] }}</div>
-
-            </ng-container>
-          </td>
+                @default {
+                  {{ data[head] }}
+                }
+              }
+            </td>
+          }
         </tr>
         </tbody>
       </table>
-    </ng-container>
+
+      @if (paginationTable) {
+        <div class="w-full mt-6 p-1.5">
+          <app-paginator
+            [currentPage]="pageData.number"
+            [totalPages]="pageData.totalPages"
+            [totalElements]="pageData.totalElements"
+            (goTo)="onPageNumber($event)"
+          ></app-paginator>
+        </div>
+      }
+    </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DynamicTableComponent<T> {
-
-  // TODO validate why current pages isn't changing on html
-  protected readonly currentPage = signal<number>(0);
 
   @Input() paginationTable: boolean = false; // validates if pagination table should be rendered
   @Input() tHead: (keyof T)[] = [];
@@ -217,11 +129,8 @@ export class DynamicTableComponent<T> {
   @Output() eventEmitter = new EventEmitter<TableContent<T>>();
   @Output() pageEmitter = new EventEmitter<PageChange>();
 
-  date = (d: any): string => d === 0 ? '' : new Date(d).toDateString();
-
   /**
-   * Informs Parent component. Note the table clicked on is the table
-   * that does not require pagination
+   * Informs Parent component on what input was clicked.
    *
    * @param data represents the row details
    * @param key can either be detail, edit or delete
@@ -230,15 +139,9 @@ export class DynamicTableComponent<T> {
   onClick = (data: T, key: string): void => this.eventEmitter.emit({ data: data, key: key });
 
   /**
-   * Informs Product Component on the row clicked. Requires pagination
-   * */
-  onclickProduct = (data: T, key: string): void => this.eventEmitter.emit({ data: data, key: key });
-
-  /**
    * Emits page number clicked
    * */
   onPageNumber(pageNumber: number): void {
-    this.currentPage.set(pageNumber);
     this.pageEmitter.emit({ page: pageNumber, size: 20 });
   }
 

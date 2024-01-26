@@ -16,10 +16,8 @@
 
           <div class="flex flex-wrap items-center">
             <div class="relative" *ngFor="let image of files">
-              <button
-                type="button"
+              <button type="button" (click)="remove(image)"
                 class="x-btn m-0.5 outline-none border-0 text-center cursor-pointer bg-transparent"
-                (click)="remove(image)"
               >
                 <img [src]="toString(image)" alt="logo"
                      class="m-0 object-cover min-h-[4rem] min-w-[4rem] sm:min-h-[9.375rem] sm:min-w-[9.375rem] max-h-[12.5rem] max-w-[12.5rem]">
@@ -69,18 +67,12 @@
           <h6 class="cx-font-size capitalize">colour <span class="text-red-500">*</span></h6>
 
           <div class="grid grid-cols-2 gap-2.5">
-            <input
-              formControlName="colour"
-              placeholder="colour"
-              type="text"
+            <input (keyup)="oninputChange($event)" type="text" placeholder="colour" formControlName="colour"
               class="p-2.5 w-full flex-1 inline rounded-md border border-solid border-[var(--border-outline)]"
-              (keyup)="oninputChange($event)"
             />
 
-            <select
-              (change)="onselectColour($event)"
-              class="cursor-pointer rounded-md border border-solid border-[var(--border-outline)]"
-            >
+            <select (change)="onselectColour($event)"
+              class="cursor-pointer rounded-md border border-solid border-[var(--border-outline)]">
               <option value="" disabled selected>change?</option>
               <option *ngFor="let colour of data.colours">{{ colour }}</option>
             </select>
@@ -89,8 +81,7 @@
 
         <!-- Size and Inventory -->
         <div class="pt-2.5">
-          <app-size-inventory
-            (eventEmitter)="sizeInv($event)"></app-size-inventory>
+          <app-size-inventory (eventEmitter)="sizeInv($event)"></app-size-inventory>
         </div>
       </div>
 
@@ -103,9 +94,8 @@
     <button mat-stroked-button color="warn" [style.border-color]="'red'" type="button" (click)="cancel()">
       cancel
     </button>
-    <button
+    <button type="submit"
       class="text-white font-bold py-2 px-4 rounded bg-[var(--app-theme)]"
-      type="submit"
       [disabled]="!reactiveForm.valid || (colourExists && files.length === 0) || rows.length === 0"
       [style]="{
       'background-color':
@@ -117,8 +107,7 @@
           : 'var(--app-theme-hover)'
       }"
       [asyncButton]="create()"
-    >create
-    </button>
+    >create</button>
   </div>
 
 </form>

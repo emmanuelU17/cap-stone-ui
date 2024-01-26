@@ -61,10 +61,7 @@ import {FormControl, ReactiveFormsModule} from "@angular/forms";
                       <div class="flex flex-1 items-end justify-between text-sm">
                         <div>
                           <p class="text-gray-500">{{ detail.size }}</p>
-                          <input type="number"
-                                 [value]="detail.qty"
-                                 (click)="qtyChange(detail.sku)"
-                                 [formControl]="formControl"
+                          <input type="number" [value]="detail.qty" (click)="qtyChange(detail.sku)"
                                  class="qty-box p-2.5 flex-1 w-full rounded-sm border border-solid border-[var(--border-outline)]">
                         </div>
 

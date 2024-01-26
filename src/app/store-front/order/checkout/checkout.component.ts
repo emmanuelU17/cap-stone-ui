@@ -171,12 +171,12 @@ import {RouterLink} from "@angular/router";
 
               <!-- postcode -->
               <div class="w-full">
-                <h5 class="cs-font md:text-xs uppercase">postalcode/zipcode</h5>
+                <h5 class="cs-font md:text-xs uppercase">postcode/zipcode</h5>
                 <input type="text"
                        name="postcode"
                        formControlName="postcode"
                        class="w-full p-2 border"
-                       placeholder="postalcode/zipcode">
+                       placeholder="postcode/zipcode">
               </div>
             </div>
 
@@ -185,13 +185,11 @@ import {RouterLink} from "@angular/router";
               <h5 class="cs-font md:text-xs uppercase">
                 country <span class="text-red-500">*</span>
               </h5>
-              <select class="w-full p-2 border cursor-pointer" formControlName="country">
-                <option value="" disabled selected>country</option>
-                <option>Nigeria</option>
-                <option>United States of America</option>
-                <option>United Kingdom</option>
-                <option>Canada</option>
-              </select>
+              <input type="text"
+                     name="postcode"
+                     formControlName="country"
+                     class="w-full p-2 border"
+                     placeholder="country">
             </div>
 
             <!-- delivery information -->
@@ -201,7 +199,8 @@ import {RouterLink} from "@angular/router";
             </div>
 
             <div class="w-full flex justify-end text-sm md:text-base">
-              <a routerLink="/order" (click)="onAddressEntered()" [style]="{ 'display': form.valid ? 'block' : 'none' }" class="p-2 text-white hover:text-black bg-black hover:bg-[var(--app-theme-hover)]">
+              <a routerLink="/order" (click)="onAddressEntered()" [style]="{ 'display': form.valid ? 'block' : 'none' }"
+                 class="p-2 text-white hover:text-black bg-black hover:bg-[var(--app-theme-hover)]">
                 Continue to payment
               </a>
             </div>
@@ -214,56 +213,58 @@ import {RouterLink} from "@angular/router";
 
           <div class="pb-4">
             <ul role="list" class="relative -my-6 divide-y divide-gray-200">
-              <li class="flex pt-6 pb-3" *ngFor="let detail of carts$ | async; let i = index">
-                <div class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-                  <img [src]="detail.url" alt="product image{{ i }}" class="h-full w-full object-cover object-center">
-                </div>
-                <div class="ml-4 flex flex-1 flex-col">
-                  <div class="md:mb-2 flex flex-col md:flex-row md:justify-between text-base font-medium text-gray-900">
-                    <h3 class="cs-font">
-                      {{ detail.product_name }}
-                    </h3>
-                    <p class="cs-font ml-4">{{ currency(detail.currency) }}{{ detail.price }}</p>
+              @for (detail of carts$ | async; track detail.product_name; let i = $index) {
+                <li class="flex pt-6 pb-3">
+                  <div class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
+                    <img [src]="detail.url" alt="product image{{ i }}" class="h-full w-full object-cover object-center">
                   </div>
-                  <!-- mobile -->
-                  <div class="cs-font md:hidden">
-                    <div class="grid grid-cols-2">
-                      <div class="">
-                        <h5 class="w-fit border-b font-bold">size</h5>
+                  <div class="ml-4 flex flex-1 flex-col">
+                    <div class="md:mb-2 flex flex-col md:flex-row md:justify-between text-base font-medium text-gray-900">
+                      <h3 class="cs-font">
+                        {{ detail.product_name }}
+                      </h3>
+                      <p class="cs-font ml-4">{{ currency(detail.currency) }}{{ detail.price }}</p>
+                    </div>
+                    <!-- mobile -->
+                    <div class="cs-font md:hidden">
+                      <div class="grid grid-cols-2">
+                        <div class="">
+                          <h5 class="w-fit border-b font-bold">size</h5>
+                          <p class="text-gray-500">{{ detail.size }}</p>
+                        </div>
+                        <div class="">
+                          <h5 class="w-fit border-b font-bold">quantity</h5>
+                          <p class="text-gray-500">{{ detail.qty }}</p>
+                        </div>
+                      </div>
+
+                      <div class="w-full pt-1">
+                        <h5 class="w-fit border-b font-bold">colour</h5>
+                        <p class="mt-1 text-gray-500">{{ detail.colour }}</p>
+                      </div>
+
+                    </div>
+                    <!-- none mobile -->
+                    <div class="hidden md:grid grid-cols-3 text-xs">
+
+                      <div class="border-r-2">
+                        <h5 class="border-b font-bold">colour</h5>
+                        <p class="mt-1 text-sm text-gray-500">{{ detail.colour }}</p>
+                      </div>
+
+                      <div class="border-r-2 text-center">
+                        <h5 class="border-b font-bold">size</h5>
                         <p class="text-gray-500">{{ detail.size }}</p>
                       </div>
-                      <div class="">
-                        <h5 class="w-fit border-b font-bold">quantity</h5>
-                        <p class="text-gray-500">{{ detail.qty }}</p>
+
+                      <div class="border-r-2">
+                        <h5 class="border-b text-right font-bold">quantity</h5>
+                        <p class="text-gray-500 text-right">{{ detail.qty }}</p>
                       </div>
                     </div>
-
-                    <div class="w-full pt-1">
-                      <h5 class="w-fit border-b font-bold">colour</h5>
-                      <p class="mt-1 text-gray-500">{{ detail.colour }}</p>
-                    </div>
-
                   </div>
-                  <!-- none mobile -->
-                  <div class="hidden md:grid grid-cols-3 text-xs">
-
-                    <div class="border-r-2">
-                      <h5 class="border-b font-bold">colour</h5>
-                      <p class="mt-1 text-sm text-gray-500">{{ detail.colour }}</p>
-                    </div>
-
-                    <div class="border-r-2 text-center">
-                      <h5 class="border-b font-bold">size</h5>
-                      <p class="text-gray-500">{{ detail.size }}</p>
-                    </div>
-
-                    <div class="border-r-2">
-                      <h5 class="border-b text-right font-bold">quantity</h5>
-                      <p class="text-gray-500 text-right">{{ detail.qty }}</p>
-                    </div>
-                  </div>
-                </div>
-              </li>
+                </li>
+              }
             </ul>
           </div>
           <div>

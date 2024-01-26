@@ -1,5 +1,4 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
-import {CategoryService} from "./shop/category/category.service";
 import {catchError, combineLatest, map, Observable, of, startWith, switchMap} from "rxjs";
 import {HttpErrorResponse} from "@angular/common/http";
 import {CommonModule} from "@angular/common";
@@ -9,6 +8,7 @@ import {HomeService} from "./home/home.service";
 import {FooterComponent} from "./utils/footer/footer.component";
 import {CartService} from "./order/cart/cart.service";
 import {FooterService} from "./utils/footer/footer.service";
+import {ShopService} from "./shop/shop.service";
 
 @Component({
   selector: 'app-store',
@@ -16,9 +16,7 @@ import {FooterService} from "./utils/footer/footer.service";
   imports: [CommonModule, StoreFrontNavigationComponent, RouterOutlet, FooterComponent],
   template: `
     @if (combine$ | async; as combine) {
-
       @switch (combine.state) {
-
         @case ('LOADING') {
           <div class="lg-scr h-full p-20 flex justify-center items-center">
             <h1 class="capitalize text-[var(--app-theme-hover)]">
@@ -60,7 +58,7 @@ import {FooterService} from "./utils/footer/footer.service";
 export class StoreComponent {
 
   private readonly footerService = inject(FooterService);
-  private readonly categoryService = inject(CategoryService);
+  private readonly shopService = inject(ShopService);
   private readonly homeService = inject(HomeService);
   private readonly cartService = inject(CartService);
   private readonly router = inject(Router);
@@ -69,16 +67,16 @@ export class StoreComponent {
     .pipe(switchMap((currency) => this.cartService.cartItems(currency)));
   private readonly homeProducts$ = this.footerService.currency$
     .pipe(switchMap((currency) => this.homeService.homeProducts(currency)));
-  private readonly categories$ = this.categoryService.allCategories();
+  private readonly categories$ = this.shopService.allCategories();
 
   readonly count$ = this.cartService.count$;
-  readonly hierarchy$ = this.categoryService.categories$
+  readonly hierarchy$ = this.shopService.categories$
 
   /**
    * On load of storefront make call to server to return categories, cart and
    * products from home front to improve UI/UX.
    * */
-  combine$: Observable<{ state: string, error?: string }> =
+  readonly combine$: Observable<{ state: string, error?: string }> =
     combineLatest([this.cartItems$, this.homeProducts$, this.categories$])
       .pipe(
         map(() => ({ state: 'LOADED' })),
@@ -97,10 +95,10 @@ export class StoreComponent {
 
   /**
    * Update {@code currentCategorySubject} method in
-   * {@code category.service.ts} on the categories clicked from navigation bar.
+   * {@code shop.service.ts} on the categories clicked from navigation bar.
    * */
   onCategoryClicked(obj: { categoryId: number; name: string }): void {
-    this.categoryService.currentCategorySubject.next(obj.categoryId);
+    this.shopService.currentCategorySubject.next(obj.categoryId);
   }
 
 }

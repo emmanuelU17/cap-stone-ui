@@ -139,7 +139,7 @@ export class UpdateVariantComponent {
         switchMap((status: number) => {
           // refresh variants table and close the modal
           return this.updateProductService
-            .fetchProductDetails(this.data.productId)
+            .productDetailsByProductUUID(this.data.productId)
             .pipe(
               tap((arr: ProductDetailResponse[]) => this.dialogRef.close({ arr: arr })),
               switchMap(() => of(status)),

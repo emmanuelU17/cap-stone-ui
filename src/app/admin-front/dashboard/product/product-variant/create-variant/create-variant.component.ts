@@ -133,7 +133,7 @@ export class CreateVariantComponent {
       .pipe(
         switchMap((status: number) => {
           return this.updateProductService
-            .fetchProductDetails(this.data.id)
+            .productDetailsByProductUUID(this.data.id)
             .pipe(
               switchMap((arr: ProductDetailResponse[]) => {
                 this.dialogRef.close({ arr: arr });

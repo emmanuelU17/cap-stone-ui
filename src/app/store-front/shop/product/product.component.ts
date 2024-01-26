@@ -3,19 +3,18 @@ import {ProductDetail} from "../shop.helper";
 import {Variant} from "../../../global-utils";
 import {catchError, map, Observable, of, startWith, switchMap} from "rxjs";
 import {ActivatedRoute, Params, RouterLink} from "@angular/router";
-import {ProductService} from "./product.service";
 import {HttpErrorResponse} from "@angular/common/http";
 import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
 import {CommonModule} from "@angular/common";
 import {CartService} from "../../order/cart/cart.service";
 import {DirectiveModule} from "../../../directive/directive.module";
 import {FooterService} from "../../utils/footer/footer.service";
+import {ShopService} from "../shop.service";
 
 @Component({
   selector: 'app-product',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink, DirectiveModule],
-  templateUrl: './product.component.html',
   styles: [`
     .show {
       overflow: visible;
@@ -43,12 +42,13 @@ import {FooterService} from "../../utils/footer/footer.service";
       background: #555;
     }
   `],
+  templateUrl: './product.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductComponent {
 
   private readonly footerService = inject(FooterService);
-  private readonly productService = inject(ProductService);
+  private readonly shopService = inject(ShopService);
   private readonly route = inject(ActivatedRoute);
   private readonly fb = inject(FormBuilder);
   private readonly cartService = inject(CartService);
@@ -73,7 +73,7 @@ export class ProductComponent {
       switchMap((obj) => this.footerService.currency$
         .pipe(map((c) => ({ currency: c, id: obj.id })))
       ),
-      switchMap((object) => this.productService
+      switchMap((object) => this.shopService
         .productDetailsByProductUUID(object.id, object.currency)
         .pipe(
           map((arr) => {

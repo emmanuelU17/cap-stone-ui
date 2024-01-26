@@ -22,10 +22,8 @@
           <!-- Form-Group (product name)-->
           <div class="mb-2">
             <h3 class="capitalize"><span class="text-red-500">*</span> name</h3>
-            <input
-              formControlName="name"
-              type="text"
-              class="p-2.5 w-full flex-1 inline rounded-sm border border-solid border-[var(--border-outline)] capitalize"
+            <input formControlName="name" type="text"
+                   class="p-2.5 w-full flex-1 inline rounded-sm border border-solid border-[var(--border-outline)] capitalize"
             />
           </div>
 
@@ -34,20 +32,16 @@
             <!-- SKU -->
             <div>
               <h3 class="uppercase"><span class="text-red-500">*</span> sku</h3>
-              <input
-                formControlName="sku"
-                type="text"
-                class="p-2.5 w-full flex-1 inline rounded-sm border border-solid border-[var(--border-outline)] capitalize"
+              <input formControlName="sku" type="text"
+                     class="p-2.5 w-full flex-1 inline rounded-sm border border-solid border-[var(--border-outline)] capitalize"
               />
             </div>
 
             <!-- PRICE -->
             <div>
               <h3 class="capitalize"><span class="text-red-500">*</span> price</h3>
-              <input
-                formControlName="price"
-                type="number"
-                class="p-2.5 flex-1 w-full rounded-sm border border-solid border-[var(--border-outline)] capitalize"
+              <input formControlName="price" type="number"
+                     class="p-2.5 flex-1 w-full rounded-sm border border-solid border-[var(--border-outline)] capitalize"
               />
             </div>
           </div>
@@ -83,9 +77,11 @@
 
           <!-- weight -->
           <div class="mb-2">
-            <h4 class="cx-font-size"><span class="text-red-500">*</span> Weight <span class="text-xs">kg</span></h4>
-            <!-- formControlName="weight" -->
-            <input  placeholder="kg" type="number"
+            <h4 class="cx-font-size">
+              <span class="text-red-500">* </span>
+              Weight <span class="text-xs">{{ data.product.weight_type }}</span>
+            </h4>
+            <input placeholder="kg" type="number" formControlName="weight"
                    class="p-2.5 w-full flex-1 inline rounded-sm border border-solid border-[var(--border-outline)]"/>
           </div>
 
@@ -99,16 +95,18 @@
         <div class="mb-2.5 p-2.5 rounded-md border border-solid border-[var(--active)] bg-[var(--white)]">
           <div class="mb-1.5"><h2 class="cx-font-size capitalize"><span class="text-red-500">*</span> media</h2></div>
           <div class="flex flex-row flex-wrap items-center gap-2.5">
-            <div *ngFor="let image of currentDetails.urls; let i = index" [style]="{ 'flex-grow': i == 0 ? '1' : '0' }"
-              class="basis-1/4 aspect-h-1 aspect-w-1 overflow-hidden rounded-md bg-gray-200 lg:aspect-none">
-              <img [src]="image" alt="image"
-                   class="h-full w-full rounded-md object-cover object-center lg:h-full lg:w-full">
-            </div>
+            @for (image of currentDetails.urls; track image; let i = $index) {
+              <div [style]="{ 'flex-grow': i == 0 ? '1' : '0' }"
+                   class="basis-1/4 aspect-h-1 aspect-w-1 overflow-hidden rounded-md bg-gray-200 lg:aspect-none">
+                <img [src]="image" alt="image"
+                     class="h-full w-full rounded-md object-cover object-center lg:h-full lg:w-full">
+              </div>
+            }
           </div>
         </div>
       </div>
 
-      <!-- Btn ctn -->
+      <!-- btn ctn -->
       <div class="flex justify-between py-2.5 px-1.5">
         <button (click)="returnToProductComponent()" type="button"
                 class="text-white font-bold py-2 px-4 rounded border bg-red-500">cancel</button>

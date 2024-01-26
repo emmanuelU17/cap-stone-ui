@@ -8,6 +8,7 @@ export interface UpdateProduct {
   currency: string;
   price: number;
   category: string;
+  weight: number;
 }
 
 export interface ProductResponse {
@@ -18,7 +19,8 @@ export interface ProductResponse {
   price: number;
   currency: string;
   image: string;
-  action: string;
+  weight: number;
+  weight_type: string;
 }
 
 export interface ProductDetailResponse {
@@ -26,18 +28,6 @@ export interface ProductDetailResponse {
   is_visible: boolean;
   url: string[];
   variants: Variant[],
-}
-
-export interface CustomRowMapper {
-  index: number;
-  colour: string;
-  is_visible: boolean;
-  url: string;
-  urls?: string[];
-  sku: string;
-  inventory: number;
-  size: string;
-  action: string
 }
 
 export interface CategoryRequest {
@@ -57,7 +47,6 @@ export interface CategoryResponse {
   name: string;
   visible: boolean;
   children: CategoryResponse[];
-  action: string;
 }
 
 export interface UpdateCategory {

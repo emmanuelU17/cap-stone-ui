@@ -6,10 +6,11 @@ import {ProductService} from "../product.service";
 import {CategoryService} from "../../category/category.service";
 import {Router, RouterLink} from "@angular/router";
 import {PageChange, ProductResponse, TableContent} from "../../../shared-util";
-import {catchError, combineLatest, map, Observable, of, startWith, switchMap} from "rxjs";
+import {catchError, map, Observable, of, startWith, switchMap} from "rxjs";
 import {Page} from "../../../../global-utils";
 import {HttpErrorResponse} from "@angular/common/http";
 import {DeleteComponent} from "../../util/delete/delete.component";
+import {mapper, ProductMapper} from "../../util/mapper";
 
 @Component({
   selector: 'app-product-impl',
@@ -71,13 +72,13 @@ export class ProductImplComponent {
   private readonly dialog = inject(MatDialog);
 
   // Table details
-  thead: Array<keyof ProductResponse> = ['product_id', 'image', 'name', 'desc', 'currency', 'price', 'action'];
-  data$: Observable<{ state: string, error?: string, data?: Page<ProductResponse> }> = this.productService
+  thead: Array<keyof ProductMapper> = ['index', 'image', 'name', 'currency', 'price', 'weight', 'type', 'delete'];
+  data$: Observable<{ state: string, error?: string, data?: Page<ProductMapper> }> = this.productService
     .currency$
     .pipe(
       switchMap(() => this.productService.products$
         .pipe(
-          map((res: Page<ProductResponse>) => ({ state: 'LOADED', data: res })),
+          map((res: Page<ProductResponse>) => ({ state: 'LOADED', data: mapper(res) })),
           startWith({ state: 'LOADING' }),
           catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error.message }))
         )
@@ -92,7 +93,7 @@ export class ProductImplComponent {
       .pipe(
         switchMap((currency) => this.productService
           .allProducts(page.page, page.size, currency)
-          .pipe(map((res: Page<ProductResponse>) => ({ state: 'LOADED', data: res })))
+          .pipe(map((res: Page<ProductResponse>) => ({ state: 'LOADED', data: mapper(res) })))
         ),
         startWith({ state: 'LOADING' }),
         catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error.message }))
@@ -105,16 +106,16 @@ export class ProductImplComponent {
    * @param content of custom interface TableContent
    * @return void
    * */
-  infoFromTableComponent(content: TableContent<ProductResponse>): void {
+  infoFromTableComponent(content: TableContent<ProductMapper>): void {
     switch (content.key) {
       case 'product':{
-        this.router.navigate([`/admin/dashboard/product/${content.data.product_id}`]);
+        this.router.navigate([`/admin/dashboard/product/${content.data.productId}`]);
         break;
       }
 
       case 'delete': {
         const obs = this.productService
-          .deleteProduct(content.data.product_id)
+          .deleteProduct(content.data.productId)
           .pipe(
             switchMap((status: number) =>
               this.productService.action(status, this.categoryService.allCategories())

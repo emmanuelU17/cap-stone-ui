@@ -15,25 +15,20 @@ export class UpdateProductService {
   /**
    * Fetch ProductDetail based on id
    * */
-  fetchProductDetails(id: string): Observable<ProductDetailResponse[]> {
-    const url: string = `${this.HOST}api/v1/worker/product/detail`;
-    return this.http.get<ProductDetailResponse[]>(url, {
-      params: { id: id },
-      responseType: 'json',
-      withCredentials: true
-    });
-  }
+  productDetailsByProductUUID = (id: string): Observable<ProductDetailResponse[]> => this.http
+    .get<ProductDetailResponse[]>(
+      `${this.HOST}api/v1/worker/product/detail?id=${id}`,
+      { responseType: 'json', withCredentials: true }
+    );
 
   /**
    * Delete Product Variant
    * */
-  deleteVariant(sku: string): Observable<number> {
-    const url = `${this.HOST}api/v1/worker/product/detail/sku`;
-    return this.http.delete<number>(url, {
-      params: { sku: sku },
-      observe: 'response',
-      withCredentials: true
-    }).pipe(map((res: HttpResponse<number>) => res.status));
-  }
+  deleteVariantBySku = (sku: string): Observable<number> => this.http
+    .delete<number>(
+      `${this.HOST}api/v1/worker/product/detail/sku?sku=${sku}`,
+      { observe: 'response', withCredentials: true }
+    )
+    .pipe(map((res: HttpResponse<number>) => res.status));
 
 }

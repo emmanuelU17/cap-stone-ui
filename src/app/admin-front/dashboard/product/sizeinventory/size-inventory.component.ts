@@ -76,13 +76,11 @@ import {VARIABLE_IS_NUMERIC} from "../../../../global-utils";
 
         <!-- Preview and final state -->
         <div class="pt-2.5 flex justify-end">
-          <button
-            class="capitalize text-white font-bold py-2 px-4 rounded"
-            type="button"
-            [disabled]="invalidInputImpl()"
-            [style]="{ 'background-color': invalidInputImpl() ? 'var(--app-theme)' : 'var(--app-theme-hover)' }"
-            (click)="informParent()"
-          >save</button>
+          <button type="button" (click)="informParent()" [disabled]="invalidInputImpl()"
+                  [style]="{ 'background-color': invalidInputImpl() ? 'var(--app-theme)' : 'var(--app-theme-hover)' }"
+                  class="capitalize text-white font-bold py-2 px-4 rounded">
+            save
+          </button>
         </div>
 
       </div>

@@ -1,4 +1,4 @@
-export interface PaymentDTO {
+export interface PaymentDetails {
   pubKey: string;
   total: number;
   currency: string;
