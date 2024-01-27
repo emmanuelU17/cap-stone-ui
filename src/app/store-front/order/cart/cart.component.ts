@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {DirectiveModule} from "../../../directive/directive.module";
 import {CardComponent} from "../../utils/card/card.component";
@@ -60,7 +60,7 @@ import {SarreCurrency, VARIABLE_IS_NUMERIC} from "../../../global-utils";
                       <div class="flex flex-1 items-end justify-between text-sm">
                         <div>
                           <p class="text-gray-500">{{ detail.size }}</p>
-                          <input type="number" [value]="detail.qty" (keyup)="qtyChange($event, detail.sku, detail.qty)"
+                          <input type="number" [value]="detail.qty" (keyup)="qtyChange($event, detail.sku)"
                                  class="qty-box p-2.5 flex-1 w-full rounded-sm border border-solid border-[var(--border-outline)]">
                         </div>
 
@@ -161,7 +161,7 @@ export class CartComponent {
   private readonly homeService = inject(HomeService);
 
   readonly products$ = this.homeService.products$;
-
+  readonly total$ = this.cartService.total$;
   readonly carts$ = this.cartService.cart$;
   readonly currency$ = this.footService.currency$
     .pipe(switchMap((c: SarreCurrency) => this.currency(c)));
@@ -175,31 +175,22 @@ export class CartComponent {
    * */
   remove = (sku: string): Observable<number> => this.cartService.removeFromCart(sku);
 
-  readonly total$ = this.cartService.total$;
-
-  private readonly objSignal =
-    signal<{ sku: string, qty: number  }>({ sku: '', qty: -1 });
-
   /**
    * Updates qty based on a {@code Product} sku. As far as bool,
    * it displays a loading screen 1070 ms after a user enters their input.
    * */
   bool$ = of(false);
-  qtyChange(e: KeyboardEvent, sku: string, qty: number): void {
-    const eventQty = (e.target as HTMLInputElement).value;
+  qtyChange(e: KeyboardEvent, sku: string): void {
+    const qty = (e.target as HTMLInputElement).value;
 
-    if (!VARIABLE_IS_NUMERIC(eventQty))
+    if (!VARIABLE_IS_NUMERIC(qty))
       return;
-    else if (VARIABLE_IS_NUMERIC(eventQty) && Number(eventQty) < 0)
+    else if (VARIABLE_IS_NUMERIC(qty) && Number(qty) < 0)
       return;
-
-    const num = Number(eventQty);
-
-    this.objSignal.set({ sku: sku, qty: num === qty ? qty : num })
 
     this.bool$ = this.bool$
       .pipe(
-        switchMap(() => of(this.objSignal()).pipe(delay(1070))),
+        switchMap(() => of({ sku: sku, qty: Number(qty) }).pipe(delay(1007))),
         switchMap((obj: { sku: string, qty: number }) => obj.qty === 0
           ? this.remove(obj.sku)
             .pipe(map(() => false), startWith(true))

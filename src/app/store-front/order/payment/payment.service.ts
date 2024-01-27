@@ -1,8 +1,8 @@
 import {inject, Injectable, signal} from '@angular/core';
 import {environment} from "../../../../environments/environment";
-import {HttpClient, HttpErrorResponse, HttpResponse} from "@angular/common/http";
+import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {FooterService} from "../../utils/footer/footer.service";
-import {BehaviorSubject, catchError, map, Observable, of, switchMap, tap} from "rxjs";
+import {BehaviorSubject, catchError, Observable, of, switchMap, tap} from "rxjs";
 import {PaymentDetails, ReservationDTO} from "../index";
 import {ToastService} from "../../../shared-comp/toast/toast.service";
 import {Router} from "@angular/router";
@@ -38,7 +38,7 @@ export class PaymentService {
   validate = (): Observable<PaymentDetails> => this.footerService.currency$
     .pipe(
       switchMap((currency) => this.http
-        .get<PaymentDetails>(
+        .post<PaymentDetails>(
           `${this.HOST}api/v1/payment?currency=${currency}&country=${this.country()}`,
           {
             headers: { 'content-type': 'application/json' },
@@ -48,10 +48,10 @@ export class PaymentService {
           }
         )
         .pipe(
-          map((res: HttpResponse<PaymentDetails>) => res.body !== null
-            ? res.body
-            : { pubKey: '', total: 0, currency: currency }
-          ),
+          // map((res: HttpResponse<PaymentDetails>) => res.body !== null
+          //   ? res.body
+          //   : { pubKey: '', total: 0, currency: currency }
+          // ),
           catchError((err: HttpErrorResponse) => {
             this.toast(err.error ? err.error.message : err.message);
             this.router.navigate(['/checkout']);
