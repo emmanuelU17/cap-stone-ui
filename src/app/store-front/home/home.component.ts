@@ -73,46 +73,6 @@ import {FooterService} from "../utils/footer/footer.service";
 })
 export class HomeComponent {
 
-  str = `
-
-    @if (image$ | async; as image) {
-        <div [style.background-image]="'url(' + image + ')'"
-             class="trans w-full bg-center bg-no-repeat bg-cover">
-          <div class="lg-scr">
-            <h1 class="bg-font uppercase font-bold text-white">clothing apparel for the confident women</h1>
-
-            <button (click)="route('/shop')" type="button"
-                    class="text-sm md:text-lg capitalize text-white cursor-pointer border-b border-b-white">
-              shop now
-            </button>
-          </div>
-        </div>
-      }
-
-      <div class="lg-scr py-4">
-        <div class="p-3.5 flex justify-center">
-          <h1
-            class="feature-font w-fit capitalize font-bold text-[var(--app-theme)] border-b border-b-[var(--app-theme)]">
-            featured collection
-          </h1>
-        </div>
-
-        <div class="p-2 xl:p-0 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-
-          @for (product of products$ | async; track product.product_id; let i = $index) {
-            <button (click)="clicked(product)" type="button">
-              <app-card [url]="product.image" [name]="product.name" [currency]="currency(product.currency)"
-                        [price]="product.price"></app-card>
-            </button>
-          } @empty {
-            no product available.
-          }
-        </div>
-
-      </div>
-
-  `
-
   private readonly footerService = inject(FooterService);
   private readonly homeService = inject(HomeService);
   private readonly router = inject(Router);

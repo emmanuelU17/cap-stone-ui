@@ -1,12 +1,7 @@
 import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {catchError, combineLatest, map, Observable, of, ReplaySubject, startWith, switchMap, tap} from "rxjs";
-import {
-  ProductDetailResponse,
-  ProductResponse,
-  TableContent,
-  UpdateProduct,
-} from "../../../shared-util";
+import {ProductDetailResponse, ProductResponse, TableContent, UpdateProduct,} from "../../../shared-util";
 import {HttpErrorResponse} from "@angular/common/http";
 import {ProductService} from "../product.service";
 import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
@@ -241,7 +236,9 @@ export class UpdateProductComponent implements OnInit {
       );
   }
 
-  /** Make a call to our server to update a Product */
+  /**
+   * Make a call to our server to update a Product.
+   * */
   private updateProduct(obj: UpdateProduct, bool: boolean): Observable<number> {
     return this.productService.updateProduct(obj)
       .pipe(
@@ -296,12 +293,13 @@ export class UpdateProductComponent implements OnInit {
         }
 
         // Open Component
-        const open = this.dialog.open(UpdateVariantComponent, {
-          height: '400px',
-          width: '600px',
-          maxWidth: '100%',
-          data: v,
-        })
+        const open = this.dialog
+          .open(UpdateVariantComponent, {
+            height: '400px',
+            width: '600px',
+            maxWidth: '100%',
+            data: v,
+          });
 
         this.afterComponentClose(open.afterClosed());
         break;
@@ -340,7 +338,7 @@ export class UpdateProductComponent implements OnInit {
       }
 
       default:
-        console.error('Invalid key');
+        console.error('invalid key');
     }
   }
 

@@ -15,6 +15,7 @@ import {CustomUpdateVariant, UpdateVariant} from "../index";
 @Component({
   selector: 'app-update-variant',
   standalone: true,
+  imports: [CommonModule, MatDialogModule, ReactiveFormsModule, DirectiveModule, MatRadioModule],
   template: `
     <div class="w-full p-2 flex justify-center">
       <h1 class="cx-font-size w-fit capitalize border-b border-b-[var(--app-theme)]">
@@ -61,34 +62,27 @@ import {CustomUpdateVariant, UpdateVariant} from "../index";
       <!-- SIZE -->
       <div class="p-6 text-left rounded-md border border-[var(--active)] border-solid bg-[var(--white)]">
         <h4 class="cx-font-size capitalize">size <span style="color: red">*</span></h4>
-        <input
-          type="text"
+        <input type="text" formControlName="size" [value]="data.variant.size"
           class="p-2.5 w-full flex-1 inline rounded-sm border border-solid border-[var(--border-outline)]"
-          [value]="data.variant.size"
-          formControlName="size"
         >
       </div>
 
       <!-- Btn ctn -->
       <div class="flex justify-between py-2.5 px-1.5">
-        <button
-          class="text-white font-bold py-2 px-4 rounded border bg-red-500"
-          type="button"
-          (click)="onNoClick()">cancel
-        </button>
+        <button class="text-white font-bold py-2 px-4 rounded border bg-red-500"
+                type="button"
+                (click)="onNoClick()">cancel</button>
 
         <button type="submit"
                 class="text-white font-bold py-2 px-4 rounded bg-[var(--app-theme)]"
                 [disabled]="!form.valid"
                 [style]="{ 'background-color': form.valid ? 'var(--app-theme-hover)' : 'var(--app-theme)' }"
                 [asyncButton]="update()"
-        >update
-        </button>
+        >update</button>
       </div>
 
     </form>
   `,
-  imports: [CommonModule, MatDialogModule, ReactiveFormsModule, DirectiveModule, MatRadioModule],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UpdateVariantComponent {
@@ -113,12 +107,16 @@ export class UpdateVariantComponent {
     });
   }
 
-  /** Closes modal */
+  /**
+   * Closes modal
+   * */
   onNoClick(): void {
     this.dialogRef.close({ arr: [] });
   }
 
-  /** Update ProductVariant */
+  /**
+   * Update ProductVariant
+   * */
   update(): Observable<number> {
     const sku = this.form.controls['sku'].value;
     const visible = this.form.controls['visible'].value;

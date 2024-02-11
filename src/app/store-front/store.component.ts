@@ -24,6 +24,7 @@ import {ShopService} from "./shop/shop.service";
             </h1>
           </div>
         }
+
         @case ('ERROR') {
           <div class="lg-scr p-10 capitalize text-3xl text-red-500">
             Error {{ combine.error }}

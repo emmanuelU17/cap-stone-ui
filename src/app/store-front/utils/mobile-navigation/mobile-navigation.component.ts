@@ -91,9 +91,6 @@ export class MobileNavigationComponent {
   toggleNavDisplay(bool: boolean, path?: string): void {
     this.toggleEmitter.emit(bool);
     if (path) {
-      if (path === '/') {
-        path = '/'
-      }
       this.route(`${path}`);
     }
   }

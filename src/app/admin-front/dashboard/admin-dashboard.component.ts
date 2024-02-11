@@ -14,6 +14,7 @@ import {AuthMenuComponent} from "./util/authmenu/auth-menu.component";
 import {DirectiveModule} from "../../directive/directive.module";
 import {RouterLink, RouterLinkActive, RouterOutlet} from "@angular/router";
 import {AuthService} from "../../service/auth.service";
+import {SettingService} from "./setting/setting.service";
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -54,10 +55,8 @@ import {AuthService} from "../../service/auth.service";
           <!--  Main body  -->
           <div class="flex flex-1">
             <!--  Left Column  -->
-            <div
-              [style]="{ 'display': leftColumn ? 'block' : 'none' }"
-              class="l-col hidden py-3.5 border-r-2 border-solid border-[var(--active)]"
-            >
+            <div [style]="{ 'display': leftColumn ? 'block' : 'none' }"
+              class="l-col hidden py-3.5 border-r-2 border-solid border-[var(--active)]">
               <div *ngFor="let link of dashBoardLinks; let j = index" class="w-52 py-0 px-2.5 max-[768px]:w-[calc(200px + 1vw)]">
                 <div class="uppercase">
 
@@ -143,10 +142,11 @@ export class AdminDashboardComponent {
   private readonly authService = inject(AuthService);
   private readonly categoryService = inject(CategoryService);
   private readonly productService = inject(ProductService);
+  private readonly setting = inject(SettingService);
 
   protected readonly SarreCurrency = SarreCurrency;
   readonly principal$ = this.authService.principal$
-  readonly dashBoardLinks: Display[] = DASHBOARDLINKS;
+  readonly dashBoardLinks = DASHBOARDLINKS;
 
   activeCurrency = SarreCurrency.NGN;
   leftColumn = false;
@@ -161,15 +161,22 @@ export class AdminDashboardComponent {
       tap((arr: CategoryResponse[]) => arr.sort((a, b) => a.name.localeCompare(b.name)))
     );
 
-  combine$: Observable<{ state: string, error?: string }> =
-    combineLatest([this.products$, this.category$])
+  // Shipping Settings
+  private readonly shipping$ = this.setting.allShipping();
+
+  readonly combine$: Observable<{ state: string, error?: string }> =
+    combineLatest([this.products$, this.category$, this.shipping$])
       .pipe(
         map(() => ({ state: 'LOADED' })),
         startWith({ state: 'LOADING' }),
-        catchError((e: HttpErrorResponse) => of({ state: 'ERROR', error: e.error ? e.error.message : e.message }))
+        catchError((e: HttpErrorResponse) =>
+          of({ state: 'ERROR', error: e.error ? e.error.message : e.message })
+        )
       );
 
-  /** Set currency for the whole admin front */
+  /**
+   * Set currency for the whole admin front
+   * */
   setCurrency = (currency: SarreCurrency): void => {
     this.activeCurrency = currency;
     this.productService.setCurrencySubject(currency);

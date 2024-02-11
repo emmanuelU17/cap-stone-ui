@@ -41,12 +41,8 @@ interface CategoryResponseMapper {
       </div>
 
       <div class="px-0" *ngIf="data$ | async as data">
-        <app-dynamic-table
-          [detail]="false"
-          [tHead]="tHead"
-          [data]="data"
-          (eventEmitter)="infoFromTableComponent($event)"
-        ></app-dynamic-table>
+        <app-dynamic-table [tHead]="tHead" [data]="data"
+                           (eventEmitter)="infoFromTableComponent($event)"></app-dynamic-table>
       </div>
     </div>
   `,
@@ -62,8 +58,8 @@ export class CategoryImplComponent {
   readonly data$ = this.categoryService.categories$
     .pipe(
       map((arr) => arr
-        .map((obj) => ({
-          index: 0,
+        .map((obj, index) => ({
+          index: index + 1,
           categoryId: obj.category_id,
           name: obj.name,
           visible: obj.visible,

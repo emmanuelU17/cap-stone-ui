@@ -1,4 +1,4 @@
-import {inject, Injectable, signal} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient, HttpErrorResponse, HttpResponse} from "@angular/common/http";
 import {BehaviorSubject, catchError, map, Observable, of, tap} from "rxjs";
@@ -59,7 +59,11 @@ export class AuthService {
     );
 
   logout = (path: string): Observable<number> => this.http
-    .post(`${this.HOST}api/v1/logout`, {}, { observe: 'response',  withCredentials: true })
+    .post(
+      `${this.HOST}api/v1/logout`,
+      {},
+      { observe: 'response',  withCredentials: true }
+    )
     .pipe(
       map((res: any) => res === null ? 0 : res.status),
       tap(() => this.router.navigate([`${path}`]))
@@ -68,7 +72,11 @@ export class AuthService {
   header = { 'content-type': 'application/json' };
 
   register = (obj: RegisterDTO, path: string, route?: string): Observable<number> =>this.http
-    .post<RegisterDTO>(`${this.HOST}${path}`, obj, { headers: this.header, observe: 'response', withCredentials: true })
+    .post<RegisterDTO>(
+      `${this.HOST}${path}`,
+      obj,
+      { headers: this.header, observe: 'response', withCredentials: true }
+    )
     .pipe(
       map((res: HttpResponse<RegisterDTO>) => {
         this.toastService.toastMessage('registered!');

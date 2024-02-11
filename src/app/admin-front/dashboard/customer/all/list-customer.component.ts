@@ -17,45 +17,46 @@ import {TableContent} from "../../../shared-util";
         <!-- Header -->
         <h1 class="cx-font-size w-fit capitalize border-b border-[var(--app-theme)]">customers</h1>
         <a class="ml-1" routerLink="register">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            class="w-6 h-6 text-[var(--app-theme)]"
-          >
+          <svg fill="none" stroke-width="1.5" stroke="currentColor" viewBox="0 0 24 24"
+               xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-[var(--app-theme)]">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
           </svg>
         </a>
       </div>
 
-      <div class="flex-1" *ngIf="users$ | async as users" [ngSwitch]="users.state">
-        <ng-container *ngSwitchCase="'loading...'">
-          <div class="lg-scr h-full p-20 flex justify-center items-center">
-            <h1 class="cx-font-size capitalize text-[var(--app-theme-hover)]">
-              {{ users.state }}
-            </h1>
-          </div>
-        </ng-container>
-        <ng-container *ngSwitchCase="'ERROR'">
-          <div class="lg-scr mg-top p-10 capitalize text-3xl text-red-500">
-            Error {{ users.error }}
-          </div>
-        </ng-container >
-        <ng-container *ngSwitchCase="'LOADED'">
-          <ng-container *ngIf="users.data">
-            <app-dynamic-table
-              [paginationTable]="true"
-              [detail]="true"
-              [pageData]="users.data"
-              [tHead]="thead"
-              (eventEmitter)="infoFromTableComponent($event)"
-            ></app-dynamic-table>
-          </ng-container>
-        </ng-container>
-      </div>
+      @if (users$ | async; as users) {
+        <div class="flex-1" [ngSwitch]="users.state">
 
+          @switch (users.state) {
+
+            @case ('LOADING') {
+              <div class="lg-scr h-full p-20 flex justify-center items-center">
+                <h1 class="cx-font-size capitalize text-[var(--app-theme-hover)]">
+                  loading..
+                </h1>
+              </div>
+            }
+
+            @case ('LOADED') {
+              @if (users.data) {
+                <app-dynamic-table [tHead]="thead"
+                                   [pageData]="users.data"
+                                   (eventEmitter)="infoFromTableComponent($event)"
+                                   [paginationTable]="true"></app-dynamic-table>
+              } @else {
+                error retrieving user data
+              }
+            }
+
+            @case ('ERROR') {
+              <div class="lg-scr mg-top p-10 capitalize text-3xl text-red-500">
+                Error {{ users.error }}
+              </div>
+            }
+
+          }
+        </div>
+      }
     </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -70,7 +71,7 @@ export class ListCustomerComponent {
     .allUsers()
     .pipe(
       map((page) => ({ state: 'LOADED', data: page })),
-      startWith({ state: 'loading...' }),
+      startWith({ state: 'LOADING' }),
       catchError((err) => of({ state: 'ERROR', error: err.error.message}))
     );
 

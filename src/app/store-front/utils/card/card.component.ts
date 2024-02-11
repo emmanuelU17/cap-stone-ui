@@ -5,6 +5,17 @@ import {CommonModule} from "@angular/common";
   selector: 'app-card',
   standalone: true,
   imports: [CommonModule],
+  styles: [`
+    .name {
+      font-size: 15px;
+    }
+
+    @media (max-width: 768px) {
+      .name {
+        font-size: calc(7px + 1vw);
+      }
+    }
+  `],
   template: `
     <div class="h-full w-full flex flex-col">
       <div class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 h-36 sm:h-56 md:h-80">
@@ -18,28 +29,19 @@ import {CommonModule} from "@angular/common";
           </h3>
         </div>
           @if (bool) {
-              <p class="name font-medium text-gray-900">{{ currency }}{{ price }}</p>
+            <p class="name font-medium text-gray-900">{{ currency }}{{ price }}</p>
           }
       </div>
     </div>
   `,
-  styles: [`
-    .name {
-      font-size: 15px;
-    }
-
-    @media (max-width: 768px) {
-      .name {
-        font-size: calc(7px + 1vw);
-      }
-    }
-  `],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CardComponent {
+
   @Input() url = '';
   @Input() name = '';
   @Input() currency = '';
   @Input() price = 0;
   @Input() bool = true;
+
 }

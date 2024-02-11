@@ -17,8 +17,8 @@ export interface ProductMapper {
 
 export const mapper = (page: Page<ProductResponse>): Page<ProductMapper> => ({
   content: page.content
-    .map((obj) => ({
-      index: 0,
+    .map((obj, index) => ({
+      index: index + 1,
       category: obj.category,
       productId: obj.product_id,
       name: obj.name,

@@ -34,32 +34,39 @@ import {mapper, ProductMapper} from "../../util/mapper";
         </a>
       </div>
 
-      <div class="flex-1" *ngIf="data$ | async as data" [ngSwitch]="data.state">
-        <ng-container *ngSwitchCase="'LOADING'">
-          <div class="lg-scr h-full p-20 flex justify-center items-center">
-            <h1 class="cx-font-size capitalize text-[var(--app-theme-hover)]">
-              loading...
-            </h1>
-          </div>
-        </ng-container>
-        <ng-container *ngSwitchCase="'ERROR'">
-          <div class="lg-scr mg-top p-10 capitalize text-3xl text-red-500">
-            Error {{ data.error }}
-          </div>
-        </ng-container >
-        <ng-container *ngSwitchCase="'LOADED'">
-          <ng-container *ngIf="data.data">
-            <app-dynamic-table
-              [paginationTable]="true"
-              [detail]="true"
-              [pageData]="data.data"
-              [tHead]="thead"
-              (eventEmitter)="infoFromTableComponent($event)"
-              (pageEmitter)="pageChange($event)"
-            ></app-dynamic-table>
-          </ng-container>
-        </ng-container>
-      </div>
+      @if (data$ | async; as data) {
+        <div class="flex-1">
+          @switch (data.state) {
+            @case ('LOADING') {
+              <div class="lg-scr h-full p-20 flex justify-center items-center">
+                <h1 class="cx-font-size capitalize text-[var(--app-theme-hover)]">
+                  loading...
+                </h1>
+              </div>
+            }
+
+            @case ('ERROR') {
+              <div class="lg-scr mg-top p-10 capitalize text-3xl text-red-500">
+                Error {{ data.error }}
+              </div>
+            }
+
+            @case ('LOADED') {
+              @if (data.data) {
+                <app-dynamic-table [pageData]="data.data"
+                                   [paginationTable]="true"
+                                   (pageEmitter)="pageChange($event)"
+                                   (eventEmitter)="infoFromTableComponent($event)"
+                                   [tHead]="thead"></app-dynamic-table>
+              } @else {
+                no data to present
+              }
+            }
+
+          }
+        </div>
+      }
+
     </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -137,7 +144,7 @@ export class ProductImplComponent {
       }
 
       default :
-        console.error('Invalid key chosen');
+        console.error('invalid key chosen');
     }
   }
 

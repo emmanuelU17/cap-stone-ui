@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
-import {catchError, map, Observable, of, startWith} from "rxjs";
+import {catchError, map, of, startWith} from "rxjs";
 import {AuthService} from "./service/auth.service";
 
 @Component({
@@ -36,7 +36,7 @@ export class AppComponent {
   /**
    * onload of application, retrieve CSRF token
    * */
-  csrf$: Observable<{ state: string }> = this.authService
+  readonly csrf$ = this.authService
     .csrf()
     .pipe(
       map(() => ({ state: 'LOADED' })),

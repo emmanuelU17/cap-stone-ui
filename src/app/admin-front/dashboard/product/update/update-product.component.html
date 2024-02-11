@@ -144,7 +144,7 @@
           }
           @case ('LOADED') {
             @if (variant.data) {
-              <app-dynamic-table [tHead]="thead" [detail]="true" [data]="variant.data"
+              <app-dynamic-table [tHead]="thead" [data]="variant.data"
                                  (eventEmitter)="onDeleteOrUpdateVariant($event)"></app-dynamic-table>
             }
           }

@@ -21,11 +21,9 @@ import {HttpErrorResponse} from "@angular/common/http";
       <button mat-stroked-button color="warn" [style.border-color]="'red'" type="button" (click)="cancel()">
         Cancel
       </button>
-      <button
-        type="button"
-        class="capitalize text-white font-bold py-2 px-4 rounded bg-[var(--app-theme-hover)]"
-        [asyncButton]="delete()"
-      >delete</button>
+      <button class="capitalize text-white font-bold py-2 px-4 rounded bg-[var(--app-theme-hover)]"
+              [asyncButton]="delete()"
+              type="button">delete</button>
     </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -39,12 +37,17 @@ export class DeleteComponent {
     @Inject(MAT_DIALOG_DATA) public data: DeleteData<{ status: number, message: string }>,
   ) { }
 
-  /** Emits false if a user wants delete */
+  /**
+   * Closes component.
+   * */
   cancel(): void {
     this.dialogRef.close();
   }
 
-  /** Emits true if a user wants delete */
+  /**
+   *  Passes the observable from the callers component
+   *  to asyncButton in delete component.
+   * */
   delete = (): Observable<number> => this.data.asyncButton
     .pipe(
       map((obj: { status: number, message: string }) => {

@@ -40,8 +40,7 @@ import {VARIABLE_IS_NUMERIC} from "../../../../global-utils";
                 'display': invalidInputImpl() && i === indexOfError ? 'block' : 'none',
                 'color': 'red',
                 'font-size': '10px'
-           }"
-            >Please enter correctly</p>
+           }">Please enter correctly</p>
 
             <div class="w-full flex gap-1.5">
               <!-- Size -->
