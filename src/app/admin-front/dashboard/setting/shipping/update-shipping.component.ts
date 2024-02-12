@@ -3,7 +3,7 @@ import {CommonModule} from "@angular/common";
 import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from "@angular/material/dialog";
 import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {SettingService} from "../setting.service";
-import {ShippingSettingMapper} from "../util";
+import {ShipSettingMapper} from "../util";
 import {catchError, Observable, of} from "rxjs";
 import {DirectiveModule} from "../../../../directive/directive.module";
 import {HttpErrorResponse} from "@angular/common/http";
@@ -66,11 +66,10 @@ export class UpdateShippingComponent {
     private readonly toast: ToastService,
     private readonly fb: FormBuilder,
     private dialogRef: MatDialogRef<UpdateShippingComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: ShippingSettingMapper,
+    @Inject(MAT_DIALOG_DATA) public data: ShipSettingMapper,
   ) {
-    console.log('Data ', data)
     this.form = this.fb.group({
-      country: new FormControl(data.country, [Validators.required, Validators.max(5)]),
+      country: new FormControl(data.country, [Validators.required, Validators.max(57)]),
       usd: new FormControl(data.usd_price, Validators.required),
       ngn: new FormControl(data.ngn_price, Validators.required),
     });

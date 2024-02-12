@@ -12,7 +12,8 @@ export class AsyncButtonDirective {
 
   @Input('asyncButton') clickFunc!: Observable<unknown>;
 
-  @HostListener('click', ['$event']) onClick(): void {
+  @HostListener('click', ['$event'])
+  onClick(): void {
     const spinner = `
         <div role="status" class="
              inline-block

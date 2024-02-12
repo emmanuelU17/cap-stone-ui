@@ -5,7 +5,7 @@ import {CategoryResponse} from "../shared-util";
 import {SarreCurrency} from "../../global-utils";
 import {HttpErrorResponse} from "@angular/common/http";
 import {ProductService} from "./product/product.service";
-import {DASHBOARDLINKS, Display} from "./route-util";
+import {DASHBOARDLINKS} from "./route-util";
 import {CommonModule} from "@angular/common";
 import {NavigationComponent} from "./util/navigation/navigation.component";
 import {MatIconModule} from "@angular/material/icon";
@@ -151,21 +151,45 @@ export class AdminDashboardComponent {
   activeCurrency = SarreCurrency.NGN;
   leftColumn = false;
 
-  // Products
+  /**
+   * To improve UX, on load of Admin route, based on default currency,
+   * make call to server to return a {@code Page} of {@code ProductResponse}.
+   *
+   * @return An Observable of a {@code Page} of {@code ProductResponse}.
+   * */
   private readonly products$ = this.productService.currency$
     .pipe(switchMap((currency) => this.productService.allProducts(0, 20, currency)));
 
-  // Categories
+  /**
+   * To improve UX, on load of Admin route, make call to server to
+   * return all {@code CategoryResponse} where we sort based on
+   * property name.
+   *
+   * @return An Observable of an array of {@code CategoryResponse}.
+   * */
   private readonly category$ = this.categoryService.allCategories()
     .pipe(
       tap((arr: CategoryResponse[]) => arr.sort((a, b) => a.name.localeCompare(b.name)))
     );
 
-  // Shipping Settings
-  private readonly shipping$ = this.setting.allShipping();
+  /**
+   * To improve UX, on load of Admin route, make call to server to
+   * return all Tax information.
+   *
+   * @return An Observable of an array of {@code ShipSetting}.
+   * */
+  private readonly ship$ = this.setting.allShipping();
+
+  /**
+   * To improve UX, on load of Admin route, make call to server to
+   * return all Tax information.
+   *
+   * @return An Observable of an array of {@code TaxSetting}.
+   * */
+  private readonly tax$ = this.setting.allTaxSetting();
 
   readonly combine$: Observable<{ state: string, error?: string }> =
-    combineLatest([this.products$, this.category$, this.shipping$])
+    combineLatest([this.products$, this.category$, this.ship$, this.tax$])
       .pipe(
         map(() => ({ state: 'LOADED' })),
         startWith({ state: 'LOADING' }),

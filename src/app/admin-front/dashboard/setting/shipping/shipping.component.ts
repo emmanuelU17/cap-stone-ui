@@ -7,7 +7,7 @@ import {DeleteComponent} from "../../util/delete/delete.component";
 import {MatDialog, MatDialogModule} from "@angular/material/dialog";
 import {SettingService} from "../setting.service";
 import {UpdateShippingComponent} from "./update-shipping.component";
-import {ShippingSettingMapper} from "../util";
+import {ShipSettingMapper} from "../util";
 
 @Component({
   selector: 'app-shipping',
@@ -57,7 +57,7 @@ export class ShippingComponent {
    */
   readonly ship$: Observable<CxShipping[]> = this.service.refreshShippingSetting$
     .pipe(
-      map((arr: ShippingSettingMapper[]) => {
+      map((arr: ShipSettingMapper[]) => {
         return arr.map((value, index) =>
           ({
             index: index + 1,

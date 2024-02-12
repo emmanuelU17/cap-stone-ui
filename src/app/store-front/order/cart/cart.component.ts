@@ -7,7 +7,7 @@ import {FooterService} from "../../utils/footer/footer.service";
 import {Router} from "@angular/router";
 import {HomeService} from "../../home/home.service";
 import {catchError, delay, map, Observable, of, startWith, switchMap} from "rxjs";
-import {SarreCurrency, VARIABLE_IS_NUMERIC} from "../../../global-utils";
+import {SarreCurrency, IS_NUMERIC} from "../../../global-utils";
 
 @Component({
   selector: 'app-cart',
@@ -183,9 +183,9 @@ export class CartComponent {
   qtyChange(e: KeyboardEvent, sku: string): void {
     const qty = (e.target as HTMLInputElement).value;
 
-    if (!VARIABLE_IS_NUMERIC(qty))
+    if (!IS_NUMERIC(qty))
       return;
-    else if (VARIABLE_IS_NUMERIC(qty) && Number(qty) < 0)
+    else if (IS_NUMERIC(qty) && Number(qty) < 0)
       return;
 
     this.bool$ = this.bool$

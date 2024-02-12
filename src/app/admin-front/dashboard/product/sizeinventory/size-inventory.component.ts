@@ -6,7 +6,7 @@ import {CustomQueue} from "./custom-queue";
 import {SizeInventoryService} from "./size-inventory.service";
 import {tap} from "rxjs";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {VARIABLE_IS_NUMERIC} from "../../../../global-utils";
+import {IS_NUMERIC} from "../../../../global-utils";
 
 @Component({
   selector: 'app-size-inventory',
@@ -118,7 +118,7 @@ export class SizeInventoryComponent {
   }
 
   // https://stackoverflow.com/questions/175739/how-can-i-check-if-a-string-is-a-valid-number
-  private isNumeric = (num: any): boolean => VARIABLE_IS_NUMERIC(num);
+  private isNumeric = (num: any): boolean => IS_NUMERIC(num);
 
   /**
    * Validates if size and quantity pair are in the right format

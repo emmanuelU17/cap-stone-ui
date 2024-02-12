@@ -1,4 +1,4 @@
-export const VARIABLE_IS_NUMERIC = (num: any): boolean =>
+export const IS_NUMERIC = (num: any): boolean =>
   (typeof (num) === 'number' || typeof (num) === 'string' && num.trim() !== '') && !isNaN(num as number);
 
 export enum SarreCurrency {

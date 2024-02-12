@@ -4,6 +4,12 @@ export interface ShippingDTO {
   usd_price: number;
 }
 
-export interface ShippingSettingMapper extends ShippingDTO {
+export interface ShipSettingMapper extends ShippingDTO {
   shipping_id: number;
+}
+
+export interface TaxSetting {
+  tax_id: number;
+  name: string;
+  rate: number;
 }
