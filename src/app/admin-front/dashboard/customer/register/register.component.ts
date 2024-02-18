@@ -2,11 +2,11 @@ import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
-import {DirectiveModule} from "../../../../directive/directive.module";
+import {DirectiveModule} from "@/app/directive/directive.module";
 import {Observable, of, tap} from "rxjs";
 import {MatButtonModule} from "@angular/material/button";
-import {AuthService} from "../../../../service/auth.service";
-import {RegisterDTO} from 'src/app/global-utils';
+import {AuthService} from "@/app/service/auth.service";
+import {RegisterDTO} from '@/app/global-utils';
 
 @Component({
   selector: 'app-register',
@@ -160,7 +160,7 @@ export class RegisterComponent {
 
   viewPassword = false;
 
-  form = this.fb.group({
+  readonly form = this.fb.group({
     firstname: new FormControl('', [Validators.required]),
     lastname: new FormControl('', [Validators.required]),
     email: new FormControl('', [Validators.required, Validators.email]),

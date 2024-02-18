@@ -1,9 +1,9 @@
 import {inject, Injectable} from '@angular/core';
-import {environment} from "../../environments/environment";
+import {environment} from "@/environments/environment";
 import {HttpClient, HttpErrorResponse, HttpResponse} from "@angular/common/http";
 import {BehaviorSubject, catchError, map, Observable, of, tap} from "rxjs";
-import {AuthResponse, RegisterDTO} from "../global-utils";
-import {ToastService} from "../shared-comp/toast/toast.service";
+import {AuthResponse, RegisterDTO} from "@/app/global-utils";
+import {ToastService} from "@/app/shared-comp/toast/toast.service";
 import {Router} from "@angular/router";
 
 interface CSRF {

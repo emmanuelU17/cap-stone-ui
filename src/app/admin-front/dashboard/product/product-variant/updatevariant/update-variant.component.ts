@@ -4,12 +4,12 @@ import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from "@angular/material/
 import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {catchError, Observable, of, switchMap, tap} from "rxjs";
 import {VariantService} from "../variant.service";
-import {DirectiveModule} from "../../../../../directive/directive.module";
+import {DirectiveModule} from "@/app/directive/directive.module";
 import {MatRadioModule} from "@angular/material/radio";
 import {HttpErrorResponse} from "@angular/common/http";
-import {ToastService} from "../../../../../shared-comp/toast/toast.service";
-import {UpdateProductService} from "../../update/update-product.service";
-import {ProductDetailResponse} from "../../../../shared-util";
+import {ToastService} from "@/app/shared-comp/toast/toast.service";
+import {UpdateProductService} from "@/app/admin-front/dashboard/product/update/update-product.service";
+import {ProductDetailResponse} from "@/app/admin-front/shared-util";
 import {CustomUpdateVariant, UpdateVariant} from "../index";
 
 @Component({
@@ -92,7 +92,7 @@ export class UpdateVariantComponent {
   private readonly toastService = inject(ToastService);
   private readonly fb = inject(FormBuilder);
 
-  form: FormGroup;
+  readonly form: FormGroup;
 
   constructor(
     private dialogRef: MatDialogRef<UpdateVariantComponent>,
@@ -137,15 +137,19 @@ export class UpdateVariantComponent {
         switchMap((status: number) => {
           // refresh variants table and close the modal
           return this.updateProductService
-            .productDetailsByProductUUID(this.data.productId)
+            .productDetailsByProductUuid(this.data.productId)
             .pipe(
               tap((arr: ProductDetailResponse[]) => this.dialogRef.close({ arr: arr })),
               switchMap(() => of(status)),
+              catchError((e: HttpErrorResponse) => {
+                this.toastService.toastMessage(e.error ? e.error.message : e.message);
+                return of(e.status);
+              })
             )
         }),
-        catchError((err: HttpErrorResponse) => {
-          this.toastService.toastMessage(err.message);
-          return of(err.status);
+        catchError((e: HttpErrorResponse) => {
+          this.toastService.toastMessage(e.error ? e.error.message : e.message);
+          return of(e.status);
         })
       );
   }

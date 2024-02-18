@@ -8,8 +8,11 @@ import {Router} from "@angular/router";
   imports: [StoreFrontNavigationComponent],
   template: `
     <div class="lg-scr z-10 border-b border-transparent fixed left-0 top-0 right-0">
-      <app-store-front-navigation-navigation [count]="0" [categories]="[]"
-                                             (routeEmitter)="onChildRoute($event)"></app-store-front-navigation-navigation>
+      <app-store-front-navigation-navigation
+        [count]="0"
+        [categories]="[]"
+        (routeEmitter)="onChildRoute($event)"
+      ></app-store-front-navigation-navigation>
     </div>
     <div class="lg-scr mg-top p-2.5">
       <h1>Page not found :(</h1>

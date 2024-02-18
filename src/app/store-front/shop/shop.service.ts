@@ -1,10 +1,10 @@
 import {inject, Injectable} from '@angular/core';
-import {environment} from "../../../environments/environment";
+import {environment} from "@/environments/environment";
 import {HttpClient} from "@angular/common/http";
-import {Category, Page, SarreCurrency} from "../../global-utils";
+import {Category, Page, SarreCurrency} from "@/app/global-utils";
 import {BehaviorSubject, Observable, of, switchMap, tap} from "rxjs";
 import {ProductDetail} from "./shop.helper";
-import {Product} from "../store-front-utils";
+import {Product} from "@/app/store-front/store-front-utils";
 
 @Injectable({
   providedIn: 'root'

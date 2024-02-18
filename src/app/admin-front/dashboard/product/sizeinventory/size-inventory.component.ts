@@ -1,12 +1,12 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Inject, Output} from '@angular/core';
 import {CommonModule, DOCUMENT} from '@angular/common';
-import {SizeInventory} from "../../../shared-util";
+import {SizeInventory} from "@/app/admin-front/shared-util";
 import {MatButtonModule} from "@angular/material/button";
 import {CustomQueue} from "./custom-queue";
 import {SizeInventoryService} from "./size-inventory.service";
 import {tap} from "rxjs";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {IS_NUMERIC} from "../../../../global-utils";
+import {IS_NUMERIC} from "@/app/global-utils";
 
 @Component({
   selector: 'app-size-inventory',

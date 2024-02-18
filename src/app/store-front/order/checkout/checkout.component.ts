@@ -1,12 +1,19 @@
-import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
 import {CartService} from "../cart/cart.service";
-import {FooterService} from "../../utils/footer/footer.service";
-import {map, switchMap} from "rxjs";
+import {FooterService} from "@/app/store-front/utils/footer/footer.service";
+import {catchError, delay, map, Observable, of, Subject, switchMap, tap, throwError} from "rxjs";
 import {PaymentService} from "../payment/payment.service";
-import {ReservationDTO} from "../index";
+import {Checkout, ReservationDTO} from "../index";
 import {RouterLink} from "@angular/router";
+import {CheckoutService} from "@/app/store-front/order/checkout/checkout.service";
+import {HttpErrorResponse} from "@angular/common/http";
+import {SarreCurrency} from "@/app/global-utils";
+
+interface CustomCheckout extends Checkout {
+  currency: SarreCurrency;
+}
 
 @Component({
   selector: 'app-checkout',
@@ -55,7 +62,8 @@ import {RouterLink} from "@angular/router";
 
         <!-- non mobile -->
         <div class="hidden md:grid grid-cols-3">
-          <button routerLink="/order/cart" class="p-3 flex gap-3 opacity-50 bg-white hover:bg-transparent hover:opacity-100">
+          <button routerLink="/order/cart"
+                  class="p-3 flex gap-3 opacity-50 bg-white hover:bg-transparent hover:opacity-100">
             <div class="h-full flex items-center">
               <h1 class="cx-font-fam" style="font-size: 50px">01</h1>
             </div>
@@ -189,6 +197,7 @@ import {RouterLink} from "@angular/router";
                      name="postcode"
                      formControlName="country"
                      class="w-full p-2 border"
+                     (keyup)="onInputCountry($event)"
                      placeholder="country">
             </div>
 
@@ -199,7 +208,8 @@ import {RouterLink} from "@angular/router";
             </div>
 
             <div class="w-full flex justify-end text-sm md:text-base">
-              <a routerLink="/order" (click)="onAddressEntered()" [style]="{ 'display': form.valid ? 'block' : 'none' }"
+              <a routerLink="/order" (click)="onAddressEntered()"
+                 [style]="{ 'display': form.valid && loading() === 'loaded' ? 'block' : 'none' }"
                  class="p-2 text-white hover:text-black bg-black hover:bg-[var(--app-theme-hover)]">
                 Continue to payment
               </a>
@@ -219,7 +229,8 @@ import {RouterLink} from "@angular/router";
                     <img [src]="detail.url" alt="product image{{ i }}" class="h-full w-full object-cover object-center">
                   </div>
                   <div class="ml-4 flex flex-1 flex-col">
-                    <div class="md:mb-2 flex flex-col md:flex-row md:justify-between text-base font-medium text-gray-900">
+                    <div
+                      class="md:mb-2 flex flex-col md:flex-row md:justify-between text-base font-medium text-gray-900">
                       <h3 class="cs-font">
                         {{ detail.product_name }}
                       </h3>
@@ -267,38 +278,52 @@ import {RouterLink} from "@angular/router";
               }
             </ul>
           </div>
-          <div>
-            <!-- subtotal -->
-            <div class="cs-font py-1 flex justify-between md:text-sm">
-              <h3 class="capitalize">subtotal</h3>
-              <h3 class="capitalize" *ngIf="total$ | async as total">
-                {{ total.currency }}{{ total.total }}
-              </h3>
+
+          @if (checkout$ | async; as checkout) {
+            <div>
+              <!-- subtotal -->
+              <div class="cs-font py-1 flex justify-between md:text-sm">
+                <h3 class="capitalize">subtotal</h3>
+                <h3 class="capitalize">
+                  {{ checkout.currency }}{{ checkout.total }}
+                </h3>
+              </div>
+
+              <!-- shipping -->
+              <div class="cs-font py-1 flex justify-between md:text-xs">
+                <h3 class="capitalize">shipping</h3>
+                <h3 class="capitalize">{{ checkout.currency }}{{ checkout.ship_cost }}</h3>
+              </div>
+
+              <!-- taxes -->
+              <div class="cs-font py-1 flex justify-between md:text-sm">
+                <p class="capitalize text-sm">{{ checkout.tax_name }} ({{ checkout.tax_rate }})</p>
+                <h3 class="capitalize">{{ checkout.currency }}{{ checkout.tax_total }}</h3>
+              </div>
+
+              <!-- total -->
+              <div class="cs-font py-1 flex justify-between font-semibold md:text-sm">
+                <h3 class="capitalize">total</h3>
+                <h3 class="uppercase"><span style="font-size: 8px">{{ checkout.currency }}</span>{{ checkout.total }}
+                </h3>
+              </div>
             </div>
-
-            <!-- shipping -->
-            <div class="cs-font py-1 flex justify-between md:text-xs">
-              <h3 class="capitalize">shipping</h3>
-              <h3 class="capitalize">$15.00</h3>
-            </div>
-
-            <!-- taxes -->
-            <div class="cs-font py-1 flex justify-between md:text-sm">
-              <h3 class="capitalize">taxes</h3>
-              <h3>$2.00</h3>
-            </div>
-
-            <!-- total -->
-            <div class="cs-font py-1 flex justify-between font-semibold md:text-sm">
-              <h3 class="capitalize">total</h3>
-              <h3 class="uppercase"><span style="font-size: 8px">USD</span> $50.00</h3>
-            </div>
-
-          </div>
-
+          }
         </div>
       </div>
     </div>
+
+    @if (loading() === 'loading') {
+      <div class="fixed top-0 right-0 bottom-0 left-0 flex justify-center items-center bg-black opacity-50 z-10">
+        <div role="status"
+             class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-r-[var(--app-theme)] align-[-0.125em] text-primary motion-reduce:animate-[spin_1.5s_linear_infinite]">
+          <span
+            class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
+            Loading...
+          </span>
+        </div>
+      </div>
+    }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -308,16 +333,11 @@ export class CheckoutComponent {
   private readonly cartService = inject(CartService);
   private readonly footService = inject(FooterService);
   private readonly fb = inject(FormBuilder);
+  private readonly checkoutService = inject(CheckoutService);
+
+  readonly loading = signal('');
 
   readonly carts$ = this.cartService.cart$;
-
-  // TODO api call to receive shipping price based on location and tax
-  readonly total$ = this.footService.currency$
-    .pipe(
-      switchMap((currency) => this.cartService.total$
-        .pipe(map((num) => ({ total: num, currency: currency })))
-      )
-    );
 
   readonly form = this.fb.group({
     email: new FormControl("", [Validators.required]),
@@ -333,6 +353,76 @@ export class CheckoutComponent {
 
   currency = (str: string): string => this.footService.currency(str);
 
+  private readonly subject = new Subject<string>();
+
+  /**
+   * Initiates a server request to adjust prices based on the
+   * user's country.
+   *
+   * On new emission from {@link subject}, {@link checkout$}
+   * sets a delay of 807 milliseconds and triggers a loading
+   * state whilst making a GET request to the server.
+   *
+   * @return An observable of {@link CustomCheckout} which is the
+   * adjusted prices and currency based on value emitted from
+   * {@link subject}.
+   */
+  readonly checkout$: Observable<CustomCheckout> = this.subject
+    .pipe(
+      switchMap((str) => of(str)
+        .pipe(
+          delay(907),
+          tap(() => this.loading.set('loading'))
+        ),
+      ),
+      switchMap((country) => this.footService.currency$
+        .pipe(
+          switchMap((currency) => this.checkoutService
+            .checkout(country, currency)
+            .pipe(
+              map((obj) => {
+                this.loading.set('loaded');
+                return {
+                  currency: currency,
+                  ship_cost: obj.ship_cost,
+                  tax_name: obj.tax_name,
+                  tax_rate: obj.tax_rate,
+                  tax_total: obj.tax_total,
+                  total: obj.total
+                };
+              }),
+              catchError((e: HttpErrorResponse) => {
+                this.loading.set('error');
+                const err = e.error ? e.error.message : e.message;
+                this.paymentService.toast(err);
+                return throwError(() => new Error(err));
+              })
+            )
+          )
+        ))
+    );
+
+  /**
+   * Updates {@link subject} when a user enters their country.
+   *
+   * @param e The keyboard event triggered by the user input.
+   */
+  onInputCountry = (e: KeyboardEvent): void => {
+    this.subject
+      .next((e.target as HTMLInputElement).value);
+  }
+
+  /**
+   * Sets the address details for a user to confirm before proceeding
+   * to the {@link src/app/store-front/order/payment/payment.component.ts}.
+   * <br> <br>
+   * This method retrieves address details entered by the user from
+   * the form fields.
+   * If any required field is missing, it displays a toast message
+   * prompting the user to enter shipping information.
+   * The address details are then formatted into a {@link ReservationDTO}
+   * object and passed to the payment service.
+   */
   onAddressEntered(): void {
     const email = this.form.controls['email'].value;
     const name = this.form.controls['name'].value;

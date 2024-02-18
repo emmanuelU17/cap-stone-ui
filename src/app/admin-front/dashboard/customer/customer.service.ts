@@ -1,9 +1,9 @@
 import {inject, Injectable} from '@angular/core';
-import {environment} from "../../../../environments/environment";
+import {environment} from "@/environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {catchError, Observable, of} from "rxjs";
-import {Page, SarreUser} from "../../../global-utils";
-import {ToastService} from "../../../shared-comp/toast/toast.service";
+import {Page, SarreUser} from "@/app/global-utils";
+import {ToastService} from "@/app/shared-comp/toast/toast.service";
 
 @Injectable({
   providedIn: 'root'

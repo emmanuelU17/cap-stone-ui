@@ -2,12 +2,13 @@ import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from "@angular/common";
 import {map, Observable} from "rxjs";
 import {DynamicTableComponent} from "../../util/dynamictable/dynamic-table.component";
-import {TableContent} from "../../../shared-util";
-import {DeleteComponent} from "../../util/delete/delete.component";
+import {TableContent} from "@/app/admin-front/shared-util";
+import {DeleteComponent} from "@/app/admin-front/dashboard/util/delete/delete.component";
 import {MatDialog, MatDialogModule} from "@angular/material/dialog";
 import {SettingService} from "../setting.service";
 import {UpdateShippingComponent} from "./update-shipping.component";
 import {ShipSettingMapper} from "../util";
+import {CreateShippingComponent} from "@/app/admin-front/dashboard/setting/shipping/create-shipping.component";
 
 @Component({
   selector: 'app-shipping',
@@ -19,13 +20,13 @@ import {ShipSettingMapper} from "../util";
         <h1 class="cx-font-size w-fit capitalize border-b border-[var(--app-theme)]">
           shipping setting
         </h1>
-        <a class="ml-1">
+        <button type="button" class="ml-1" (click)="openCreateShippingComponent()">
           <svg fill="none" stroke-width="1.5" viewBox="0 0 24 24" stroke="currentColor"
                xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-[var(--app-theme)]">
             <path stroke-linecap="round" stroke-linejoin="round"
                   d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
           </svg>
-        </a>
+        </button>
       </div>
 
       @if (ship$ | async; as ship) {
@@ -102,6 +103,14 @@ export class ShippingComponent {
         asyncButton: this.service.delete(ship.id)
       }
     });
+  }
+
+  openCreateShippingComponent(): void {
+    this.dialog.open(CreateShippingComponent, {
+      width: '500px',
+      maxWidth: '100%',
+      height: 'fit-content',
+    })
   }
 
 }

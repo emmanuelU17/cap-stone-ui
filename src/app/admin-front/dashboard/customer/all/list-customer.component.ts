@@ -1,11 +1,11 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {RouterLink} from "@angular/router";
-import {DynamicTableComponent} from "../../util/dynamictable/dynamic-table.component";
+import {DynamicTableComponent} from "@/app/admin-front/dashboard/util/dynamictable/dynamic-table.component";
 import {CustomerService} from "../customer.service";
 import {catchError, map, Observable, of, startWith} from "rxjs";
-import {Page, SarreUser} from "../../../../global-utils";
-import {TableContent} from "../../../shared-util";
+import {Page, SarreUser} from "@/app/global-utils";
+import {TableContent} from "@/app/admin-front/shared-util";
 
 @Component({
   selector: 'app-list-customer',

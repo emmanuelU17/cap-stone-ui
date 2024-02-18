@@ -1,9 +1,9 @@
 import {inject, Injectable} from '@angular/core';
 import {BehaviorSubject, combineLatest, map, Observable, of, ReplaySubject, switchMap, tap} from "rxjs";
-import {Page, SarreCurrency} from "../../../global-utils";
-import {CategoryResponse, ProductResponse, UpdateProduct} from "../../shared-util";
+import {Page, SarreCurrency} from "@/app/global-utils";
+import {CategoryResponse, ProductResponse, UpdateProduct} from "@/app/admin-front/shared-util";
 import {HttpClient, HttpResponse} from "@angular/common/http";
-import {environment} from "../../../../environments/environment";
+import {environment} from "@/environments/environment";
 
 @Injectable({
   providedIn: 'root'

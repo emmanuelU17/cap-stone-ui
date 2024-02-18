@@ -1,8 +1,8 @@
 import {inject, Injectable} from '@angular/core';
-import {ProductDetailResponse} from "../../../shared-util";
+import {ProductDetailResponse} from "@/app/admin-front/shared-util";
 import {map, Observable} from "rxjs";
 import {HttpClient, HttpResponse} from "@angular/common/http";
-import {environment} from "../../../../../environments/environment";
+import {environment} from "@/environments/environment";
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +15,7 @@ export class UpdateProductService {
   /**
    * Fetch ProductDetail based on id
    * */
-  productDetailsByProductUUID = (id: string): Observable<ProductDetailResponse[]> => this.http
+  productDetailsByProductUuid = (id: string): Observable<ProductDetailResponse[]> => this.http
     .get<ProductDetailResponse[]>(
       `${this.HOST}api/v1/worker/product/detail?id=${id}`,
       { responseType: 'json', withCredentials: true }

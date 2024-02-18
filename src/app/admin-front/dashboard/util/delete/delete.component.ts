@@ -1,24 +1,24 @@
 import {ChangeDetectionStrategy, Component, inject, Inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {MatButtonModule} from "@angular/material/button";
 import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from "@angular/material/dialog";
 import {DeleteData} from "./delete-data";
-import {DirectiveModule} from "../../../../directive/directive.module";
+import {DirectiveModule} from "@/app/directive/directive.module";
 import {catchError, map, Observable, of} from "rxjs";
-import {ToastService} from "../../../../shared-comp/toast/toast.service";
+import {ToastService} from "@/app/shared-comp/toast/toast.service";
 import {HttpErrorResponse} from "@angular/common/http";
 
 @Component({
   selector: 'app-delete',
   standalone: true,
-  imports: [CommonModule, MatDialogModule, MatButtonModule, DirectiveModule],
+  imports: [CommonModule, MatDialogModule, DirectiveModule],
   template: `
     <div class="w-full mb-2 px-2.5 text-center">
       <h1 class="cx-font-size">Are you sure you want to delete {{ data.name }}?</h1>
     </div>
 
     <div class="p-2.5 px-1.5 flex justify-between">
-      <button mat-stroked-button color="warn" [style.border-color]="'red'" type="button" (click)="cancel()">
+      <button type="button" (click)="cancel()"
+              class="capitalize text-white font-bold py-2 px-4 rounded bg-red-400 text-white">
         Cancel
       </button>
       <button class="capitalize text-white font-bold py-2 px-4 rounded bg-[var(--app-theme-hover)]"

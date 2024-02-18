@@ -1,9 +1,9 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {SarreCurrency} from "../../../global-utils";
+import {SarreCurrency} from "@/app/global-utils";
 import {FooterService} from "./footer.service";
 import {RouterLink} from "@angular/router";
-import {MobileFooterComponent} from "../mobilefooter/mobile-footer.component";
+import {MobileFooterComponent} from "@/app/store-front/utils/mobilefooter/mobile-footer.component";
 
 @Component({
   selector: 'app-footer',

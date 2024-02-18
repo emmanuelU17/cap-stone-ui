@@ -1,15 +1,15 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {catchError, map, Observable, of, startWith, switchMap, tap} from "rxjs";
-import {Product} from "../../store-front-utils";
+import {Product} from "@/app/store-front/store-front-utils";
 import {CommonModule} from "@angular/common";
-import {CardComponent} from "../../utils/card/card.component";
-import {FilterComponent} from "../../utils/filter/filter.component";
+import {CardComponent} from "@/app/store-front/utils/card/card.component";
+import {FilterComponent} from "@/app/store-front/utils/filter/filter.component";
 import {RouterLink} from "@angular/router";
 import {HttpErrorResponse} from "@angular/common/http";
-import {FooterService} from "../../utils/footer/footer.service";
-import {Page, SarreCurrency} from "../../../global-utils";
-import {PaginatorComponent} from "../../../shared-comp/paginator/paginator.component";
-import {UtilService} from "../../../service/util.service";
+import {FooterService} from "@/app/store-front/utils/footer/footer.service";
+import {Page, SarreCurrency} from "@/app/global-utils";
+import {PaginatorComponent} from "@/app/shared-comp/paginator/paginator.component";
+import {UtilService} from "@/app/service/util.service";
 import {ShopService} from "../shop.service";
 
 @Component({

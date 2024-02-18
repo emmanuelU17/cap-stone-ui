@@ -1,13 +1,13 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {DirectiveModule} from "../../../directive/directive.module";
-import {CardComponent} from "../../utils/card/card.component";
+import {DirectiveModule} from "@/app/directive/directive.module";
+import {CardComponent} from "@/app/store-front/utils/card/card.component";
 import {CartService} from "./cart.service";
-import {FooterService} from "../../utils/footer/footer.service";
+import {FooterService} from "@/app/store-front/utils/footer/footer.service";
 import {Router} from "@angular/router";
-import {HomeService} from "../../home/home.service";
+import {HomeService} from "@/app/store-front/home/home.service";
 import {catchError, delay, map, Observable, of, startWith, switchMap} from "rxjs";
-import {SarreCurrency, IS_NUMERIC} from "../../../global-utils";
+import {IS_NUMERIC, SarreCurrency} from "@/app/global-utils";
 
 @Component({
   selector: 'app-cart',
@@ -30,7 +30,6 @@ import {SarreCurrency, IS_NUMERIC} from "../../../global-utils";
     <div class="lg-scr mg-top h-full w-full">
 
       @if (!!(carts$ | async)?.length) {
-
         <!-- Contents -->
         <div class="flex-1 overflow-y-auto pb-9 px-4 sm:px-6">
           <div class="flex items-start justify-between">
@@ -44,15 +43,16 @@ import {SarreCurrency, IS_NUMERIC} from "../../../global-utils";
                 @for (detail of carts$ | async; track detail.product_id; let i = $index) {
                   <li class="flex py-6">
                     <div class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-                      <img [src]="detail.url" alt="product image{{ i }}" class="h-full w-full object-cover object-center">
+                      <img [src]="detail.url" alt="product image{{ i }}"
+                           class="h-full w-full object-cover object-center">
                     </div>
                     <div class="ml-4 flex flex-1 flex-col">
                       <div>
                         <div class="flex justify-between text-base font-medium text-gray-900">
-                          <h3 (click)="route('/shop/product/' + detail.product_id)"
-                              class="font-app-card cursor-pointer hover:border-b hover:border-black">
+                          <button type="button" (click)="route('/shop/product/' + detail.product_id)"
+                                  class="font-app-card cursor-pointer hover:border-b hover:border-black">
                             {{ detail.product_name }}
-                          </h3>
+                          </button>
                           <p class="font-app-card ml-4">{{ currency(detail.currency) }}{{ detail.price }}</p>
                         </div>
                         <p class="mt-1 text-sm text-gray-500">{{ detail.colour }}</p>
@@ -77,10 +77,12 @@ import {SarreCurrency, IS_NUMERIC} from "../../../global-utils";
                 }
 
                 <!-- spinner -->
-                @if (bool$ | async; as spin) {
+                @if (loadingState$ | async; as spin) {
                   <div class="absolute top-0 right-0 bottom-0 left-0 flex justify-center items-center bg-black opacity-50">
-                    <div role="status" class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-r-[var(--app-theme)] align-[-0.125em] text-primary motion-reduce:animate-[spin_1.5s_linear_infinite]">
-                      <span class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
+                    <div role="status"
+                         class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-r-[var(--app-theme)] align-[-0.125em] text-primary motion-reduce:animate-[spin_1.5s_linear_infinite]">
+                      <span
+                        class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
                         Loading...
                       </span>
                     </div>
@@ -105,7 +107,8 @@ import {SarreCurrency, IS_NUMERIC} from "../../../global-utils";
             Shipping and taxes calculated at checkout.
           </p>
           <div class="mt-6">
-            <button (click)="route('/order/checkout')" type="submit" class=" w-full px-6 py-3 text-base font-medium text-white shadow-sm flex items-center justify-center rounded-md border border-transparent bg-[var(--app-theme)] hover:bg-[var(--app-theme-hover)]">
+            <button (click)="route('/order/checkout')" type="submit"
+                    class=" w-full px-6 py-3 text-base font-medium text-white shadow-sm flex items-center justify-center rounded-md border border-transparent bg-[var(--app-theme)] hover:bg-[var(--app-theme-hover)]">
               Checkout
             </button>
           </div>
@@ -171,15 +174,23 @@ export class CartComponent {
   route = (route: string): void => { this.router.navigate([`${route}`]); }
 
   /**
-   * removes item from a users cart
+   * makes call to server to delete an item from a users cart.
    * */
   remove = (sku: string): Observable<number> => this.cartService.removeFromCart(sku);
 
+  loadingState$ = of(false);
+
   /**
-   * Updates qty based on a {@code Product} sku. As far as bool,
-   * it displays a loading screen 1070 ms after a user enters their input.
-   * */
-  bool$ = of(false);
+   * Updates the quantity of a product based on its SKU.
+   *
+   * This function is triggered when a user enters input to adjust the quantity of a product.
+   * It validates the input, ensuring it is a numeric value and not negative.
+   *
+   * Upon successful input validation, it triggers a loading screen after a short delay.
+   *
+   * @param e The keyboard event that triggered the quantity change.
+   * @param sku The SKU (Stock Keeping Unit) of the product whose quantity is being updated.
+   */
   qtyChange(e: KeyboardEvent, sku: string): void {
     const qty = (e.target as HTMLInputElement).value;
 
@@ -188,16 +199,23 @@ export class CartComponent {
     else if (IS_NUMERIC(qty) && Number(qty) < 0)
       return;
 
-    this.bool$ = this.bool$
+    this.loadingState$ = this.loadingState$
       .pipe(
         switchMap(() => of({ sku: sku, qty: Number(qty) }).pipe(delay(1007))),
         switchMap((obj: { sku: string, qty: number }) => obj.qty === 0
           ? this.remove(obj.sku)
-            .pipe(map(() => false), startWith(true))
+            .pipe(
+              map(() => false),
+              startWith(true),
+              catchError(() => of(false))
+            )
           : this.cartService.createCart({ sku: obj.sku, qty: obj.qty })
-            .pipe(map(() => false), startWith(true))
+            .pipe(
+              map(() => false),
+              startWith(true),
+              catchError(() => of(false))
+            )
         ),
-        catchError(() => of(false))
       );
   }
 

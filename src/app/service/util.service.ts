@@ -1,5 +1,5 @@
 import {Injectable} from "@angular/core";
-import {Product} from "../store-front/store-front-utils";
+import {Product} from "@/app/store-front/store-front-utils";
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +13,7 @@ export class UtilService {
    * @param length is the size of the array
    * @return Array of number
    * */
-  getRange = (length: number): number[] => [...Array(length).keys()];
+  range = (length: number): number[] => [...Array(length).keys()];
 
   /**
    * Sorts array based on the price.

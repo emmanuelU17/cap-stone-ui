@@ -1,24 +1,24 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {SizeInventory} from "../../../shared-util";
+import {SizeInventory} from "@/app/admin-front/shared-util";
 import {catchError, Observable, of, switchMap} from "rxjs";
 import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
-import {CategoryService} from "../../category/category.service";
+import {CategoryService} from "@/app/admin-front/dashboard/category/category.service";
 import {NewProductService} from "./new-product.service";
 import {SizeInventoryComponent} from "../sizeinventory/size-inventory.component";
 import {MatButtonModule} from "@angular/material/button";
 import {MatIconModule} from "@angular/material/icon";
 import {MatRadioModule} from "@angular/material/radio";
-import {DirectiveModule} from "../../../../directive/directive.module";
+import {DirectiveModule} from "@/app/directive/directive.module";
 import {ProductService} from "../product.service";
 import {HttpErrorResponse} from "@angular/common/http";
-import {ToastService} from "../../../../shared-comp/toast/toast.service";
+import {ToastService} from "@/app/shared-comp/toast/toast.service";
 import {SizeInventoryService} from "../sizeinventory/size-inventory.service";
 import {Router} from "@angular/router";
-import {SarreCurrency} from "../../../../global-utils";
+import {SarreCurrency} from "@/app/global-utils";
 import {CKEditorModule} from "@ckeditor/ckeditor5-angular";
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import {CategoryHierarchyComponent} from "../../../../shared-comp/hierarchy/category-hierarchy.component";
+import {CategoryHierarchyComponent} from "@/app/shared-comp/hierarchy/category-hierarchy.component";
 
 @Component({
   selector: 'app-new-product',
@@ -179,13 +179,15 @@ export class NewProductComponent {
             .pipe(
               switchMap((currency) => this.productService
                 .allProducts(0, 20, currency)
-                .pipe(switchMap(() => of(status)))
+                .pipe(
+                  switchMap(() => of(status)),
+                  catchError((err: HttpErrorResponse) => {
+                    this.toastService.toastMessage(err.error ? err.error.message : err.message);
+                    return of(err.status);
+                  })
+                )
               )
             );
-        }),
-        catchError((err: HttpErrorResponse) => {
-          this.toastService.toastMessage(err.error ? err.error.message : err.message);
-          return of(err.status);
         })
       );
   }

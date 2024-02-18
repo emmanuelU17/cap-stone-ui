@@ -6,8 +6,8 @@ import {BehaviorSubject} from "rxjs";
 })
 export class SizeInventoryService {
 
-  private subject = new BehaviorSubject<boolean>(false);
-  clearQueue$ = this.subject.asObservable();
+  private readonly subject = new BehaviorSubject<boolean>(false);
+  readonly clearQueue$ = this.subject.asObservable();
 
   /**
    * Clears SizeInventory array if @param is true

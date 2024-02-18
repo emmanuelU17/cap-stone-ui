@@ -3,8 +3,8 @@ import {CommonModule} from "@angular/common";
 import {SettingService} from "../setting.service";
 import {catchError, map, of, startWith, Subject, switchMap} from "rxjs";
 import {HttpErrorResponse} from "@angular/common/http";
-import {ToastService} from "../../../../shared-comp/toast/toast.service";
-import {IS_NUMERIC} from "../../../../global-utils";
+import {ToastService} from "@/app/shared-comp/toast/toast.service";
+import {IS_NUMERIC} from "@/app/global-utils";
 import {toSignal} from "@angular/core/rxjs-interop";
 
 @Component({
@@ -120,7 +120,7 @@ export class TaxComponent {
   readonly api = toSignal(this.loadingState$, { initialValue: false });
   readonly taxes$ = this.service.refreshTaxSetting$;
 
-  update = (index: number, taxId: number, name: string, rate: string): void => {
+  update (index: number, taxId: number, name: string, rate: string): void {
     this.index.set(index);
     this.subject
       .next({ id: taxId, name: name, rate: rate })

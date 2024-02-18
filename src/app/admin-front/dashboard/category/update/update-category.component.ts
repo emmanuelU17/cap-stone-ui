@@ -1,22 +1,22 @@
 import {ChangeDetectionStrategy, Component, inject, OnInit, signal} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {CategoryResponse, PageChange, ProductResponse, TableContent} from "../../../shared-util";
+import {CategoryResponse, PageChange, ProductResponse, TableContent} from "@/app/admin-front/shared-util";
 import {FormBuilder, FormControl, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {MatRadioModule} from "@angular/material/radio";
-import {DynamicTableComponent} from "../../util/dynamictable/dynamic-table.component";
+import {DynamicTableComponent} from "@/app/admin-front/dashboard/util/dynamictable/dynamic-table.component";
 import {catchError, combineLatest, map, Observable, of, startWith, switchMap} from "rxjs";
 import {MatButtonModule} from "@angular/material/button";
-import {DirectiveModule} from "../../../../directive/directive.module";
+import {DirectiveModule} from "@/app/directive/directive.module";
 import {HttpErrorResponse} from "@angular/common/http";
-import {Page} from "../../../../global-utils";
+import {Page} from "@/app/global-utils";
 import {CategoryService} from "../category.service";
 import {ActivatedRoute, Params, Router} from "@angular/router";
-import {ProductService} from "../../product/product.service";
-import {ToastService} from "../../../../shared-comp/toast/toast.service";
+import {ProductService} from "@/app/admin-front/dashboard/product/product.service";
+import {ToastService} from "@/app/shared-comp/toast/toast.service";
 import {MatDialogModule} from "@angular/material/dialog";
-import {CategoryHierarchyComponent} from "../../../../shared-comp/hierarchy/category-hierarchy.component";
+import {CategoryHierarchyComponent} from "@/app/shared-comp/hierarchy/category-hierarchy.component";
 import {toSignal} from "@angular/core/rxjs-interop";
-import {mapper, ProductMapper} from "../../util/mapper";
+import {mapper, ProductMapper} from "@/app/admin-front/dashboard/util/mapper";
 
 @Component({
   selector: 'app-update-category',

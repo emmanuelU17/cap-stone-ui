@@ -1,15 +1,15 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
-import {ProductDetail} from "../shop.helper";
-import {Variant} from "../../../global-utils";
+import {ProductDetail} from "@/app/store-front/shop/shop.helper";
+import {Variant} from "@/app/global-utils";
 import {catchError, map, Observable, of, startWith, switchMap} from "rxjs";
 import {ActivatedRoute, Params, RouterLink} from "@angular/router";
 import {HttpErrorResponse} from "@angular/common/http";
 import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
 import {CommonModule} from "@angular/common";
-import {CartService} from "../../order/cart/cart.service";
-import {DirectiveModule} from "../../../directive/directive.module";
-import {FooterService} from "../../utils/footer/footer.service";
-import {ShopService} from "../shop.service";
+import {CartService} from "@/app/store-front/order/cart/cart.service";
+import {DirectiveModule} from "@/app/directive/directive.module";
+import {FooterService} from "@/app/store-front/utils/footer/footer.service";
+import {ShopService} from "@/app/store-front/shop/shop.service";
 
 @Component({
   selector: 'app-product',

@@ -5,11 +5,11 @@ import {
   ProductResponse,
   UpdateCategory,
   WorkerCategoryResponse
-} from "../../shared-util";
+} from "@/app/admin-front/shared-util";
 import {BehaviorSubject, map, Observable} from "rxjs";
 import {HttpClient, HttpResponse} from "@angular/common/http";
-import {environment} from "../../../../environments/environment";
-import {Category, Page, SarreCurrency} from "../../../global-utils";
+import {environment} from "@/environments/environment";
+import {Category, Page, SarreCurrency} from "@/app/global-utils";
 
 @Injectable({
   providedIn: 'root'

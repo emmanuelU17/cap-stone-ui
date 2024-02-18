@@ -1,9 +1,9 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {AuthService} from "../../../../service/auth.service";
-import {DirectiveModule} from "../../../../directive/directive.module";
-import {CardComponent} from "../../../utils/card/card.component";
-import {AccountService} from "../account.service";
+import {AuthService} from "@/app/service/auth.service";
+import {DirectiveModule} from "@/app/directive/directive.module";
+import {CardComponent} from "@/app/store-front/utils/card/card.component";
+import {AccountService} from "@/app/store-front/profile/dashboard/account.service";
 
 @Component({
   selector: 'app-overview',
@@ -18,7 +18,6 @@ import {AccountService} from "../account.service";
   `],
   template: `
     <div class="md:flex">
-
       <!-- Order history -->
       <section class="flex-1 p-2">
         <div class="w-full flex justify-center">
@@ -27,7 +26,7 @@ import {AccountService} from "../account.service";
         </div>
 
         <div class="w-full mt-2">
-          <div *ngFor="let obj of object$ | async">
+          @for (obj of object$ | async; track obj.orderNumber) {
             <!-- header -->
             <div class="p-2 grid grid-cols-3 gap-3 bg-neutral-100">
               <div class="cs-font md:text-base">
@@ -52,7 +51,7 @@ import {AccountService} from "../account.service";
                 <app-card [url]="o.url" [name]="o.name" [bool]="false"></app-card>
               }
             </div>
-          </div>
+          }
         </div>
 
       </section>
@@ -65,8 +64,7 @@ import {AccountService} from "../account.service";
           <button [asyncButton]="logout$"
                   type="button"
                   class="w-fit capitalize text-blue-300 text-sm md:text-base"
-          >logout
-          </button>
+          >logout</button>
         </div>
 
         <div class="w-full pt-2 flex flex-col gap-2">
@@ -91,6 +89,7 @@ export class OverviewComponent {
   readonly principal$ = this.authService.principal$;
   readonly object$ = this.accountService.orderHistory();
 
-  readonly logout$ = this.authService.logout('/profile/authentication');
+  readonly logout$ = this.authService
+    .logout('/profile/authentication');
 
 }

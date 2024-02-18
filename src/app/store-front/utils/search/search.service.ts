@@ -1,9 +1,9 @@
 import {inject, Injectable} from '@angular/core';
 import {BehaviorSubject, Observable, of} from "rxjs";
-import {environment} from "../../../../environments/environment";
+import {environment} from "@/environments/environment";
 import {HttpClient} from "@angular/common/http";
-import {SarreCurrency} from "../../../global-utils";
-import {Product} from "../../store-front-utils";
+import {SarreCurrency} from "@/app/global-utils";
+import {Product} from "@/app/store-front/store-front-utils";
 
 @Injectable({
   providedIn: 'root'

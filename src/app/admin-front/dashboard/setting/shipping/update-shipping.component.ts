@@ -5,9 +5,9 @@ import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} fr
 import {SettingService} from "../setting.service";
 import {ShipSettingMapper} from "../util";
 import {catchError, Observable, of} from "rxjs";
-import {DirectiveModule} from "../../../../directive/directive.module";
+import {DirectiveModule} from "@/app/directive/directive.module";
 import {HttpErrorResponse} from "@angular/common/http";
-import {ToastService} from "../../../../shared-comp/toast/toast.service";
+import {ToastService} from "@/app/shared-comp/toast/toast.service";
 
 @Component({
   selector: 'app-update-shipping',
@@ -86,7 +86,6 @@ export class UpdateShippingComponent {
     const country = this.form.controls['country'].value;
     const usd = this.form.controls['usd'].value;
     const ngn = this.form.controls['ngn'].value;
-    // console.log({ country, usd, ngn })
     return (!country || !usd || !ngn)
       ? of()
       : this.service

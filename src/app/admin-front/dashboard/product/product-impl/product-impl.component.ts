@@ -1,16 +1,16 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from "@angular/common";
-import {DynamicTableComponent} from "../../util/dynamictable/dynamic-table.component";
+import {DynamicTableComponent} from "@/app/admin-front/dashboard/util/dynamictable/dynamic-table.component";
 import {MatDialog, MatDialogModule} from "@angular/material/dialog";
 import {ProductService} from "../product.service";
-import {CategoryService} from "../../category/category.service";
+import {CategoryService} from "@/app/admin-front/dashboard/category/category.service";
 import {Router, RouterLink} from "@angular/router";
 import {PageChange, ProductResponse, TableContent} from "../../../shared-util";
 import {catchError, map, Observable, of, startWith, switchMap} from "rxjs";
-import {Page} from "../../../../global-utils";
+import {Page} from "@/app/global-utils";
 import {HttpErrorResponse} from "@angular/common/http";
-import {DeleteComponent} from "../../util/delete/delete.component";
-import {mapper, ProductMapper} from "../../util/mapper";
+import {DeleteComponent} from "@/app/admin-front/dashboard/util/delete/delete.component";
+import {mapper, ProductMapper} from "@/app/admin-front/dashboard/util/mapper";
 
 @Component({
   selector: 'app-product-impl',

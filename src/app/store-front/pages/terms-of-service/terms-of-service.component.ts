@@ -12,6 +12,4 @@ import {CommonModule} from '@angular/common';
   `,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TermsOfServiceComponent {
-
-}
+export class TermsOfServiceComponent {}

@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {Category, Link} from "../../../global-utils";
-import {CategoryHierarchyComponent} from "../../../shared-comp/hierarchy/category-hierarchy.component";
+import {Category, Link} from "@/app/global-utils";
+import {CategoryHierarchyComponent} from "@/app/shared-comp/hierarchy/category-hierarchy.component";
 
 @Component({
   selector: 'app-mobile-navigation',

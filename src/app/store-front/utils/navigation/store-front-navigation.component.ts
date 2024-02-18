@@ -2,8 +2,8 @@ import {ChangeDetectionStrategy, Component, EventEmitter, HostListener, Input, O
 import {CommonModule} from "@angular/common";
 import {SearchComponent} from "../search/search.component";
 import {MobileNavigationComponent} from "../mobile-navigation/mobile-navigation.component";
-import {Category, Link} from "../../../global-utils";
-import {CategoryHierarchyComponent} from "../../../shared-comp/hierarchy/category-hierarchy.component";
+import {Category, Link} from "@/app/global-utils";
+import {CategoryHierarchyComponent} from "@/app/shared-comp/hierarchy/category-hierarchy.component";
 
 @Component({
   selector: 'app-store-front-navigation-navigation',

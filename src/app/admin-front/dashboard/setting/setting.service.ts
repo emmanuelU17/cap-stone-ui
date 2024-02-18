@@ -1,5 +1,5 @@
 import {inject, Injectable} from '@angular/core';
-import {environment} from "../../../../environments/environment";
+import {environment} from "@/environments/environment";
 import {HttpClient, HttpResponse} from "@angular/common/http";
 import {BehaviorSubject, map, Observable, of, switchMap, tap} from "rxjs";
 import {ShippingDTO, ShipSettingMapper, TaxSetting} from "./util";
@@ -49,7 +49,7 @@ export class SettingService {
    * This method sends an HTTP GET request to the backend API to fetch all shipping data.
    * It returns an observable that emits an array of Shipping objects.
    *
-   * @returns An observable that emits an array of ShippingSetting objects retrieved from the API.
+   * @returns An observable that emits an array of {@link ShipSettingMapper} objects retrieved from the API.
    */
   readonly allShipping = (): Observable<ShipSettingMapper[]> => this.http
     .get<ShipSettingMapper[]>(`${this.HOST}api/v1/shipping`, { responseType: 'json', withCredentials: true })

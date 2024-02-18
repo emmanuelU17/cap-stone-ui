@@ -1,7 +1,7 @@
 import {inject} from "@angular/core";
 import {CartService} from "../cart/cart.service";
 import {Router} from "@angular/router";
-import {SarreCurrency} from "../../../global-utils";
+import {SarreCurrency} from "@/app/global-utils";
 import {tap} from "rxjs";
 
 export const checkoutGuard = () => {

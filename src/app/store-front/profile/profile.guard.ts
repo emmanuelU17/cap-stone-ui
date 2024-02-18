@@ -1,5 +1,5 @@
 import {inject} from "@angular/core";
-import {AuthService} from "../../service/auth.service";
+import {AuthService} from "@/app/service/auth.service";
 
 export const CLIENT_DASHBOARD_GUARD = () => {
   const service = inject(AuthService);

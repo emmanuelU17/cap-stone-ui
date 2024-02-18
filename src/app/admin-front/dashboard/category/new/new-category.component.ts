@@ -3,12 +3,12 @@ import {CommonModule} from '@angular/common';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {catchError, Observable, of, switchMap} from "rxjs";
 import {MatRadioModule} from "@angular/material/radio";
-import {DirectiveModule} from "../../../../directive/directive.module";
+import {DirectiveModule} from "@/app/directive/directive.module";
 import {CategoryService} from "../category.service";
 import {HttpErrorResponse} from "@angular/common/http";
-import {ToastService} from "../../../../shared-comp/toast/toast.service";
+import {ToastService} from "@/app/shared-comp/toast/toast.service";
 import {Router} from "@angular/router";
-import {CategoryHierarchyComponent} from "../../../../shared-comp/hierarchy/category-hierarchy.component";
+import {CategoryHierarchyComponent} from "@/app/shared-comp/hierarchy/category-hierarchy.component";
 
 @Component({
   selector: 'app-new-category',

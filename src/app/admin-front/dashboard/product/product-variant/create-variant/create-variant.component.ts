@@ -4,15 +4,15 @@ import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from "@angula
 import {MatButtonModule} from "@angular/material/button";
 import {MatIconModule} from "@angular/material/icon";
 import {MatRadioModule} from "@angular/material/radio";
-import {SizeInventoryComponent} from "../../sizeinventory/size-inventory.component";
-import {ProductDetailResponse, SizeInventory} from "../../../../shared-util";
-import {DirectiveModule} from "../../../../../directive/directive.module";
+import {SizeInventoryComponent} from "@/app/admin-front/dashboard/product/sizeinventory/size-inventory.component";
+import {ProductDetailResponse, SizeInventory} from "@/app/admin-front//shared-util";
+import {DirectiveModule} from "@/app/directive/directive.module";
 import {catchError, Observable, of, switchMap, tap} from "rxjs";
-import {ToastService} from "../../../../../shared-comp/toast/toast.service";
+import {ToastService} from "@/app/shared-comp/toast/toast.service";
 import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from "@angular/material/dialog";
 import {HttpErrorResponse} from "@angular/common/http";
-import {UpdateProductService} from "../../update/update-product.service";
-import {SizeInventoryService} from "../../sizeinventory/size-inventory.service";
+import {UpdateProductService} from "@/app/admin-front/dashboard/product/update/update-product.service";
+import {SizeInventoryService} from "@/app/admin-front/dashboard/product/sizeinventory/size-inventory.service";
 import {VariantService} from "../variant.service";
 import {ProductVariant} from "../index";
 
@@ -133,7 +133,7 @@ export class CreateVariantComponent {
       .pipe(
         switchMap((status: number) => {
           return this.updateProductService
-            .productDetailsByProductUUID(this.data.id)
+            .productDetailsByProductUuid(this.data.id)
             .pipe(
               switchMap((arr: ProductDetailResponse[]) => {
                 this.dialogRef.close({ arr: arr });

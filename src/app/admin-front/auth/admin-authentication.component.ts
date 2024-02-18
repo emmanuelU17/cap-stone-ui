@@ -2,8 +2,8 @@ import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
 import {Observable, of} from "rxjs";
 import {CommonModule} from "@angular/common";
-import {DirectiveModule} from "../../directive/directive.module";
-import {AuthService} from "../../service/auth.service";
+import {DirectiveModule} from "@/app/directive/directive.module";
+import {AuthService} from "@/app/service/auth.service";
 
 @Component({
   selector: 'app-admin-authentication',

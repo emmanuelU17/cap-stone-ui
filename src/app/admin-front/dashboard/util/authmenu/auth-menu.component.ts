@@ -1,8 +1,8 @@
 import {ChangeDetectionStrategy, Component, inject, Input} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {MatMenuModule} from "@angular/material/menu";
-import {DirectiveModule} from "../../../../directive/directive.module";
-import {AuthService} from "../../../../service/auth.service";
+import {DirectiveModule} from "@/app/directive/directive.module";
+import {AuthService} from "@/app/service/auth.service";
 
 @Component({
   selector: 'app-auth-menu',
@@ -29,6 +29,6 @@ export class AuthMenuComponent {
 
   private readonly authMenuService = inject(AuthService);
 
-  logout$ = this.authMenuService.logout('/admin');
+  readonly logout$ = this.authMenuService.logout('/admin');
 
 }

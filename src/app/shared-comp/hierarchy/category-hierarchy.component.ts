@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output, signal} from '@angular/core';
 import {CommonModule} from "@angular/common";
-import {Category} from "../../global-utils";
+import {Category} from "@/app/global-utils";
 
 @Component({
   selector: 'app-hierarchy',

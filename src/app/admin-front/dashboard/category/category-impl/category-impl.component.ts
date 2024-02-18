@@ -1,14 +1,14 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from "@angular/common";
-import {DynamicTableComponent} from "../../util/dynamictable/dynamic-table.component";
+import {DynamicTableComponent} from "@/app/admin-front/dashboard/util/dynamictable/dynamic-table.component";
 import {MatDialog, MatDialogModule} from "@angular/material/dialog";
 import {CategoryService} from "../category.service";
-import {ProductService} from "../../product/product.service";
+import {ProductService} from "@/app/admin-front/dashboard/product/product.service";
 import {Router, RouterLink} from "@angular/router";
-import {TableContent} from "../../../shared-util";
+import {TableContent} from "@/app/admin-front//shared-util";
 import {catchError, map, of, switchMap} from "rxjs";
 import {HttpErrorResponse} from "@angular/common/http";
-import {DeleteComponent} from "../../util/delete/delete.component";
+import {DeleteComponent} from "@/app/admin-front/dashboard/util/delete/delete.component";
 
 interface CategoryResponseMapper {
   index: number;

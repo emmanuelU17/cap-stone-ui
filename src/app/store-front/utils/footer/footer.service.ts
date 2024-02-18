@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject} from "rxjs";
-import {SarreCurrency} from "../../../global-utils";
+import {SarreCurrency} from "@/app/global-utils";
 
 @Injectable({
   providedIn: 'root'

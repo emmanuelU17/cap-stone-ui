@@ -2,9 +2,9 @@ import {ChangeDetectionStrategy, Component, EventEmitter, inject, Output, signal
 import {CommonModule} from '@angular/common';
 import {SearchService} from "./search.service";
 import {catchError, debounceTime, distinctUntilChanged, map, of, switchMap, tap} from "rxjs";
-import {FooterService} from "../footer/footer.service";
-import {CardComponent} from "../card/card.component";
-import {SarreCurrency} from "../../../global-utils";
+import {FooterService} from "@/app/store-front/utils/footer/footer.service";
+import {CardComponent} from "@/app/store-front/utils/card/card.component";
+import {SarreCurrency} from "@/app/global-utils";
 import {FormControl, ReactiveFormsModule} from "@angular/forms";
 
 @Component({

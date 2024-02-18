@@ -1,26 +1,26 @@
 import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {catchError, combineLatest, map, Observable, of, ReplaySubject, startWith, switchMap, tap} from "rxjs";
-import {ProductDetailResponse, ProductResponse, TableContent, UpdateProduct,} from "../../../shared-util";
+import {ProductDetailResponse, ProductResponse, TableContent, UpdateProduct,} from "@/app/admin-front/shared-util";
 import {HttpErrorResponse} from "@angular/common/http";
 import {ProductService} from "../product.service";
 import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
-import {DirectiveModule} from "../../../../directive/directive.module";
-import {CategoryService} from "../../category/category.service";
-import {DynamicTableComponent} from "../../util/dynamictable/dynamic-table.component";
-import {Variant} from "../../../../global-utils";
+import {DirectiveModule} from "@/app/directive/directive.module";
+import {CategoryService} from "@/app/admin-front/dashboard/category/category.service";
+import {DynamicTableComponent} from "@/app/admin-front/dashboard/util/dynamictable/dynamic-table.component";
+import {Variant} from "@/app/global-utils";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {MatDialog, MatDialogModule} from "@angular/material/dialog";
 import {UpdateVariantComponent} from "../product-variant/updatevariant/update-variant.component";
-import {ToastService} from "../../../../shared-comp/toast/toast.service";
+import {ToastService} from "@/app/shared-comp/toast/toast.service";
 import {CreateVariantComponent} from "../product-variant/create-variant/create-variant.component";
 import {UpdateProductService} from "./update-product.service";
 import {toSignal} from "@angular/core/rxjs-interop";
-import {DeleteComponent} from "../../util/delete/delete.component";
+import {DeleteComponent} from "@/app/admin-front/dashboard/util/delete/delete.component";
 import {CustomUpdateVariant} from "../product-variant";
 import {CKEditorModule} from "@ckeditor/ckeditor5-angular";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-import {CategoryHierarchyComponent} from "../../../../shared-comp/hierarchy/category-hierarchy.component";
+import {CategoryHierarchyComponent} from "@/app/shared-comp/hierarchy/category-hierarchy.component";
 
 interface CustomRowMapper {
   index: number;
@@ -64,14 +64,14 @@ export class UpdateProductComponent implements OnInit {
   private readonly categoryService = inject(CategoryService);
   private readonly dialog = inject(MatDialog);
   private readonly toastService = inject(ToastService);
-  private readonly productUUID = toSignal(
+  private readonly productUuid = toSignal(
     this.activeRoute.params.pipe(map((p: Params) => p as { id: string })),
     { initialValue: { id: '' } }
   );
 
   // custom object
   private readonly product: ProductResponse | undefined = this.productService.products
-    .find((value: ProductResponse) => value.product_id === this.productUUID().id)
+    .find((value: ProductResponse) => value.product_id === this.productUuid().id)
 
   categoryName = this.categoryService.categories
     .find(c => c.name === this.product?.category)?.name;
@@ -92,7 +92,7 @@ export class UpdateProductComponent implements OnInit {
     error?: string,
     data?: CustomRowMapper[]
   }> = this.updateProductService
-    .productDetailsByProductUUID(this.productUUID().id)
+    .productDetailsByProductUuid(this.productUuid().id)
     .pipe(
       map((arr: ProductDetailResponse[]) =>
         ({ state: 'LOADED', data: this.toCustomRowMapperArray(arr) })
@@ -182,7 +182,7 @@ export class UpdateProductComponent implements OnInit {
       width: '900px',
       maxWidth: '100%',
       maxHeight: '100%',
-      data: { id: this.productUUID().id, colours: this.colours }
+      data: { id: this.productUuid().id, colours: this.colours }
     });
     return this.afterComponentClose(open.afterClosed()).pipe(map(() => 0));
   }
@@ -219,7 +219,7 @@ export class UpdateProductComponent implements OnInit {
           const payload: UpdateProduct = {
             category_id: this.currentCategory !== undefined && this.currentCategory.categoryId !== cat
               ? this.currentCategory.categoryId : cat,
-            product_id: this.productUUID().id,
+            product_id: this.productUuid().id,
             name: name,
             currency: currency,
             price: price,
@@ -281,7 +281,7 @@ export class UpdateProductComponent implements OnInit {
         }
 
         const v: CustomUpdateVariant = {
-          productId: this.productUUID().id,
+          productId: this.productUuid().id,
           productName: this.product.name,
           variant: {
             sku: content.data.sku,
@@ -312,7 +312,7 @@ export class UpdateProductComponent implements OnInit {
           .pipe(
             switchMap((status: number) => {
               return this.updateProductService
-                .productDetailsByProductUUID(this.productUUID().id)
+                .productDetailsByProductUuid(this.productUuid().id)
                 .pipe(
                   tap((arr: ProductDetailResponse[]) => {
                     // On successful deletion, update productVariants$

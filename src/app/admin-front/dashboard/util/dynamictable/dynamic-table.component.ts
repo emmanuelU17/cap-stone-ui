@@ -1,8 +1,8 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {PageChange, TableContent} from "../../../shared-util";
-import {Page} from "../../../../global-utils";
-import {PaginatorComponent} from "../../../../shared-comp/paginator/paginator.component";
+import {PageChange, TableContent} from "@/app/admin-front/shared-util";
+import {Page} from "@/app/global-utils";
+import {PaginatorComponent} from "@/app/shared-comp/paginator/paginator.component";
 
 @Component({
   selector: 'app-dynamic-table',
