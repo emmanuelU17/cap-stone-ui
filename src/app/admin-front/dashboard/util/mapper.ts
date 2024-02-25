@@ -1,5 +1,5 @@
-import {Page} from "../../../global-utils";
-import {ProductResponse} from "../../shared-util";
+import {Page} from "@/app/global-utils";
+import {ProductResponse} from "@/app/admin-front/shared-util";
 
 export interface ProductMapper {
   index: number;

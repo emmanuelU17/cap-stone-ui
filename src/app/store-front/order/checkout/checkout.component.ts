@@ -3,13 +3,14 @@ import {CommonModule} from '@angular/common';
 import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
 import {CartService} from "../cart/cart.service";
 import {FooterService} from "@/app/store-front/utils/footer/footer.service";
-import {catchError, delay, map, Observable, of, Subject, switchMap, tap, throwError} from "rxjs";
+import {BehaviorSubject, catchError, delay, map, of, switchMap, tap, throwError} from "rxjs";
 import {PaymentService} from "../payment/payment.service";
-import {Checkout, ReservationDTO} from "../index";
+import {Checkout, ReservationDto} from "../index";
 import {RouterLink} from "@angular/router";
 import {CheckoutService} from "@/app/store-front/order/checkout/checkout.service";
-import {HttpErrorResponse} from "@angular/common/http";
 import {SarreCurrency} from "@/app/global-utils";
+import {HttpErrorResponse} from "@angular/common/http";
+import {Cart} from "@/app/store-front/shop/shop.helper";
 
 interface CustomCheckout extends Checkout {
   currency: SarreCurrency;
@@ -219,7 +220,7 @@ interface CustomCheckout extends Checkout {
         </div>
 
         <!-- products div -->
-        <div class="p-2 max-h-[500px] overflow-y-auto border-l bg-neutral-100">
+        <div class="relative p-2 max-h-[500px] overflow-y-auto border-l bg-neutral-100">
 
           <div class="pb-4">
             <ul role="list" class="relative -my-6 divide-y divide-gray-200">
@@ -234,7 +235,7 @@ interface CustomCheckout extends Checkout {
                       <h3 class="cs-font">
                         {{ detail.product_name }}
                       </h3>
-                      <p class="cs-font ml-4">{{ currency(detail.currency) }}{{ detail.price }}</p>
+                      <p class="cs-font ml-4">{{ currencySymbol(detail.currency) }}{{ detail.price }}</p>
                     </div>
                     <!-- mobile -->
                     <div class="cs-font md:hidden">
@@ -285,7 +286,7 @@ interface CustomCheckout extends Checkout {
               <div class="cs-font py-1 flex justify-between md:text-sm">
                 <h3 class="capitalize">subtotal</h3>
                 <h3 class="capitalize">
-                  {{ checkout.currency }}{{ checkout.total }}
+                  {{ checkout.currency }}{{ checkout.sub_total }}
                 </h3>
               </div>
 
@@ -304,26 +305,29 @@ interface CustomCheckout extends Checkout {
               <!-- total -->
               <div class="cs-font py-1 flex justify-between font-semibold md:text-sm">
                 <h3 class="capitalize">total</h3>
-                <h3 class="uppercase"><span style="font-size: 8px">{{ checkout.currency }}</span>{{ checkout.total }}
-                </h3>
+                <h3 class="uppercase">{{ checkout.currency }}{{ checkout.total }}</h3>
+              </div>
+
+              <!-- weight -->
+              <div class="cs-font py-1 flex justify-between font-semibold md:text-sm">
+                <h3 class="capitalize">total weight</h3>
+                <h3 class="lowercase">{{ checkout.weight_detail }}</h3>
+              </div>
+            </div>
+          }
+
+          @if (loading() === 'loading') {
+            <div class="absolute top-0 right-0 bottom-0 left-0 flex justify-center items-center bg-black opacity-50 z-10">
+              <div role="status" class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-r-[var(--app-theme)] align-[-0.125em] text-primary motion-reduce:animate-[spin_1.5s_linear_infinite]">
+                <span class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
+                  Loading...
+                </span>
               </div>
             </div>
           }
         </div>
       </div>
     </div>
-
-    @if (loading() === 'loading') {
-      <div class="fixed top-0 right-0 bottom-0 left-0 flex justify-center items-center bg-black opacity-50 z-10">
-        <div role="status"
-             class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-r-[var(--app-theme)] align-[-0.125em] text-primary motion-reduce:animate-[spin_1.5s_linear_infinite]">
-          <span
-            class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
-            Loading...
-          </span>
-        </div>
-      </div>
-    }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -340,20 +344,21 @@ export class CheckoutComponent {
   readonly carts$ = this.cartService.cart$;
 
   readonly form = this.fb.group({
-    email: new FormControl("", [Validators.required]),
-    name: new FormControl("", [Validators.required]),
-    phone: new FormControl("", [Validators.required]),
-    address: new FormControl("", [Validators.required, Validators.maxLength(255)]),
-    city: new FormControl("", [Validators.required, Validators.maxLength(100)]),
-    state: new FormControl("", [Validators.required, Validators.maxLength(100)]),
-    postcode: new FormControl("",[Validators.maxLength(10)]),
-    country: new FormControl("", [Validators.required, Validators.maxLength(100)]),
-    deliveryInfo: new FormControl("", [Validators.maxLength(1000)]),
+    email: new FormControl('', [Validators.required]),
+    name: new FormControl('', [Validators.required]),
+    phone: new FormControl('', [Validators.required]),
+    address: new FormControl('', [Validators.required, Validators.maxLength(255)]),
+    city: new FormControl('', [Validators.required, Validators.maxLength(100)]),
+    state: new FormControl('', [Validators.required, Validators.maxLength(100)]),
+    postcode: new FormControl('',[Validators.maxLength(10)]),
+    country: new FormControl('nigeria', [Validators.required, Validators.maxLength(100)]),
+    deliveryInfo: new FormControl('', [Validators.maxLength(1000)]),
   });
 
-  currency = (str: string): string => this.footService.currency(str);
+  readonly currencySymbol = (str: SarreCurrency) => str === SarreCurrency.NGN
+    ? SarreCurrency.NGN_SYMBOL : SarreCurrency.USD_SYMBOL;
 
-  private readonly subject = new Subject<string>();
+  private readonly subject = new BehaviorSubject<string>('nigeria');
 
   /**
    * Initiates a server request to adjust prices based on the
@@ -367,7 +372,7 @@ export class CheckoutComponent {
    * adjusted prices and currency based on value emitted from
    * {@link subject}.
    */
-  readonly checkout$: Observable<CustomCheckout> = this.subject
+  readonly checkout$ = this.subject
     .pipe(
       switchMap((str) => of(str)
         .pipe(
@@ -380,17 +385,19 @@ export class CheckoutComponent {
           switchMap((currency) => this.checkoutService
             .checkout(country, currency)
             .pipe(
-              map((obj) => {
-                this.loading.set('loaded');
-                return {
-                  currency: currency,
+              tap(() => this.loading.set('loaded')),
+              map((obj) =>
+                ({
+                  currency: this.currencySymbol(currency),
+                  sub_total: obj.sub_total,
                   ship_cost: obj.ship_cost,
                   tax_name: obj.tax_name,
                   tax_rate: obj.tax_rate,
                   tax_total: obj.tax_total,
-                  total: obj.total
-                };
-              }),
+                  total: obj.total,
+                  weight_detail: obj.weight_detail,
+                } as CustomCheckout)
+              ),
               catchError((e: HttpErrorResponse) => {
                 this.loading.set('error');
                 const err = e.error ? e.error.message : e.message;
@@ -399,7 +406,8 @@ export class CheckoutComponent {
               })
             )
           )
-        ))
+        )
+      )
     );
 
   /**
@@ -415,12 +423,12 @@ export class CheckoutComponent {
   /**
    * Sets the address details for a user to confirm before proceeding
    * to the {@link src/app/store-front/order/payment/payment.component.ts}.
-   * <br> <br>
+   * <p>
    * This method retrieves address details entered by the user from
    * the form fields.
    * If any required field is missing, it displays a toast message
    * prompting the user to enter shipping information.
-   * The address details are then formatted into a {@link ReservationDTO}
+   * The address details are then formatted into a {@link ReservationDto}
    * object and passed to the payment service.
    */
   onAddressEntered(): void {
@@ -440,7 +448,7 @@ export class CheckoutComponent {
     const postcode = this.form.controls['postcode'].value;
     const deliveryInfo = this.form.controls['deliveryInfo'].value;
 
-    const dto: ReservationDTO = {
+    const dto: ReservationDto = {
       email: email,
       name: name,
       phone: phone,

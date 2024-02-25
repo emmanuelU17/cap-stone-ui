@@ -26,7 +26,7 @@ export class ProductService {
 
   /**
    * Responsible for making a PUT call to server to update a product
-   * @param obj of type Product
+   * @param obj of type {@link Product}
    * @return Observable of type HttpStatus
    * */
   updateProduct(obj: UpdateProduct): Observable<number> {
@@ -40,7 +40,7 @@ export class ProductService {
   /**
    * Responsible for making a DELETE restful call to our serve to delete a product.
    *
-   * @param id is Product UUID
+   * @param id is {@link Product} UUID
    * @return Observable of type HttpStatus
    * */
   deleteProduct(id: string): Observable<number> {

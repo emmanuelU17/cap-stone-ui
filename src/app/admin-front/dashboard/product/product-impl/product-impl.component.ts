@@ -87,7 +87,7 @@ export class ProductImplComponent {
         .pipe(
           map((res: Page<ProductResponse>) => ({ state: 'LOADED', data: mapper(res) })),
           startWith({ state: 'LOADING' }),
-          catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error.message }))
+          catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error ? err.error.message : err.message }))
         )
       )
     );
@@ -103,19 +103,19 @@ export class ProductImplComponent {
           .pipe(map((res: Page<ProductResponse>) => ({ state: 'LOADED', data: mapper(res) })))
         ),
         startWith({ state: 'LOADING' }),
-        catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error.message }))
+        catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error ? err.error.message : err.message }))
       );
   }
 
   /**
-   * Displays UpdateProduct component based on the product clicked from DynamicTable
+   * Displays UpdateProduct component based on the product clicked
+   * from DynamicTable.
    *
-   * @param content of custom interface TableContent
-   * @return void
+   * @param content of custom interface {@link TableContent}.
    * */
   infoFromTableComponent(content: TableContent<ProductMapper>): void {
     switch (content.key) {
-      case 'product':{
+      case 'edit':{
         this.router.navigate([`/admin/dashboard/product/${content.data.productId}`]);
         break;
       }

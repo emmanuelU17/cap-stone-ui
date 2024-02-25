@@ -144,8 +144,8 @@ export class UpdateProductComponent implements OnInit {
       res.variants.forEach((variant: Variant, index: number): void => {
         const obj: CustomRowMapper = {
           index: index,
-          image: res.url[0],
-          urls: res.url,
+          image: res.urls[0],
+          urls: res.urls,
           colour: res.colour,
           visible: res.is_visible,
           sku: variant.sku,

@@ -1,5 +1,5 @@
 // Used to display the options needed to filter a product
-import {Variant} from "@/app/global-utils";
+import {SarreCurrency, Variant} from "@/app/global-utils";
 
 export interface ProductDetail {
   name: string;
@@ -7,7 +7,7 @@ export interface ProductDetail {
   price: number;
   desc: string;
   colour: string;
-  url: string[];
+  urls: string[];
   variants: Variant[];
 }
 
@@ -21,7 +21,7 @@ export interface Cart {
   url: string;
   product_name: string;
   price: number;
-  currency: string;
+  currency: SarreCurrency;
   colour: string;
   size: string;
   sku: string;

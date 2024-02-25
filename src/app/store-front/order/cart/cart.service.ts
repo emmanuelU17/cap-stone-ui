@@ -21,18 +21,18 @@ export class CartService {
   readonly cart$ = this.subject.asObservable();
 
   /**
-   * Sums the total of product in cart
+   * Sums the total of product in {@link Cart}
    * */
   readonly total$ = this.cart$
     .pipe(map((arr: Cart[]) => arr.reduce((sum, cart) => sum + (cart.qty * cart.price), 0)));
 
   /**
-   * Returns the number of items in Cart[]
+   * Returns the number of items in {@link Cart} array.
    * */
   readonly count$ = this.cart$.pipe(map((arr: Cart[]) => arr.length));
 
   /**
-   * Returns an Observable of list of Cart
+   * Returns an Observable of list of {@link Cart}.
    * */
   cartItems(currency: SarreCurrency): Observable<Cart[]> {
     const url = `${this.HOST}api/v1/cart?currency=${currency}`
@@ -47,7 +47,7 @@ export class CartService {
    * Creates a new shopping session or persists cart
    * details to an existing shopping session
    *
-   * @param cart of type CartDTO
+   * @param cart of type {@link CartDTO}
    * @return Observable of type number
    * */
   createCart(cart: CartDTO): Observable<number> {
@@ -65,15 +65,14 @@ export class CartService {
         )
       ),
       catchError((err: HttpErrorResponse) => {
-        const message = err.error ? err.error.message : err.message;
-        this.toastService.toastMessage(message);
+        this.toastService.toastMessage(err.error ? err.error.message : err.message);
         return of(err.status);
       })
     );
   }
 
   /**
-   * Removes from Cart[] based on Product sku
+   * Removes from {@link Cart} array based on {@link Product} property sku.
    *
    * @param sku is a unique string for each Product
    * */

@@ -59,7 +59,7 @@ import {PaginatorComponent} from "@/app/shared-comp/paginator/paginator.componen
                     }
 
                     @case ('name') {
-                      <button type="button" (click)="paginationTable ? onClick(data, 'product') : onClick(data, 'edit')"
+                      <button type="button" (click)="onClick(data, 'edit')"
                               class="outline-none bg-transparent text-blue-400 hover:border-b hover:border-blue-500">
                         {{ data[head] }}
                       </button>

@@ -1,4 +1,4 @@
-import {Category, Variant} from "../global-utils";
+import {Category, Variant} from "@/app/global-utils";
 
 export interface UpdateProduct {
   category_id: number;
@@ -26,7 +26,7 @@ export interface ProductResponse {
 export interface ProductDetailResponse {
   colour: string;
   is_visible: boolean;
-  url: string[];
+  urls: string[];
   variants: Variant[],
 }
 

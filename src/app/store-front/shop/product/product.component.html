@@ -34,8 +34,8 @@
 
             <!-- image carousel -->
             <ul class="p-2 flex gap-1.5 overflow-auto">
-              <li *ngFor="let img of currentProductDetail.detail.url" (click)="currentProductDetail.currImage = img"
-                class="border-none outline-none cursor-pointer bg-transparent min-h-[64px] min-w-[64px] max-h-[75px] max-w-[75px]"
+              <li *ngFor="let img of currentProductDetail.detail.urls" (click)="currentProductDetail.currImage = img"
+                  class="border-none outline-none cursor-pointer bg-transparent min-h-[64px] min-w-[64px] max-h-[75px] max-w-[75px]"
               >
                 <img class="w-full h-full object-cover object-center" [src]="img" alt="image">
               </li>

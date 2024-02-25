@@ -4,7 +4,7 @@ export interface PaymentDetail {
   currency: string;
 }
 
-export interface ReservationDTO {
+export interface ReservationDto {
   email: string;
   name: string;
   phone: string;
@@ -22,4 +22,6 @@ export interface Checkout {
   tax_rate: number;
   tax_total: number;
   total: number;
+  weight_detail: string;
+  sub_total: string;
 }

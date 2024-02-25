@@ -84,7 +84,7 @@ export class ProductComponent {
             const curr: ProductDetail = arr[0];
 
             // Current ProductDetail with the first item in arr
-            this.currentProductDetail = { currImage: curr.url[0], detail: curr };
+            this.currentProductDetail = { currImage: curr.urls[0], detail: curr };
 
             return { state: 'LOADED', data: arr };
           }),
@@ -124,7 +124,7 @@ export class ProductComponent {
     this.form.controls['size'].reset({ value: '', disabled: false });
 
     // Update currentProductDetail
-    this.currentProductDetail = { currImage: findProductDetail.url[0], detail: findProductDetail };
+    this.currentProductDetail = { currImage: findProductDetail.urls[0], detail: findProductDetail };
   }
 
   /**

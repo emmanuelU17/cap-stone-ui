@@ -39,7 +39,7 @@ import {ShopService} from "./shop/shop.service";
                 [categories]="(hierarchy$ | async) || []"
                 (routeEmitter)="onChildRoute($event)"
                 (categoryEmitter)="onCategoryClicked($event)"
-              ></app-store-front-navigation-navigation>
+              />
             </div>
 
             <div class="flex-1">
@@ -47,7 +47,7 @@ import {ShopService} from "./shop/shop.service";
             </div>
 
             <div class="lg-scr">
-              <app-footer></app-footer>
+              <app-footer/>
             </div>
           </div>
         }
@@ -88,15 +88,15 @@ export class StoreComponent {
       );
 
   /**
-   * Update {@code RouterOutlet} based on routes clicked in navigation bar.
+   * Update {@link RouterOutlet} based on routes clicked in navigation bar.
    * */
   onChildRoute(route: string): void {
     this.router.navigate([`${route}`]);
   }
 
   /**
-   * Update {@code currentCategorySubject} method in
-   * {@code shop.service.ts} on the categories clicked from navigation bar.
+   * Update {@link currentCategorySubject} method in
+   * {@link shop.service.ts} on the categories clicked from navigation bar.
    * */
   onCategoryClicked(obj: { categoryId: number; name: string }): void {
     this.shopService.currentCategorySubject.next(obj.categoryId);

@@ -20,7 +20,7 @@ import {Category} from "@/app/global-utils";
   template: `
     <div class="flex w-full h-full">
       <div class="w-2/4 max-[600px]:w-full h-full p-8 bg-white overflow-y-auto">
-        <button type="button" class="w-full pb-2 flex justify-between bg-transparent border-0" (click)="closeModal()">
+        <button type="button" (click)="closeModal()" class="w-full flex justify-between bg-transparent border-0">
           <h1 class="f-fnt tracking-tight text-gray-900">{{ title }}</h1>
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                stroke="currentColor" class="w-6 h-6">
@@ -28,17 +28,17 @@ import {Category} from "@/app/global-utils";
           </svg>
         </button>
 
-        <div class="w-full py-6 flex gap-2 flex-col border-t border-b border-gray-200">
-          <app-hierarchy [categories]="categories" (emitter)="categoryClicked($event)"></app-hierarchy>
+        <div class="w-full pt-3 pb-6 flex gap-2 flex-col border-t border-b border-gray-200">
+          <app-hierarchy [categories]="categories" (emitter)="categoryClicked($event)"/>
         </div>
 
         <div class="w-full flex flex-col">
-          <button type="button" (click)="closeModal()"
-                  class="f-fnt w-full p-3 mb-2 capitalize hover:uppercase border border-black hover:bg-black hover:text-white">
-            clear all</button>
-          <button type="button" (click)="closeModal()"
-                  class="f-fnt w-full p-3 capitalize hover:uppercase border bg-black hover:bg-white text-white hover:text-black hover:border-black">
-            show results</button>
+          <button type="button" (click)="closeModal()" class="f-fnt w-full p-3 mb-2 capitalize hover:uppercase border border-black">
+            clear all
+          </button>
+          <button type="button" (click)="closeModal()" class="f-fnt w-full p-3 capitalize hover:uppercase border bg-black text-white">
+            show results
+          </button>
         </div>
       </div>
 
