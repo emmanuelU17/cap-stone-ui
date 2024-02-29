@@ -1,10 +1,12 @@
 export interface PaymentDetail {
-  pubKey: string;
+  reference: string;
+  pub_key: string;
   total: number;
   currency: string;
 }
 
-export interface ReservationDto {
+export interface WebhookMetadata {
+  principal: string;
   email: string;
   name: string;
   phone: string;
@@ -17,6 +19,7 @@ export interface ReservationDto {
 }
 
 export interface Checkout {
+  principal: string;
   ship_cost: number;
   tax_name: string;
   tax_rate: number;

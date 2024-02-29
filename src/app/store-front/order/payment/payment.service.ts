@@ -3,7 +3,7 @@ import {environment} from "@/environments/environment";
 import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {FooterService} from "@/app/store-front/utils/footer/footer.service";
 import {BehaviorSubject, catchError, map, Observable, of, switchMap, tap} from "rxjs";
-import {PaymentDetail, ReservationDto} from "../index";
+import {PaymentDetail, WebhookMetadata} from "../index";
 import {ToastService} from "@/app/shared-comp/toast/toast.service";
 import {Router} from "@angular/router";
 
@@ -19,19 +19,19 @@ export class PaymentService {
   private readonly router = inject(Router);
 
   private readonly country = signal<string>('');
-  private readonly addressSubject = new BehaviorSubject<ReservationDto | undefined>(undefined);
+  private readonly addressSubject = new BehaviorSubject<WebhookMetadata | undefined>(undefined);
   readonly address$ = this.addressSubject
     .asObservable()
     .pipe(
       tap((dto) => {
         if (!dto)
-          this.router.navigate(['/checkout']);
+          this.router.navigate(['/order/checkout']);
         else
           this.country.set(dto.country);
       })
     );
 
-  setAddress = (dto: ReservationDto): void => this.addressSubject.next(dto);
+  setAddress = (dto: WebhookMetadata): void => this.addressSubject.next(dto);
 
   toast = (message: string): void => this.toastService.toastMessage(message);
 
@@ -59,7 +59,7 @@ export class PaymentService {
           }),
           catchError((err: HttpErrorResponse) => {
             this.toast(err.error ? err.error.message : err.message);
-            this.router.navigate(['/checkout']);
+            this.router.navigate(['/order/checkout']);
             return of();
           })
         )

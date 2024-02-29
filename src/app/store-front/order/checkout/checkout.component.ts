@@ -5,12 +5,11 @@ import {CartService} from "../cart/cart.service";
 import {FooterService} from "@/app/store-front/utils/footer/footer.service";
 import {BehaviorSubject, catchError, delay, map, of, switchMap, tap, throwError} from "rxjs";
 import {PaymentService} from "../payment/payment.service";
-import {Checkout, ReservationDto} from "../index";
+import {Checkout, WebhookMetadata} from "../index";
 import {RouterLink} from "@angular/router";
 import {CheckoutService} from "@/app/store-front/order/checkout/checkout.service";
 import {SarreCurrency} from "@/app/global-utils";
 import {HttpErrorResponse} from "@angular/common/http";
-import {Cart} from "@/app/store-front/shop/shop.helper";
 
 interface CustomCheckout extends Checkout {
   currency: SarreCurrency;
@@ -340,6 +339,7 @@ export class CheckoutComponent {
   private readonly checkoutService = inject(CheckoutService);
 
   readonly loading = signal('');
+  readonly principal = signal('');
 
   readonly carts$ = this.cartService.cart$;
 
@@ -385,10 +385,14 @@ export class CheckoutComponent {
           switchMap((currency) => this.checkoutService
             .checkout(country, currency)
             .pipe(
-              tap(() => this.loading.set('loaded')),
-              map((obj) =>
+              tap((obj) => {
+                this.principal.set(obj.principal)
+                this.loading.set('loaded');
+              }),
+              map((obj: Checkout) =>
                 ({
                   currency: this.currencySymbol(currency),
+                  principal: obj.principal,
                   sub_total: obj.sub_total,
                   ship_cost: obj.ship_cost,
                   tax_name: obj.tax_name,
@@ -428,7 +432,7 @@ export class CheckoutComponent {
    * the form fields.
    * If any required field is missing, it displays a toast message
    * prompting the user to enter shipping information.
-   * The address details are then formatted into a {@link ReservationDto}
+   * The address details are then formatted into a {@link WebhookMetadata}
    * object and passed to the payment service.
    */
   onAddressEntered(): void {
@@ -448,7 +452,8 @@ export class CheckoutComponent {
     const postcode = this.form.controls['postcode'].value;
     const deliveryInfo = this.form.controls['deliveryInfo'].value;
 
-    const dto: ReservationDto = {
+    const dto: WebhookMetadata = {
+      principal: this.principal(),
       email: email,
       name: name,
       phone: phone,

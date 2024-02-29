@@ -66,7 +66,8 @@ import {RouterLink} from "@angular/router";
             </div>
           </a>
 
-          <a routerLink="/order/checkout" class="p-3 flex gap-3 bg-white opacity-50 hover:bg-transparent hover:opacity-100">
+          <a routerLink="/order/checkout"
+             class="p-3 flex gap-3 bg-white opacity-50 hover:bg-transparent hover:opacity-100">
             <div class="h-full flex items-center">
               <h1 class="cx-font-fam" style="font-size: 50px">02</h1>
             </div>
@@ -93,7 +94,7 @@ import {RouterLink} from "@angular/router";
       <!-- content -->
       <div class="p-1 md:p-2">
         @if (address$ | async; as address) {
-          @if (raceCondition | async; as dto) {
+          @if (raceCondition$ | async; as dto) {
             <!-- shipping div -->
             <div class="w-fit mb-3 border-b border-black">
               <h1 class="uppercase cs-font md:text-sm">
@@ -183,9 +184,9 @@ import {RouterLink} from "@angular/router";
               <div class="w-fit p-2 bg-black text-white">
                 <angular4-paystack
                   [email]="address.email"
-                  [key]="dto.pubKey"
+                  [key]="dto.pub_key"
                   [amount]="dto.total"
-                  [ref]="reference"
+                  [ref]="dto.reference"
                   [metadata]="address"
                   [currency]="dto.currency"
                   [channels]="['card']"
@@ -200,8 +201,10 @@ import {RouterLink} from "@angular/router";
 
           } @else {
             <div class="flex flex-col justify-center items-center">
-              <div role="status" class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-r-[var(--app-theme)] align-[-0.125em] ext-primary motion-reduce:animate-[spin_1.5s_linear_infinite]">
-                <span class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
+              <div role="status"
+                   class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-r-[var(--app-theme)] align-[-0.125em] ext-primary motion-reduce:animate-[spin_1.5s_linear_infinite]">
+                <span
+                  class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
                   Loading...
                 </span>
               </div>
@@ -209,16 +212,16 @@ import {RouterLink} from "@angular/router";
           }
         } @else {
           <div class="flex flex-col justify-center items-center">
-            <div role="status" class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-r-[var(--app-theme)] align-[-0.125em] ext-primary motion-reduce:animate-[spin_1.5s_linear_infinite]">
-                <span class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
+            <div role="status"
+                 class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-r-[var(--app-theme)] align-[-0.125em] ext-primary motion-reduce:animate-[spin_1.5s_linear_infinite]">
+                <span
+                  class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
                   Loading...
                 </span>
             </div>
           </div>
         }
-
       </div>
-
     </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -228,9 +231,7 @@ export class PaymentComponent {
   private readonly paymentService = inject(PaymentService);
 
   readonly address$ = this.paymentService.address$;
-  readonly raceCondition = this.paymentService.validate();
-
-  reference = `ref-${Math.ceil(Math.random() * 10e13)}`;
+  readonly raceCondition$ = this.paymentService.validate();
 
   paymentInit(): void {
     console.log('Payment initialized');
