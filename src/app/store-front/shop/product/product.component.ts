@@ -10,6 +10,7 @@ import {CartService} from "@/app/store-front/order/cart/cart.service";
 import {DirectiveModule} from "@/app/directive/directive.module";
 import {FooterService} from "@/app/store-front/utils/footer/footer.service";
 import {ShopService} from "@/app/store-front/shop/shop.service";
+import {ToastService} from "@/app/shared-comp/toast/toast.service";
 
 @Component({
   selector: 'app-product',
@@ -52,6 +53,7 @@ export class ProductComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly fb = inject(FormBuilder);
   private readonly cartService = inject(CartService);
+  private readonly toastService = inject(ToastService);
 
   // Displays currency symbol
   currency = (str: string): string => this.footerService.currency(str);
@@ -120,10 +122,10 @@ export class ProductComponent {
 
     this.currentColourSize.colour = colour;
 
-    // Reset dependent FormControls
+    // reset dependent FormControls
     this.form.controls['size'].reset({ value: '', disabled: false });
 
-    // Update currentProductDetail
+    // update currentProductDetail
     this.currentProductDetail = { currImage: findProductDetail.urls[0], detail: findProductDetail };
   }
 
@@ -163,7 +165,13 @@ export class ProductComponent {
     return !this.productDetailArray
       .find(d => d.variants.find(v => v.sku === this.sku))
       ? of(0)
-      : this.cartService.createCart({ sku: this.sku, qty: 1 });
+      : this.cartService.createCart({ sku: this.sku, qty: 1 })
+        .pipe(
+          catchError((err: HttpErrorResponse) => {
+            this.toastService.toastMessage(err.error ? err.error.message : err.message);
+            return of(err.status);
+          })
+        );
   }
 
 }

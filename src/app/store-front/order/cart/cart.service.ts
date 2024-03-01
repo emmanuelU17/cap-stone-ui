@@ -63,11 +63,7 @@ export class CartService {
             .pipe(map(() => (res.status)))
           )
         )
-      ),
-      catchError((err: HttpErrorResponse) => {
-        this.toastService.toastMessage(err.error ? err.error.message : err.message);
-        return of(err.status);
-      })
+      )
     );
   }
 

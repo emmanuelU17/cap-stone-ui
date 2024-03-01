@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {DirectiveModule} from "@/app/directive/directive.module";
 import {CardComponent} from "@/app/store-front/utils/card/card.component";
@@ -6,7 +6,7 @@ import {CartService} from "./cart.service";
 import {FooterService} from "@/app/store-front/utils/footer/footer.service";
 import {Router} from "@angular/router";
 import {HomeService} from "@/app/store-front/home/home.service";
-import {catchError, delay, map, Observable, of, startWith, switchMap} from "rxjs";
+import {catchError, combineLatest, map, of, startWith, switchMap, timer} from "rxjs";
 import {IS_NUMERIC, SarreCurrency} from "@/app/global-utils";
 
 @Component({
@@ -14,6 +14,15 @@ import {IS_NUMERIC, SarreCurrency} from "@/app/global-utils";
   standalone: true,
   imports: [CommonModule, DirectiveModule, CardComponent],
   styles: [`
+    .on-input-change-error {
+      border-color: red;
+      border-width: 1px;
+    }
+
+    .on-input-change-error:focus {
+      border-color: red;
+    }
+
     /* Chrome, Safari, Edge, Opera */
     input::-webkit-outer-spin-button,
     input::-webkit-inner-spin-button {
@@ -40,7 +49,7 @@ import {IS_NUMERIC, SarreCurrency} from "@/app/global-utils";
             <div class="flow-root">
               <ul role="list" class="relative -my-6 divide-y divide-gray-200">
 
-                @for (detail of carts$ | async; track detail.product_id; let i = $index) {
+                @for (detail of carts$ | async; track detail; let i = $index) {
                   <li class="flex py-6">
                     <div class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
                       <img [src]="detail.url" alt="product image{{ i }}"
@@ -60,8 +69,12 @@ import {IS_NUMERIC, SarreCurrency} from "@/app/global-utils";
                       <div class="flex flex-1 items-end justify-between text-sm">
                         <div>
                           <p class="text-gray-500">{{ detail.size }}</p>
-                          <input type="number" [value]="detail.qty" (keyup)="qtyChange($event, detail.sku)"
-                                 class="qty-box p-2.5 flex-1 w-full rounded-sm border border-solid border-[var(--border-outline)]">
+                          @if (i === errorIndex()) {
+                            <p class="text-xs text-red-600">quantity is out of stock</p>
+                          }
+                          <input type="number" [value]="detail.qty" (keyup)="qtyChange($event, detail.sku, i)"
+                                 [ngClass]="{ 'on-input-change-error': i === errorIndex() }"
+                                 class="qty-box p-1 flex-1 w-full rounded-sm border border-solid border-[var(--border-outline)]">
                         </div>
 
                         <div class="flex">
@@ -79,8 +92,7 @@ import {IS_NUMERIC, SarreCurrency} from "@/app/global-utils";
                 <!-- spinner -->
                 @if (loadingState$ | async; as spin) {
                   <div class="absolute top-0 right-0 bottom-0 left-0 flex justify-center items-center bg-black opacity-50">
-                    <div role="status"
-                         class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-r-[var(--app-theme)] align-[-0.125em] text-primary motion-reduce:animate-[spin_1.5s_linear_infinite]">
+                    <div role="status" class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-r-[var(--app-theme)] align-[-0.125em] text-primary motion-reduce:animate-[spin_1.5s_linear_infinite]">
                       <span
                         class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
                         Loading...
@@ -99,9 +111,9 @@ import {IS_NUMERIC, SarreCurrency} from "@/app/global-utils";
         <div class="border-t border-gray-200 px-4 py-6 sm:px-6">
           <div class="flex justify-between text-base font-medium text-gray-900">
             <p>Subtotal</p>
-            <p *ngIf="total$ | async as total">
-              <span *ngIf="currency$ | async as c">{{ c }}{{ total }}</span>
-            </p>
+            @if (amount$ | async; as amount) {
+              <p>{{ amount.currency }}{{ amount.total }}</p>
+            }
           </div>
           <p class="mt-0.5 text-sm text-gray-500">
             Shipping and taxes calculated at checkout.
@@ -126,8 +138,9 @@ import {IS_NUMERIC, SarreCurrency} from "@/app/global-utils";
         <div class="py-2">
           <div class="p-3.5 flex justify-center">
             <h1
-              class="feature-font w-fit capitalize font-bold text-[var(--app-theme)] border-b border-b-[var(--app-theme)]"
-            >you may also like</h1>
+              class="feature-font w-fit capitalize font-bold text-[var(--app-theme)] border-b border-b-[var(--app-theme)]">
+              you may also like
+            </h1>
           </div>
 
           <div class="p-2 xl:p-0 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
@@ -163,11 +176,14 @@ export class CartComponent {
   private readonly router = inject(Router);
   private readonly homeService = inject(HomeService);
 
-  readonly products$ = this.homeService.products$;
-  readonly total$ = this.cartService.total$;
-  readonly carts$ = this.cartService.cart$;
-  readonly currency$ = this.footService.currency$
+  private readonly total$ = this.cartService.total$;
+  private readonly currency$ = this.footService.currency$
     .pipe(switchMap((c: SarreCurrency) => this.currency(c)));
+
+  readonly products$ = this.homeService.products$;
+  readonly carts$ = this.cartService.cart$;
+  readonly amount$ = combineLatest([this.total$, this.currency$])
+    .pipe(map((obj: [number, string]) => ({ currency: obj[1], total: obj[0] })))
 
   currency = (str: string): string => this.footService.currency(str);
 
@@ -176,9 +192,10 @@ export class CartComponent {
   /**
    * makes call to server to delete an item from a users cart.
    * */
-  remove = (sku: string): Observable<number> => this.cartService.removeFromCart(sku);
+  remove = (sku: string) => this.cartService.removeFromCart(sku);
 
   loadingState$ = of(false);
+  readonly errorIndex = signal(-1);
 
   /**
    * Updates the quantity of a product based on its SKU.
@@ -190,8 +207,9 @@ export class CartComponent {
    *
    * @param e The keyboard event that triggered the quantity change.
    * @param sku The SKU (Stock Keeping Unit) of the product whose quantity is being updated.
+   * @param index The input that was clicked. Needed to indicate the quantity that is out of stock.
    */
-  qtyChange(e: KeyboardEvent, sku: string): void {
+  qtyChange(e: KeyboardEvent, sku: string, index: number): void {
     const qty = (e.target as HTMLInputElement).value;
 
     if (!IS_NUMERIC(qty))
@@ -199,9 +217,9 @@ export class CartComponent {
     else if (IS_NUMERIC(qty) && Number(qty) < 0)
       return;
 
-    this.loadingState$ = this.loadingState$
+    this.loadingState$ = timer(907)
       .pipe(
-        switchMap(() => of({ sku: sku, qty: Number(qty) }).pipe(delay(1007))),
+        switchMap(() => of({ sku: sku, qty: Number(qty) })),
         switchMap((obj: { sku: string, qty: number }) => obj.qty === 0
           ? this.remove(obj.sku)
             .pipe(
@@ -211,9 +229,15 @@ export class CartComponent {
             )
           : this.cartService.createCart({ sku: obj.sku, qty: obj.qty })
             .pipe(
-              map(() => false),
+              map(() => {
+                this.errorIndex.set(-1);
+                return false;
+              }),
               startWith(true),
-              catchError(() => of(false))
+              catchError(() => {
+                this.errorIndex.set(index);
+                return of(false)
+              })
             )
         ),
       );
