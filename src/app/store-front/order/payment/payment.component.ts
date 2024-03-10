@@ -3,6 +3,8 @@ import {CommonModule} from '@angular/common';
 import {Angular4PaystackModule} from "angular4-paystack";
 import {PaymentService} from "./payment.service";
 import {RouterLink} from "@angular/router";
+import {Observable, of} from "rxjs";
+import {PaymentDetail, WebhookMetadata} from "@/app/store-front/order";
 
 @Component({
   selector: 'app-payment',
@@ -96,8 +98,8 @@ import {RouterLink} from "@angular/router";
         @if (address$ | async; as address) {
           @if (raceCondition$ | async; as dto) {
             <!-- shipping div -->
-            <div class="w-fit mb-3 border-b border-black">
-              <h1 class="uppercase cs-font md:text-sm">
+            <div class="w-full mb-3 flex justify-center">
+              <h1 class="capitalize cs-font md:text-sm border-b border-black">
                 confirm contact & shipping information
               </h1>
             </div>
@@ -230,8 +232,27 @@ export class PaymentComponent {
 
   private readonly paymentService = inject(PaymentService);
 
-  readonly address$ = this.paymentService.address$;
-  readonly raceCondition$ = this.paymentService.validate();
+  // readonly address$ = this.paymentService.address$;
+  // readonly raceCondition$ = this.paymentService.validate();
+
+  address$: Observable<WebhookMetadata> = of({
+    principal: 'james',
+    email: 'jack@gmail.com',
+    name: 'prince',
+    phone: '00000000',
+    address: 'address',
+    city: 'city',
+    state: 'state',
+    postcode: 'postcode',
+    country: 'country',
+    deliveryInfo: 'delivery info'
+  });
+  raceCondition$: Observable<PaymentDetail> = of({
+    reference: 'reff',
+    pub_key: 'pub key',
+    total: 50000,
+    currency: '$'
+  });
 
   paymentInit(): void {
     console.log('Payment initialized');
