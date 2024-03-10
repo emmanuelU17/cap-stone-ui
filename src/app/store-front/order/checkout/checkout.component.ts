@@ -10,6 +10,7 @@ import {RouterLink} from "@angular/router";
 import {CheckoutService} from "@/app/store-front/order/checkout/checkout.service";
 import {SarreCurrency} from "@/app/global-utils";
 import {HttpErrorResponse} from "@angular/common/http";
+import {CheckoutNavComponent} from "@/app/store-front/order/checkout-nav/checkout-nav.component";
 
 interface CustomCheckout extends Checkout {
   currency: SarreCurrency;
@@ -18,80 +19,13 @@ interface CustomCheckout extends Checkout {
 @Component({
   selector: 'app-checkout',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
-  styles: [`
-    .cx-font-fam {
-      font-family: 'Jost', sans-serif;
-    }
-
-    @media (max-width: 768px) {
-      .cs-font {
-        font-size: calc(8px + 1vw);
-      }
-
-      .banner {
-        font-size: calc(5px + 1vw);
-      }
-    }
-  `],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, CheckoutNavComponent],
+  styleUrls: ['../order.component.css'],
   template: `
     <div class="lg-scr mg-top">
       <!-- banner -->
-      <div class="p-2 mb-2 md:p-4 md:mb-3 bg-neutral-100">
-        <!-- mobile -->
-        <div class="grid grid-cols-3 md:hidden">
-          <a routerLink="/order/cart" class="text-center opacity-50 hover:bg-transparent hover:opacity-100">
-            <div class="flex gap-1 justify-center">
-              <h1 class="cx-font-fam uppercase banner">01 shopping cart</h1>
-            </div>
-            <p class="banner capitalize">manage your items</p>
-          </a>
-          <button class="text-center" type="button">
-            <div class="flex gap-1 justify-center">
-              <h1 class="cx-font-fam banner uppercase">02 checkout details</h1>
-            </div>
-            <p class="banner capitalize">confirm your items</p>
-          </button>
-          <button type="button" class="text-center opacity-50 hover:bg-transparent hover:opacity-100">
-            <div class="flex gap-1 justify-center">
-              <h1 class="cx-font-fam banner uppercase">03 payment details</h1>
-            </div>
-            <p class="banner capitalize">confirm your order</p>
-          </button>
-        </div>
-
-        <!-- non mobile -->
-        <div class="hidden md:grid grid-cols-3">
-          <button routerLink="/order/cart"
-                  class="p-3 flex gap-3 opacity-50 bg-white hover:bg-transparent hover:opacity-100">
-            <div class="h-full flex items-center">
-              <h1 class="cx-font-fam" style="font-size: 50px">01</h1>
-            </div>
-            <div class="my-auto mx-0 text-left">
-              <h3 class="cx-font-fam text-xl uppercase">shopping cart</h3>
-              <p class="text-xs capitalize">manage your items list</p>
-            </div>
-          </button>
-          <div class="p-3 flex gap-3">
-            <div class="h-full flex items-center">
-              <h1 class="cx-font-fam" style="font-size: 50px">02</h1>
-            </div>
-            <div class="my-auto mx-0 text-left">
-              <h3 class="cx-font-fam text-xl uppercase">checkout details</h3>
-              <p class="text-xs capitalize">checkout your items list</p>
-            </div>
-          </div>
-
-          <div class="p-3 flex gap-3 cursor-pointer bg-white opacity-50 hover:bg-transparent hover:opacity-100">
-            <div class="h-full flex items-center">
-              <h1 class="cx-font-fam" style="font-size: 50px">03</h1>
-            </div>
-            <div class="my-auto mx-0 text-left">
-              <h3 class="cx-font-fam text-xl uppercase">payment details</h3>
-              <p class="text-xs capitalize">confirm your order</p>
-            </div>
-          </div>
-        </div>
+      <div>
+        <app-checkout-nav/>
       </div>
 
       <!-- contents -->
@@ -194,7 +128,7 @@ interface CustomCheckout extends Checkout {
                 country <span class="text-red-500">*</span>
               </h5>
               <input type="text"
-                     name="postcode"
+                     name="country"
                      formControlName="country"
                      class="w-full p-2 border"
                      (keyup)="onInputCountry($event)"

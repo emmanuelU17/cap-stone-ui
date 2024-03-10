@@ -1,9 +1,8 @@
 import {inject, Injectable} from '@angular/core';
 import {environment} from "@/environments/environment";
-import {HttpClient, HttpErrorResponse, HttpResponse} from "@angular/common/http";
-import {BehaviorSubject, catchError, map, Observable, of, switchMap, tap} from "rxjs";
+import {HttpClient, HttpResponse} from "@angular/common/http";
+import {BehaviorSubject, map, Observable, switchMap, tap} from "rxjs";
 import {Cart, CartDTO} from "@/app/store-front/shop/shop.helper";
-import {ToastService} from "@/app/shared-comp/toast/toast.service";
 import {SarreCurrency} from "@/app/global-utils";
 import {FooterService} from "@/app/store-front/utils/footer/footer.service";
 
@@ -15,7 +14,6 @@ export class CartService {
   private readonly HOST: string | undefined = environment.domain;
   private readonly http = inject(HttpClient);
   private readonly footerService = inject(FooterService);
-  private readonly toastService = inject(ToastService);
 
   private readonly subject = new BehaviorSubject<Cart[]>([]);
   readonly cart$ = this.subject.asObservable();

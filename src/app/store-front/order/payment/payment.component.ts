@@ -2,183 +2,136 @@ import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {Angular4PaystackModule} from "angular4-paystack";
 import {PaymentService} from "./payment.service";
-import {RouterLink} from "@angular/router";
-import {Observable, of} from "rxjs";
-import {PaymentDetail, WebhookMetadata} from "@/app/store-front/order";
+import {Router} from "@angular/router";
+import {CheckoutNavComponent} from "@/app/store-front/order/checkout-nav/checkout-nav.component";
 
 @Component({
   selector: 'app-payment',
   standalone: true,
-  imports: [CommonModule, Angular4PaystackModule, RouterLink],
-  styles: [`
-    .cx-font-fam {
-      font-family: 'Jost', sans-serif;
-    }
-
-    @media (max-width: 768px) {
-      .cs-font {
-        font-size: calc(8px + 1vw);
-      }
-
-      .banner {
-        font-size: calc(5px + 1vw);
-      }
-    }
-  `],
+  imports: [CommonModule, Angular4PaystackModule, CheckoutNavComponent],
+  styleUrls: ['../order.component.css'],
   template: `
     <div class="lg-scr mg-top">
       <!-- banner -->
-      <div class="p-2 mb-2 md:p-4 md:mb-3 bg-neutral-100">
-
-        <!-- mobile -->
-        <div class="grid grid-cols-3 md:hidden">
-
-          <a routerLink="/order/cart" class="text-center opacity-50 hover:bg-transparent hover:opacity-100">
-            <div class="flex justify-center">
-              <h1 class="cx-font-fam uppercase banner">01 shopping cart</h1>
-            </div>
-            <p class="banner capitalize">manage your items</p>
-          </a>
-
-          <a routerLink="/order/checkout" class="text-center opacity-50 hover:bg-transparent hover:opacity-100">
-            <div class="flex justify-center">
-              <h1 class="cx-font-fam banner uppercase">02 checkout details</h1>
-            </div>
-            <p class="banner capitalize">confirm your items</p>
-          </a>
-
-          <button type="button" class="text-center">
-            <div class="flex justify-center">
-              <h1 class="cx-font-fam banner uppercase">03 payment details</h1>
-            </div>
-            <p class="banner capitalize">confirm your order</p>
-          </button>
-        </div>
-
-        <!-- non mobile -->
-        <div class="hidden md:grid grid-cols-3">
-
-          <a routerLink="/order/cart" class="p-3 flex gap-3 bg-white opacity-50 hover:bg-transparent hover:opacity-100">
-            <div class="h-full flex items-center">
-              <h1 class="cx-font-fam" style="font-size: 50px">01</h1>
-            </div>
-            <div class="my-auto mx-0 text-left">
-              <h3 class="cx-font-fam text-xl uppercase">shopping cart</h3>
-              <p class="text-xs capitalize">manage your items list</p>
-            </div>
-          </a>
-
-          <a routerLink="/order/checkout"
-             class="p-3 flex gap-3 bg-white opacity-50 hover:bg-transparent hover:opacity-100">
-            <div class="h-full flex items-center">
-              <h1 class="cx-font-fam" style="font-size: 50px">02</h1>
-            </div>
-            <div class="my-auto mx-0 text-left">
-              <h3 class="cx-font-fam text-xl uppercase">checkout details</h3>
-              <p class="text-xs capitalize">checkout your items list</p>
-            </div>
-          </a>
-
-          <div class="p-3 flex gap-3">
-            <div class="h-full flex items-center">
-              <h1 class="cx-font-fam" style="font-size: 50px">03</h1>
-            </div>
-            <div class="my-auto mx-0 text-left">
-              <h3 class="cx-font-fam text-xl uppercase">payment details</h3>
-              <p class="text-xs capitalize">confirm your order</p>
-            </div>
-          </div>
-
-        </div>
-
+      <div>
+        <app-checkout-nav/>
       </div>
 
       <!-- content -->
-      <div class="p-1 md:p-2">
+      <div class="p-1 sm:p-2">
         @if (address$ | async; as address) {
           @if (raceCondition$ | async; as dto) {
             <!-- shipping div -->
-            <div class="w-full mb-3 flex justify-center">
-              <h1 class="capitalize cs-font md:text-sm border-b border-black">
+            <div class="mb-3 border-b">
+              <h1 class="capitalize cs-font md:text-sm">
                 confirm contact & shipping information
               </h1>
             </div>
 
-            <div class="pb-3">
-              <!-- email -->
-              <div class="w-full">
-                <h2 class="cs-font w-fit border-b border-black uppercase md:text-xs">
-                  email
-                </h2>
-                <h4 class="cs-font">{{ address.email }}</h4>
-              </div>
-
-              <!-- name -->
-              <div class="w-full">
-                <h2 class="cs-font w-fit border-b border-black uppercase md:text-xs">
-                  name
-                </h2>
-                <h4 class="cs-font">{{ address.name }}</h4>
+            <div class="pb-3 grid grid-cols-1 gap-3">
+              <!-- email and full name -->
+              <div class="grid grid-cols-2 gap-2">
+                <div class="w-full">
+                  <h5 class="cs-font md:text-xs uppercase">
+                    email <span class="text-red-500">*</span>
+                  </h5>
+                  <input type="email"
+                         name="email"
+                         [value]="address.email"
+                         class="w-full p-2 border"
+                         placeholder="email" readonly>
+                </div>
+                <div class="w-full">
+                  <h5 class="cs-font md:text-xs uppercase">
+                    full name <span class="text-red-500">*</span>
+                  </h5>
+                  <input type="text"
+                         name="name"
+                         [value]="address.name"
+                         class="w-full p-2 border"
+                         placeholder="fullname" readonly>
+                </div>
               </div>
 
               <!-- phone -->
               <div class="w-full">
-                <h2 class="cs-font w-fit border-b border-black uppercase md:text-xs">
-                  phone
-                </h2>
-                <h4 class="cs-font">{{ address.phone }}</h4>
+                <h5 class="cs-font md:text-xs uppercase">
+                  phone number <span class="text-red-500">*</span>
+                </h5>
+                <input type="text"
+                       name="phone"
+                       [value]="address.phone"
+                       class="w-full p-2 border"
+                       placeholder="phone" readonly>
               </div>
 
               <!-- address -->
               <div class="w-full">
-                <h2 class="cs-font w-fit border-b border-black uppercase md:text-xs">
-                  address
-                </h2>
-                <h4 class="cs-font">{{ address.address }}</h4>
+                <h5 class="cs-font md:text-xs uppercase">
+                  address <span class="text-red-500">*</span>
+                </h5>
+                <input type="text"
+                       name="address"
+                       [value]="address.address"
+                       class="w-full p-2 border"
+                       placeholder="address" readonly>
               </div>
 
               <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
                 <!-- city -->
                 <div class="w-full">
-                  <h2 class="cs-font w-fit border-b border-black uppercase md:text-xs">
-                    city
-                  </h2>
-                  <h4 class="cs-font">{{ address.city }}</h4>
+                  <h5 class="cs-font md:text-xs uppercase">
+                    city <span class="text-red-500">*</span>
+                  </h5>
+                  <input type="text"
+                         name="city"
+                         [value]="address.city"
+                         class="w-full p-2 border"
+                         placeholder="city" readonly>
                 </div>
 
                 <!-- state -->
                 <div class="w-full">
-                  <h2 class="cs-font w-fit border-b border-black uppercase md:text-xs">
-                    state
-                  </h2>
-                  <h4 class="cs-font">{{ address.state }}</h4>
+                  <h5 class="cs-font md:text-xs uppercase">
+                    state <span class="text-red-500">*</span>
+                  </h5>
+                  <input type="text"
+                         name="state"
+                         [value]="address.state"
+                         class="w-full p-2 border"
+                         placeholder="state"
+                         readonly>
                 </div>
 
                 <!-- postcode -->
                 <div class="w-full">
-                  <h2 class="cs-font w-fit border-b border-black uppercase md:text-xs">
-                    postcode/zipcode
-                  </h2>
-                  <h4 class="cs-font">{{ address.postcode }}</h4>
+                  <h5 class="cs-font md:text-xs uppercase">postcode/zipcode</h5>
+                  <input type="text"
+                         name="postcode"
+                         class="w-full p-2 border"
+                         [value]="address.postcode"
+                         placeholder="postcode/zipcode"
+                         readonly>
                 </div>
               </div>
 
               <!-- country -->
               <div class="w-full">
-                <h2 class="cs-font w-fit border-b border-black uppercase md:text-xs">
-                  country
-                </h2>
-                <h4 class="cs-font">{{ address.country }}</h4>
+                <h5 class="cs-font md:text-xs uppercase">
+                  country <span class="text-red-500">*</span>
+                </h5>
+                <input type="text"
+                       name="postcode"
+                       [value]="address.country"
+                       class="w-full p-2 border"
+                       placeholder="country"
+                       readonly>
               </div>
 
               <!-- delivery information -->
               <div class="w-full">
-                <h2 class="cs-font w-fit border-b border-black uppercase md:text-xs">
-                  delivery information
-                </h2>
-                <div class="max-h-36 overflow-y-auto opacity-50 bg-white">
-                  <p class="cs-font text-black">{{ address.deliveryInfo }}</p>
-                </div>
+                <h5 class="cs-font md:text-xs uppercase">delivery information</h5>
+                <textarea [textContent]="address.deliveryInfo" name="deliveryInfo" class="w-full p-2 border" readonly></textarea>
               </div>
             </div>
 
@@ -195,9 +148,7 @@ import {PaymentDetail, WebhookMetadata} from "@/app/store-front/order";
                   [class]="'btn btn-primary'"
                   (onClose)="paymentCancel()"
                   (callback)="paymentDone($event)"
-                >
-                  PAY {{ dto.currency }}{{ dto.total }}
-                </angular4-paystack>
+                >PAY {{ dto.currency }}{{ dto.total }}</angular4-paystack>
               </div>
             </div>
 
@@ -231,39 +182,18 @@ import {PaymentDetail, WebhookMetadata} from "@/app/store-front/order";
 export class PaymentComponent {
 
   private readonly paymentService = inject(PaymentService);
+  private readonly router = inject(Router);
 
-  // readonly address$ = this.paymentService.address$;
-  // readonly raceCondition$ = this.paymentService.validate();
-
-  address$: Observable<WebhookMetadata> = of({
-    principal: 'james',
-    email: 'jack@gmail.com',
-    name: 'prince',
-    phone: '00000000',
-    address: 'address',
-    city: 'city',
-    state: 'state',
-    postcode: 'postcode',
-    country: 'country',
-    deliveryInfo: 'delivery info'
-  });
-  raceCondition$: Observable<PaymentDetail> = of({
-    reference: 'reff',
-    pub_key: 'pub key',
-    total: 50000,
-    currency: '$'
-  });
-
-  paymentInit(): void {
-    console.log('Payment initialized');
-  }
+  readonly address$ = this.paymentService.address$;
+  readonly raceCondition$ = this.paymentService.validate();
 
   paymentDone(ref: any): void {
     console.log('Payment done ', ref);
+    this.router.navigate([`/order/${ref}`]);
   }
 
   paymentCancel(): void {
-    console.log('payment failed');
+    this.router.navigate(['/order/cart']);
   }
 
 }

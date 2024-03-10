@@ -1,0 +1,17 @@
+.cx-font-fam {
+  font-family: 'Jost', sans-serif;
+}
+
+@media (max-width: 768px) {
+  .cs-font {
+    font-size: calc(8px + 1vw);
+  }
+
+  .banner {
+    font-size: calc(5px + 1vw);
+  }
+}
+
+.active-r {
+  opacity: 1;
+}

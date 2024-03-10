@@ -17,5 +17,9 @@ export const route: Routes = [
     path: 'checkout',
     loadComponent: () => import('./checkout/checkout.component').then(m => m.CheckoutComponent),
     canActivate: [checkoutGuard]
+  },
+  {
+    path: ':reference',
+    loadComponent: () => import('./success-payment/success-payment.component').then(m => m.SuccessPaymentComponent),
   }
 ];
