@@ -1,10 +1,7 @@
 <form class="h-full flex flex-col px-0" [formGroup]="form">
   <!-- Title-container -->
   <div class="flex py-2.5 px-0 mb-4">
-    <button type="button"
-            class="mr-1.5 md:px-2.5 border-[var(--border-outline)] border"
-            (click)="routeToProductComponent()"
-    >
+    <button type="button" (click)="routeToProductComponent()" class="mr-1.5 md:px-2.5 border-[var(--border-outline)] border">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
            class="w-6 h-6">
         <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18"/>
@@ -23,7 +20,7 @@
         <div class="w-full flex gap-1.5 max-[640px]:flex-col">
           <!-- Product Name -->
           <div class="mb-2 flex-1">
-            <h4 class="cx-font-size capitalize"><span class="text-red-500">*</span>name</h4>
+            <h4 class="cx-font-size capitalize"><span class="text-red-500">*</span> name</h4>
             <input
               formControlName="name"
               placeholder="product name"
@@ -67,27 +64,19 @@
         <div class="py-1.5"><h2 class="cx-font-size capitalize"><span class="text-red-500">*</span> media</h2></div>
 
         <div class="flex flex-wrap items-center">
-          <div class="relative" *ngFor="let image of files">
-            <button
-              type="button"
-              class="x-btn m-0.5 outline-none border-0 text-center cursor-pointer bg-transparent"
-              (click)="remove(image)"
-              >
-              <img [src]="toString(image)" alt="logo"
-                   class="m-0 min-h-[9.375rem] min-w-[9.375rem] max-h-[12.5rem] max-w-[12.5rem] object-cover">
-            </button>
-          </div>
+
+          @for (image of files; track image) {
+            <div class="relative">
+              <button type="button" (click)="remove(image)" class="x-btn m-0.5 outline-none border-0 text-center cursor-pointer bg-transparent">
+                <img [src]="toString(image)" alt="image" class="m-0 min-h-[9.375rem] min-w-[9.375rem] max-h-[12.5rem] max-w-[12.5rem] object-cover">
+              </button>
+            </div>
+          }
 
           <div class="upload">
-            <input type="file"
-                   multiple
-                   class="hidden"
-                   (change)="onFileSelected($event)"
-                   accept="image/*" #fileUpload>
+            <input type="file" multiple class="hidden" (change)="onFileSelected($event)" accept="image/*" #fileUpload>
 
-            <button class="flex outline-none border-0 text-center cursor-pointer bg-transparent"
-                    type="button"
-                    (click)="fileUpload.click()">
+            <button (click)="fileUpload.click()" type="button" class="flex outline-none border-0 text-center cursor-pointer bg-transparent">
               <p *ngIf="files.length < 1">No file uploaded yet.</p>
               <mat-icon>attach_file</mat-icon>
             </button>
@@ -105,7 +94,7 @@
         <!-- End of attribute-title -->
 
         <div class="mb-2">
-          <h4 class="cx-font-size capitalize"><span class="text-red-500">*</span> visibility (include in store front)</h4>
+          <h4 class="cx-font-size"><span class="text-red-500">*</span> Visibility (include in store front)</h4>
           <mat-radio-group aria-label="Select an option" formControlName="visible">
             <mat-radio-button [checked]='true' value="false">false</mat-radio-button>
             <mat-radio-button value="true">true</mat-radio-button>
@@ -147,7 +136,7 @@
 
         <!-- weight -->
         <div class="mb-2">
-          <h4 class="cx-font-size"><span class="text-red-500">*</span> Weight <span class="text-xs">kg</span></h4>
+          <h4 class="cx-font-size"><span class="text-red-500">*</span> Weight <span class="text-xs text-blue-400">kg</span></h4>
           <input formControlName="weight" placeholder="kg" type="number"
                  class="p-2.5 w-full flex-1 inline rounded-sm border border-solid border-[var(--border-outline)]"/>
         </div>

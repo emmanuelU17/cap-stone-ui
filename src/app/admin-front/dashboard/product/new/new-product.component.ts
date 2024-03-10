@@ -67,9 +67,9 @@ export class NewProductComponent {
   readonly form = this.fb.group({
     collection: new FormControl(''),
     name: new FormControl('', [Validators.required, Validators.max(50)]),
-    weight: new FormControl('', Validators.required),
-    ngn: new FormControl('', Validators.required),
-    usd: new FormControl('', Validators.required),
+    weight: new FormControl(0, Validators.required),
+    ngn: new FormControl(0, Validators.required),
+    usd: new FormControl(0, Validators.required),
     desc: new FormControl('', [Validators.required, Validators.max(1000)]),
     visible: new FormControl(false, Validators.required),
     colour: new FormControl('', Validators.required),
@@ -86,11 +86,14 @@ export class NewProductComponent {
    * @param event of any
    * @return void
    * */
-  onFileSelected(event: any): void {
-    for (let i = 0; i < event.target.files.length; i++) {
-      const file: File = event.target.files[i];
-      this.files.push(file);
-    }
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+
+    if (!input.files)
+      return;
+
+    const files: File[] = Array.from(input.files);
+    this.files.push(...files);
   }
 
   /**
@@ -102,7 +105,10 @@ export class NewProductComponent {
         this.form.get(key)?.reset('');
       }
     });
-    this.files = [];
+
+    while (this.files.length > 0) {
+      this.files.pop();
+    }
     this.sizeInventoryService.setSubject(true);
     this.currentCategory = undefined;
   }
@@ -127,17 +133,24 @@ export class NewProductComponent {
   }
 
   currentCategory: { categoryId: number; name: string } | undefined = undefined;
+
   categoryClicked(obj: { categoryId: number; name: string }): void {
     this.currentCategory = obj;
   }
 
   /**
    * Method responsible for creating a new product
-   *
-   * @return void
    * */
   submit(): Observable<number> {
-    if (!this.currentCategory) {
+    const name = this.form.controls['name'].value;
+    const ngn = this.form.controls['ngn'].value;
+    const usd = this.form.controls['usd'].value;
+    const weight = this.form.controls['weight'].value;
+    const desc = this.form.controls['desc'].value;
+    const visible = this.form.controls['visible'].value;
+    const colour = this.form.controls['colour'].value;
+
+    if (!this.currentCategory || !name || !ngn || !usd || !weight || visible === null || !colour) {
       return of(0);
     }
 
@@ -145,15 +158,15 @@ export class NewProductComponent {
 
     const dto = {
       category_id: this.currentCategory.categoryId,
-      name: this.form.controls['name'].value,
+      name: name.trim(),
       priceCurrency: [
-        { currency: SarreCurrency.NGN, price: this.form.controls['ngn'].value },
-        { currency: SarreCurrency.USD , price: this.form.controls['usd'].value }
+        { currency: SarreCurrency.NGN, price: ngn },
+        { currency: SarreCurrency.USD , price: usd }
       ],
-      weight: this.form.controls['weight'].value,
-      desc: this.form.controls['desc'].value?.trim(),
-      visible: this.form.controls['visible'].value,
-      colour: this.form.controls['colour'].value,
+      weight: weight,
+      desc: !desc ? '' : desc.trim(),
+      visible: visible,
+      colour: colour.trim(),
       sizeInventory: this.rows,
     }
 
@@ -167,29 +180,31 @@ export class NewProductComponent {
   }
 
   /**
-   * Creates a new Product and fetches new products to updates product table
+   * Creates a new {@link Product} and fetches new products to updates product table
    * */
-  private create(data: FormData): Observable<number> {
-    return this.newProductService.create(data)
-      .pipe(
-        switchMap((status: number) => {
-          this.sizeInventoryService.setSubject(true);
-          this.clear();
-          return this.productService.currency$
-            .pipe(
-              switchMap((currency) => this.productService
-                .allProducts(0, 20, currency)
-                .pipe(
-                  switchMap(() => of(status)),
-                  catchError((err: HttpErrorResponse) => {
-                    this.toastService.toastMessage(err.error ? err.error.message : err.message);
-                    return of(err.status);
-                  })
-                )
+  private create = (data: FormData): Observable<number> => this.newProductService.create(data)
+    .pipe(
+      switchMap((status: number) => {
+        this.sizeInventoryService.setSubject(true);
+        this.clear();
+        return this.productService.currency$
+          .pipe(
+            switchMap((currency) => this.productService
+              .allProducts(0, 20, currency)
+              .pipe(
+                switchMap(() => of(status)),
+                catchError((err: HttpErrorResponse) => {
+                  this.toastService.toastMessage(err.error ? err.error.message : err.message);
+                  return of(err.status);
+                })
               )
-            );
-        })
-      );
-  }
+            )
+          );
+      }),
+      catchError((err: HttpErrorResponse) => {
+        this.toastService.toastMessage(err.error ? err.error.message : err.message);
+        return of(err.status);
+      })
+    );
 
 }
