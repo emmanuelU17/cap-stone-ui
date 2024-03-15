@@ -16,7 +16,7 @@ An ecommerce application still in development.
 or `pack config default-builder <you-builder-choice>`
 * Convert to image `pack build <image-name> -b paketo-buildpacks/web-servers
 --env "BP_WEB_SERVER=nginx"
---env "BP_WEB_SERVER_ROOT=dist/capstone-ui"
+--env "BP_WEB_SERVER_ROOT=dist/capstone"
 --env "BP_WEB_SERVER_ENABLE_PUSH_STATE=true"
 --env "NODE_ENV=development"`
 

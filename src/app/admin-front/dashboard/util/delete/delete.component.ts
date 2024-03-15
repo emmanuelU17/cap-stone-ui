@@ -60,6 +60,6 @@ export class DeleteComponent {
         this.cancel();
         return of(err.status);
       })
-  );
+    );
 
 }

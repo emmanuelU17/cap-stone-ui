@@ -86,8 +86,8 @@ export class AdminAuthenticationComponent {
     const principal = this.loginForm.controls['principal'].value;
     const password = this.loginForm.controls['password'].value;
     return (!principal || !password)
-    ? of()
-    : this.authService
+      ? of()
+      : this.authService
         .login(
           { principal: principal, password: password },
           'api/v1/worker/auth/login',

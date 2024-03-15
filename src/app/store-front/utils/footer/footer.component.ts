@@ -82,9 +82,11 @@ import {MobileFooterComponent} from "@/app/store-front/utils/mobilefooter/mobile
         </h1>
 
         <select class="f-font p-2 cursor-pointer" (change)="setCurrency($event)">
-          <option *ngFor="let currency of currencies" [value]="currency" class="uppercase cursor-pointer">
-            {{ currency }}
-          </option>
+          @for (currency of currencies; track currency) {
+            <option [value]="currency" class="uppercase cursor-pointer">
+              {{ currency }}
+            </option>
+          }
         </select>
       </div>
 

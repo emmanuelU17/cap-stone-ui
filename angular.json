@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "sarrebrand": {
+    "capstone": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -16,7 +16,7 @@
             "allowedCommonJsDependencies": [
               "@ckeditor/ckeditor5-build-classic"
             ],
-            "outputPath": "dist/sarrebrand",
+            "outputPath": "dist/capstone",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": [
@@ -76,10 +76,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "sarrebrand:build:production"
+              "buildTarget": "capstone:build:production"
             },
             "development": {
-              "buildTarget": "sarrebrand:build:development"
+              "buildTarget": "capstone:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -87,7 +87,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "sarrebrand:build"
+            "buildTarget": "capstone:build"
           }
         },
         "test": {

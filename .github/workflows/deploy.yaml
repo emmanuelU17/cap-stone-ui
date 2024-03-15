@@ -35,9 +35,9 @@ jobs:
         run: |
           #!/usr/bin/env bash
           pack config default-builder paketobuildpacks/builder:base
-          pack build emmanuelu17/capstone-ui --buildpack paketo-buildpacks/web-servers \
+          pack build emmanuelu17/capstone --buildpack paketo-buildpacks/web-servers \
           --env "BP_WEB_SERVER=nginx" \
-          --env "BP_WEB_SERVER_ROOT=dist/apstone-ui" \
+          --env "BP_WEB_SERVER_ROOT=dist/capstone" \
           --env "BP_WEB_SERVER_ENABLE_PUSH_STATE=true" \
           --env "NODE_ENV=production"
         shell: bash
@@ -46,4 +46,4 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Tag & Publish to Docker Hub
-        run: docker push --all-tags emmanuelu17/capstone-ui
+        run: docker push --all-tags emmanuelu17/capstone
