@@ -10,6 +10,9 @@ An ecommerce application still in development.
 * CKEditor5
 * Paystack
 
+## To convert to a docker image using Dockerfile
+* `docker build --tag <chose-a-name>:latest . --progress=plain --build-arg="PORT=<choose-a-port-number>"` 
+
 ## To convert source code to docker image using buildpacks
 * [Install pack](https://buildpacks.io/docs/tools/pack/)
 * Set default `pack config default-builder paketobuildpacks/builder:base`

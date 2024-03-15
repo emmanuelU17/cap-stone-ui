@@ -23,7 +23,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build image
-        run: docker build --tag capstone:latest . --progress=plain
+        run: docker build --tag capstone:latest . --progress=plain --build-arg="PORT=4200"
 
       - name: Push image to dockerhub
         run: |

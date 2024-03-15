@@ -5,27 +5,28 @@ import {AuthService} from "./service/auth.service";
 @Component({
   selector: 'app-root',
   template: `
-    @if (csrf$ | async; as csrf) {
-      @switch (csrf.state) {
-        @case ('LOADING') {
-          <div class="lg-scr h-full p-20 flex justify-center items-center">
-            <h1 class="capitalize text-[var(--app-theme-hover)]">
-              loading...
-            </h1>
-          </div>
-        }
+    <router-outlet></router-outlet>
+<!--    @if (csrf$ | async; as csrf) {-->
+<!--      @switch (csrf.state) {-->
+<!--        @case ('LOADING') {-->
+<!--          <div class="lg-scr h-full p-20 flex justify-center items-center">-->
+<!--            <h1 class="capitalize text-[var(&#45;&#45;app-theme-hover)]">-->
+<!--              loading...-->
+<!--            </h1>-->
+<!--          </div>-->
+<!--        }-->
 
-        @case ('ERROR') {
-          <div class="lg-scr p-10 text-3xl text-red-500">
-            Please try again later as server is undergoing maintenance
-          </div>
-        }
+<!--        @case ('ERROR') {-->
+<!--          <div class="lg-scr p-10 text-3xl text-red-500">-->
+<!--            Please try again later as server is undergoing maintenance-->
+<!--          </div>-->
+<!--        }-->
 
-        @case ('LOADED') {
-          <router-outlet></router-outlet>
-        }
-      }
-    }
+<!--        @case ('LOADED') {-->
+<!--          <router-outlet></router-outlet>-->
+<!--        }-->
+<!--      }-->
+<!--    }-->
   `,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
