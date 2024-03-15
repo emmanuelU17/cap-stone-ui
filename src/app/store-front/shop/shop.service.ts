@@ -1,63 +1,69 @@
-import {Injectable} from '@angular/core';
-import {catchError, combineLatest, map, Observable, of, startWith} from "rxjs";
-import {Filter} from "./shop.helper";
-import {HttpErrorResponse} from "@angular/common/http";
-import {Product} from "../store-front-utils";
+import {inject, Injectable} from '@angular/core';
+import {environment} from "@/environments/environment";
+import {HttpClient} from "@angular/common/http";
+import {Category, Page, SarreCurrency} from "@/app/global-utils";
+import {BehaviorSubject, Observable, of, switchMap, tap} from "rxjs";
+import {ProductDetail} from "./shop.helper";
+import {Product} from "@/app/store-front/store-front-utils";
 
 @Injectable({
   providedIn: 'root'
 })
 export class ShopService {
 
-  /**
-   * Method allows displays a set of squares. These squares display the amount of products to be displayed on the page.
-   * Can either be grid-cols-3 or grid-cols-4
-   *
-   * @param length is the size of the array
-   * @return Array of number
-   * */
-  getRange(length: number): number[] {
-    return new Array(length);
-  }
+  private readonly HOST: string | undefined = environment.domain;
+  private readonly http = inject(HttpClient);
 
-  /**
-   * Sorts array based on the price.
-   * If bool is true, arr is filtered in ascending order.
-   * If bool is false, arr is filtered in descending order.
-   *
-   * @param bool
-   * @param arr is the Product array
-   * @return Array of type Product
-   * */
-  sortArray(bool: boolean, arr: Product[]): Product[] {
-    return bool ? arr.sort((a: Product, b: Product) => a.price - b.price)
-      : arr.sort((a: Product, b: Product) => b.price - a.price);
-  }
+  private readonly subject = new BehaviorSubject<Category[]>([]);
+  readonly categories$ = this.subject.asObservable();
 
-  /**
-   * Onload of the page use combineLatest to combine api calls. Also fork join can be used
-   * https://www.learnrxjs.io/learn-rxjs/operators/combination/forkjoin
-   *
-   * @param products$ is an Observable of Product array
-   * @param generic$ is an Observable of Category or Collection array
-   * @param str is what filtering we are applying
-   * @return Observable object of { state: string, error?: string, products?: Product[], filter?: Filter<string>[] }
-   * */
-  getCombine$<T>(products$: Observable<Product[]>, generic$: Observable<T[]>, str: string): Observable<{
-    state: string,
-    error?: string,
-    products?: Product[],
-    filter?: Filter<T>[]
-  }> {
-    return combineLatest([products$, generic$])
-      .pipe(
-        map(([products, generic]: [Product[], T[]]) => {
-          const arr: Filter<T>[] = [{ isOpen: false, parent: str, children: generic }];
-          return { state: 'LOADED', products: products, filter: arr };
-        }),
-        startWith({ state: 'LOADING' }),
-        catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error.message }))
+  readonly currentCategorySubject = new BehaviorSubject<number | undefined>(undefined);
+  readonly category$ = this.currentCategorySubject
+    .asObservable()
+    .pipe(
+      switchMap((num) => num
+        ? of(num)
+        : this.categories$.pipe(switchMap((arr) => of(arr[0].category_id)))
+      ),
     );
-  }
+
+  /**
+   * Returns a {@code ProductDetail} array based on {@code Product} uuid.
+   * */
+  productDetailsByProductUUID = (uuid: string, c: SarreCurrency): Observable<ProductDetail[]> =>
+    this.http
+      .get<ProductDetail[]>(
+        `${this.HOST}api/v1/client/product/detail?product_id=${uuid}&currency=${c}`,
+        { withCredentials: true }
+      );
+
+  /**
+   * Returns all categories from server that are marked as visible
+   *
+   * @return Observable of Category array
+   * */
+  allCategories = (): Observable<Category[]> => this.http
+    .get<Category[]>(`${this.HOST}api/v1/client/category`, { withCredentials: true })
+    .pipe(tap((arr: Category[]): void => this.subject.next(arr)));
+
+  /**
+   * returns all products based on categoryId.
+   *
+   * @param categoryId is the category id
+   * @param page is the page number
+   * @param size is the amount of items to be displayed on a page
+   * @param c
+   * @return Observable of Page<Product>
+   * */
+  productsBasedOnCategoryId = (
+    categoryId: number,
+    c: SarreCurrency,
+    page: number = 0,
+    size: number = 20,
+  ): Observable<Page<Product>> => this.http
+    .get<Page<Product>>(
+      `${this.HOST}api/v1/client/category/products?category_id=${categoryId}&currency=${c}&page=${page}&size=${size}`,
+      { withCredentials: true }
+    );
 
 }

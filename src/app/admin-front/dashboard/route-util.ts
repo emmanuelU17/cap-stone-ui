@@ -1,12 +1,10 @@
-interface List {
-  icon: string,
-  name: string,
-  route: string
-}
-
 export interface Display {
   title: string;
-  array: List[];
+  array: {
+    icon: string,
+    name: string,
+    route: string
+  }[];
 }
 
 export const DASHBOARDLINKS: Display[] = [
@@ -32,12 +30,7 @@ export const DASHBOARDLINKS: Display[] = [
         icon: 'flare',
         name: 'category',
         route: 'category'
-      },
-      {
-        icon: 'filter_center_focus',
-        name: 'collection',
-        route: 'collection',
-      },
+      }
     ]
   },
   {
@@ -47,6 +40,21 @@ export const DASHBOARDLINKS: Display[] = [
         icon: 'account_box',
         name: 'customer',
         route: 'customer',
+      }
+    ]
+  },
+  {
+    title: 'setting',
+    array: [
+      {
+        icon: 'local_shipping',
+        name: 'shipping',
+        route: 'setting/shipping',
+      },
+      {
+        icon: 'attach_money',
+        name: 'tax',
+        route: 'setting/tax',
       }
     ]
   },

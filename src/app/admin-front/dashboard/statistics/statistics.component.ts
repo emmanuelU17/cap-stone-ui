@@ -1,12 +1,12 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {CommonModule} from '@angular/common';
+import {CommonModule} from "@angular/common";
 
 @Component({
   selector: 'app-statistics',
   standalone: true,
   imports: [CommonModule],
   template: `
-    <p>statistics works!</p>
+    statics component works
   `,
   changeDetection: ChangeDetectionStrategy.OnPush
 })

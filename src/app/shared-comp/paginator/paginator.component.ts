@@ -1,68 +1,12 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output, Renderer2} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {RouterLinkActive} from "@angular/router";
+import {UtilService} from "@/app/service/util.service";
 
 @Component({
   selector: 'app-paginator',
   standalone: true,
   imports: [CommonModule, RouterLinkActive],
-  template: `
-    <nav class="text-black" aria-label="pagination">
-
-      <ng-container *ngIf="totalPages < 6; else greater">
-        <ul class="list-style-none flex justify-center">
-          <li class="flex gap-2 cursor-pointer">
-            <!-- rgb(148 163 184) -->
-            <a
-              *ngFor="let num of range(); let i = index"
-              (click)="onGoTo(num)"
-              [attr.data-page-number]="num"
-              aria-label="button number"
-              [style]="{ 'background-color': num === currentPage ? 'var(--app-theme)' : '' }"
-              class="relative block rounded-full bg-transparent px-3 py-1.5 text-sm text-neutral-600 transition-all duration-300 hover:bg-gray-200"
-            >{{ num + 1 }}</a>
-          </li>
-        </ul>
-      </ng-container>
-
-      <ng-template #greater>
-        <ul class="flex gap-2.5 justify-center list-style-none">
-          <!-- Previous -->
-          <li>
-            <a (click)="onPrevious()"
-              aria-label="Previous button"
-              class="relative cursor-pointer block rounded-full bg-transparent px-3 py-1.5 text-sm text-neutral-600 transition-all duration-300 hover:bg-gray-200"
-            >
-              <span aria-hidden="true">&laquo;</span>
-            </a>
-          </li>
-
-          <!-- number -->
-          <li class="slider w-60 flex overflow-x-auto scroll-smooth">
-            <a
-              *ngFor="let num of range(); let i = index"
-              (click)="onGoTo(num)"
-              aria-label="button number"
-              [attr.data-page-number]="num"
-              [style]="{ 'background-color': num === currentPage ? 'var(--app-theme)' : '' }"
-              class="relative cursor-pointer block rounded-full bg-transparent px-3 py-1.5 text-sm text-neutral-600 transition-all duration-300 hover:bg-gray-200"
-            >{{ num + 1 }}</a>
-          </li>
-
-          <!-- Next -->
-          <li>
-            <a (click)="onNext()"
-              class="relative cursor-pointer block rounded bg-transparent px-3 py-1.5 text-sm text-neutral-600 transition-all duration-300 hover:bg-gray-200 hover:rounded-full"
-              aria-label="Next button"
-            >
-              <span aria-hidden="true">&raquo;</span>
-            </a>
-          </li>
-        </ul>
-      </ng-template>
-
-    </nav>
-  `,
   styles: [`
     /* width */
     ::-webkit-scrollbar {
@@ -85,15 +29,68 @@ import {RouterLinkActive} from "@angular/router";
       background: #555;
     }
   `],
+  template: `
+    <nav class="text-black" aria-label="pagination">
+      @if (totalPages < 6) {
+        <ul class="list-style-none flex justify-center">
+          <li class="flex gap-2 cursor-pointer">
+            <!-- rgb(148 163 184) -->
+            <a
+              *ngFor="let num of range(); let i = index"
+              (click)="onGoTo(num)"
+              [attr.data-page-number]="num"
+              aria-label="button number"
+              [style]="{ 'background-color': num === currentPage ? 'var(--app-theme)' : '' }"
+              class="relative block rounded-full bg-transparent px-3 py-1.5 text-sm text-neutral-600 transition-all duration-300 hover:bg-gray-200"
+            >{{ num + 1 }}</a>
+          </li>
+        </ul>
+      } @else {
+        <div class="flex gap-2.5 justify-center list-style-none">
+          <!-- Previous -->
+          <div>
+            <button (click)="onPrevious()" type="button" aria-label="Previous button"
+                    class="relative block rounded-full bg-transparent px-3 py-1.5 text-sm text-neutral-600 transition-all duration-300 hover:bg-gray-200"
+            >
+              <span aria-hidden="true">&laquo;</span>
+            </button>
+          </div>
+
+          <!-- number -->
+          <ul class="slider w-60 flex overflow-x-auto scroll-smooth">
+            @for (num of range(); track num; let i = $index) {
+              <li>
+                <a (click)="onGoTo(num)" aria-label="button number" [attr.data-page-number]="num"
+                   [style]="{ 'background-color': num === currentPage ? 'var(--app-theme)' : '' }"
+                   class="relative cursor-pointer block rounded-full bg-transparent px-3 py-1.5 text-sm text-neutral-600 transition-all duration-300 hover:bg-gray-200">
+                  {{ num + 1 }}
+                </a>
+              </li>
+            }
+          </ul>
+
+          <!-- Next -->
+          <div>
+            <button (click)="onNext()" type="button" aria-label="Next button"
+                    class="relative block rounded bg-transparent px-3 py-1.5 text-sm text-neutral-600 transition-all duration-300 hover:bg-gray-200 hover:rounded-full"
+            >
+              <span aria-hidden="true">&raquo;</span>
+            </button>
+          </div>
+        </div>
+      }
+    </nav>
+  `,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PaginatorComponent {
 
   private readonly render = inject(Renderer2);
+  private readonly utilService = inject(UtilService);
 
-  @Input() currentPage: number = 0;
-  @Input() totalPages: number = 0;
-  @Input() totalElements: number = 0;
+  @Input() currentPage = 0;
+  @Input() totalPages = 0;
+  @Input() totalElements = 0;
 
   @Output() goTo = new EventEmitter<number>();
 
@@ -101,9 +98,7 @@ export class PaginatorComponent {
    * Displays from 0 to the total number of items (totalPages)
    * passed by the parent component
    * */
-  range(): number[] {
-    return [...Array(this.totalPages).keys()];
-  }
+  range = (): number[] => this.utilService.range(this.totalPages);
 
   /**
    * Informs parent component on what page number was clicked
@@ -129,8 +124,7 @@ export class PaginatorComponent {
   onNext(): void {
     const container = this.render.selectRootElement('.slider', true);
     let dimension = container.getBoundingClientRect();
-    let width = dimension.width;
-    container.scrollLeft += width;
+    container.scrollLeft += dimension.width;
   }
 
 }

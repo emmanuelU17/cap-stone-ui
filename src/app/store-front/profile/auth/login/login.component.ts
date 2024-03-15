@@ -2,8 +2,8 @@ import {ChangeDetectionStrategy, Component, EventEmitter, inject, Output} from '
 import {CommonModule} from '@angular/common';
 import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
 import {Observable, of} from "rxjs";
-import {DirectiveModule} from "../../../../directive/directive.module";
-import {AuthService} from "../../../../service/auth.service";
+import {DirectiveModule} from "@/app/directive/directive.module";
+import {AuthService} from "@/app/service/auth.service";
 
 @Component({
   selector: 'app-login',
@@ -113,7 +113,7 @@ export class LoginComponent {
   viewPassword = false;
   displayMessage = false;
 
-  form = this.fb.group({
+  readonly form = this.fb.group({
     principal: new FormControl("", [Validators.required]),
     password: new FormControl("", [Validators.required]),
   });
@@ -134,7 +134,7 @@ export class LoginComponent {
       : this.authService.login(
           { principal: principal, password: password },
             'api/v1/client/auth/login',
-            '/profile/dashboard'
+            '/account'
         );
   }
 

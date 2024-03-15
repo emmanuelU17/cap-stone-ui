@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject} from "rxjs";
-import {SarreCurrency} from "../../../global-utils";
+import {SarreCurrency} from "@/app/global-utils";
 
 @Injectable({
   providedIn: 'root'
@@ -8,17 +8,14 @@ import {SarreCurrency} from "../../../global-utils";
 export class FooterService {
 
   private readonly subject = new BehaviorSubject<SarreCurrency>(SarreCurrency.NGN);
-
-  currency$ = this.subject.asObservable();
+  readonly currency$ = this.subject.asObservable();
 
   activeCurrency(currency: SarreCurrency): void {
     this.subject.next(currency);
   }
 
-  currency = (str: string): string => {
-    return str.toUpperCase() === SarreCurrency.NGN
-      ? SarreCurrency.NGN_SYMBOL
-      : SarreCurrency.USD_SYMBOL;
-  }
+  currency = (str: string): string => str.toUpperCase() === SarreCurrency.NGN
+    ? SarreCurrency.NGN_SYMBOL
+    : SarreCurrency.USD_SYMBOL;
 
 }

@@ -1,13 +1,16 @@
 import {Routes} from "@angular/router";
 
-export const ADMIN_PRODUCT_ROUTES: Routes = [
+export const routes: Routes = [
   {
-    path: 'new-product',
-    loadComponent: () => import('../newproduct/new-product.component')
-      .then(m => m.NewProductComponent),
+    path: '',
+    loadComponent: () => import('./product-impl/product-impl.component').then(m => m.ProductImplComponent)
   },
-  // {
-  //   path: ':id',
-  //   loadComponent: () => import('./updateproduct/update-product.component').then(m => m.UpdateProductComponent),
-  // },
+  {
+    path: 'new',
+    loadComponent: () => import('./new/new-product.component').then(m => m.NewProductComponent),
+  },
+  {
+    path: ':id',
+    loadComponent: () => import('./update/update-product.component').then(m => m.UpdateProductComponent),
+  },
 ]

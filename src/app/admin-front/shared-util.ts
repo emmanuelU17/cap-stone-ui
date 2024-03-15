@@ -1,19 +1,17 @@
-import {Variant} from "../global-utils";
+import {Category, Variant} from "@/app/global-utils";
 
 export interface UpdateProduct {
-  category_id: string;
-  collection_id: string;
+  category_id: number;
   product_id: string;
   name: string;
   desc: string;
   currency: string;
   price: number;
   category: string;
-  collection: string;
+  weight: number;
 }
 
 export interface ProductResponse {
-  collection: string;
   category: string;
   product_id: string;
   name: string;
@@ -21,67 +19,41 @@ export interface ProductResponse {
   price: number;
   currency: string;
   image: string;
-  action: string;
+  weight: number;
+  weight_type: string;
 }
 
 export interface ProductDetailResponse {
   colour: string;
   is_visible: boolean;
-  url: string[];
+  urls: string[];
   variants: Variant[],
-}
-
-export interface CustomRowMapper {
-  index: number;
-  colour: string;
-  is_visible: boolean;
-  url: string;
-  urls?: string[];
-  sku: string;
-  inventory: number;
-  size: string;
-  action: string
 }
 
 export interface CategoryRequest {
   name: string;
-  parent: string;
+  parent_id: number | undefined;
   visible: boolean;
+}
+
+export interface WorkerCategoryResponse {
+  table: CategoryResponse[];
+  hierarchy: Category[];
 }
 
 export interface CategoryResponse {
-  category_id: string;
-  category: string;
-  created_at?: number;
-  modified_at?: number;
+  category_id: number;
+  parent_id: number;
+  name: string;
   visible: boolean;
-  action: string;
+  children: CategoryResponse[];
 }
 
 export interface UpdateCategory {
-  category_id: string;
+  category_id: number;
   name: string;
   visible: boolean;
-}
-
-export interface CollectionRequest {
-  name: string;
-  visible: string;
-}
-
-export interface CollectionResponse {
-  collection_id: string;
-  collection: string;
-  visible: boolean;
-  created_at: number;
-  modified_at: number;
-  action: string;
-}
-
-export interface UpdateCollection {
-  collection_id: string;
-  name: string;
-  visible: boolean;
+  parent_id: number | undefined;
 }
 
 export interface TableContent<T> {
@@ -100,7 +72,7 @@ export interface SizeInventory {
 }
 
 // https://stackoverflow.com/questions/13499025/how-to-show-ckeditor-with-basic-toolbar
-export const CKEDITOR4CONFIG = {
+export const CkEditorConfig = {
   toolbar: [
     ['Format', 'Font', 'FontSize'],
     ['Bold', 'Italic', 'Underline', 'StrikeThrough'],

@@ -1,21 +1,20 @@
 import {inject, Injectable} from '@angular/core';
-import {BehaviorSubject, Observable, of} from "rxjs";
-import {environment} from "../../../../environments/environment";
+import {BehaviorSubject, Observable} from "rxjs";
+import {environment} from "@/environments/environment";
 import {HttpClient} from "@angular/common/http";
-import {SarreCurrency} from "../../../global-utils";
-import {Product} from "../../store-front-utils";
+import {Page, SarreCurrency} from "@/app/global-utils";
+import {Product} from "@/app/store-front/store-front-utils";
 
 @Injectable({
   providedIn: 'root'
 })
 export class SearchService {
 
-  HOST: string | undefined = environment.domain;
-
+  private readonly HOST: string | undefined = environment.domain;
   private readonly http = inject(HttpClient);
 
   private readonly subject = new BehaviorSubject<boolean>(false);
-  openSearchComponent$ = this.subject.asObservable();
+  readonly openSearchComponent$ = this.subject.asObservable();
 
   /**
    * Opens search.component.ts
@@ -25,15 +24,16 @@ export class SearchService {
   }
 
   /**
-   * Returns an array of ProductResponse based on param
+   * Returns an array of ProductResponse based on param.
    *
-   * @param s is the user param search choice
-   * @param currency is the currency set in footerService
-   * @return Observable of Product array
+   * @param size
+   * @param s is the user param search choice.
+   * @param currency is the currency set in footerService.
+   * @return Observable of {@link Product} array.
    * */
-  _search(s: string, currency: SarreCurrency): Observable<Product[]> {
-    const url = `${this.HOST}api/v1/client/product/find?search=${s}&currency=${currency}`;
-    return this.http.get<Product[]>(url, { withCredentials: true });
+  _search(size: number, s: string, currency: SarreCurrency): Observable<Page<Product>> {
+    const url = `${this.HOST}api/v1/client/product/find?size=${size}&search=${s}&currency=${currency}`;
+    return this.http.get<Page<Product>>(url, { withCredentials: true });
   }
 
 }

@@ -1,4 +1,4 @@
-export const VARIABLE_IS_NUMERIC = (num: any): boolean =>
+export const IS_NUMERIC = (num: any): boolean =>
   (typeof (num) === 'number' || typeof (num) === 'string' && num.trim() !== '') && !isNaN(num as number);
 
 export enum SarreCurrency {
@@ -6,15 +6,9 @@ export enum SarreCurrency {
   NGN_SYMBOL = '₦', USD_SYMBOL = '$'
 }
 
-export interface CSRF {
-  token: string;
-  parameterName: string;
-  headerName: string;
-}
-
 export interface Link {
   name: string;
-  value: string;
+  path: string;
   bool?: boolean;
 }
 
@@ -22,10 +16,12 @@ export interface AuthResponse {
   principal: string;
 }
 
-export interface State<T> {
-  state: string;
-  error?: string;
-  data?: T;
+export interface Category {
+  name: string;
+  category_id: number;
+  parent_id: number;
+  visible: boolean;
+  children: Category[];
 }
 
 export interface Variant {

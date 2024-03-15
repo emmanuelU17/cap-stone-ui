@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {CommonModule} from '@angular/common';
 
 @Component({
   selector: 'app-faq',
@@ -12,6 +12,4 @@ import { CommonModule } from '@angular/common';
   `,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FAQComponent {
-
-}
+export class FAQComponent {}

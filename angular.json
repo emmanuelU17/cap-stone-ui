@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "sarrebrand": {
+    "capstone": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -11,9 +11,12 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:browser-esbuild",
           "options": {
-            "outputPath": "dist/sarrebrand",
+            "allowedCommonJsDependencies": [
+              "@ckeditor/ckeditor5-build-classic"
+            ],
+            "outputPath": "dist/capstone",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": [
@@ -73,10 +76,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "sarrebrand:build:production"
+              "buildTarget": "capstone:build:production"
             },
             "development": {
-              "buildTarget": "sarrebrand:build:development"
+              "buildTarget": "capstone:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -84,7 +87,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "sarrebrand:build"
+            "buildTarget": "capstone:build"
           }
         },
         "test": {
@@ -107,6 +110,12 @@
           }
         }
       }
+    }
+  },
+  "cli": {
+    "analytics": "b4c2ea65-f319-47f2-adc3-228f8821507d",
+    "cache": {
+      "path": "/tmp/.angular/cache"
     }
   }
 }

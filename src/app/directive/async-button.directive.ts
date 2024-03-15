@@ -12,7 +12,8 @@ export class AsyncButtonDirective {
 
   @Input('asyncButton') clickFunc!: Observable<unknown>;
 
-  @HostListener('click', ['$event']) onClick(): void {
+  @HostListener('click', ['$event'])
+  onClick(): void {
     const spinner = `
         <div role="status" class="
              inline-block
@@ -25,7 +26,7 @@ export class AsyncButtonDirective {
              "
         >
          <span class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]"
-            >Loading...</span>
+         >Loading...</span>
         </div>
     `
 
