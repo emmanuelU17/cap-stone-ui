@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
-// import {Angular4PaystackModule} from "angular4-paystack";
+import {Angular4PaystackModule} from "angular4-paystack";
 import {PaymentService} from "./payment.service";
 import {Router} from "@angular/router";
 import {CheckoutNavComponent} from "@/app/store-front/order/checkout-nav/checkout-nav.component";
@@ -8,7 +8,7 @@ import {CheckoutNavComponent} from "@/app/store-front/order/checkout-nav/checkou
 @Component({
   selector: 'app-payment',
   standalone: true,
-  imports: [CommonModule, CheckoutNavComponent], // Angular4PaystackModule,
+  imports: [CommonModule, Angular4PaystackModule, CheckoutNavComponent],
   styleUrls: ['../order.component.css'],
   template: `
     <div class="lg-scr mg-top">
@@ -137,18 +137,18 @@ import {CheckoutNavComponent} from "@/app/store-front/order/checkout-nav/checkou
 
             <div class="flex justify-end">
               <div class="w-fit p-2 bg-black text-white">
-<!--                <angular4-paystack-->
-<!--                  [email]="address.email"-->
-<!--                  [key]="dto.pub_key"-->
-<!--                  [amount]="dto.total"-->
-<!--                  [ref]="dto.reference"-->
-<!--                  [metadata]="address"-->
-<!--                  [currency]="dto.currency"-->
-<!--                  [channels]="['card']"-->
-<!--                  [class]="'btn btn-primary'"-->
-<!--                  (onClose)="paymentCancel()"-->
-<!--                  (callback)="paymentDone($event)"-->
-<!--                >PAY {{ dto.currency }}{{ dto.total }}</angular4-paystack>-->
+                <angular4-paystack
+                  [email]="address.email"
+                  [key]="dto.pub_key"
+                  [amount]="dto.total"
+                  [ref]="dto.reference"
+                  [metadata]="address"
+                  [currency]="dto.currency"
+                  [channels]="['card']"
+                  [class]="'btn btn-primary'"
+                  (onClose)="paymentCancel()"
+                  (callback)="paymentDone($event)"
+                >PAY {{ dto.currency }}{{ dto.total }}</angular4-paystack>
               </div>
             </div>
 
