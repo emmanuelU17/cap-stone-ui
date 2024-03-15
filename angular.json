@@ -113,6 +113,9 @@
     }
   },
   "cli": {
-    "analytics": "b4c2ea65-f319-47f2-adc3-228f8821507d"
+    "analytics": "b4c2ea65-f319-47f2-adc3-228f8821507d",
+    "cache": {
+      "path": "/tmp/.angular/cache"
+    }
   }
 }
