@@ -1,9 +1,9 @@
-import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {Angular4PaystackModule} from "angular4-paystack";
-import {PaymentService} from "./payment.service";
-import {Router} from "@angular/router";
-import {CheckoutNavComponent} from "@/app/store-front/order/checkout-nav/checkout-nav.component";
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Angular4PaystackModule } from 'angular4-paystack';
+import { PaymentService } from './payment.service';
+import { Router } from '@angular/router';
+import { CheckoutNavComponent } from '@/app/store-front/order/checkout-nav/checkout-nav.component';
 
 @Component({
   selector: 'app-payment',
@@ -14,7 +14,7 @@ import {CheckoutNavComponent} from "@/app/store-front/order/checkout-nav/checkou
     <div class="lg-scr mg-top">
       <!-- banner -->
       <div>
-        <app-checkout-nav/>
+        <app-checkout-nav />
       </div>
 
       <!-- content -->
@@ -35,21 +35,27 @@ import {CheckoutNavComponent} from "@/app/store-front/order/checkout-nav/checkou
                   <h5 class="cs-font md:text-xs uppercase">
                     email <span class="text-red-500">*</span>
                   </h5>
-                  <input type="email"
-                         name="email"
-                         [value]="address.email"
-                         class="w-full p-2 border"
-                         placeholder="email" readonly>
+                  <input
+                    type="email"
+                    name="email"
+                    [value]="address.email"
+                    class="w-full p-2 border"
+                    placeholder="email"
+                    readonly
+                  />
                 </div>
                 <div class="w-full">
                   <h5 class="cs-font md:text-xs uppercase">
                     full name <span class="text-red-500">*</span>
                   </h5>
-                  <input type="text"
-                         name="name"
-                         [value]="address.name"
-                         class="w-full p-2 border"
-                         placeholder="fullname" readonly>
+                  <input
+                    type="text"
+                    name="name"
+                    [value]="address.name"
+                    class="w-full p-2 border"
+                    placeholder="fullname"
+                    readonly
+                  />
                 </div>
               </div>
 
@@ -58,11 +64,14 @@ import {CheckoutNavComponent} from "@/app/store-front/order/checkout-nav/checkou
                 <h5 class="cs-font md:text-xs uppercase">
                   phone number <span class="text-red-500">*</span>
                 </h5>
-                <input type="text"
-                       name="phone"
-                       [value]="address.phone"
-                       class="w-full p-2 border"
-                       placeholder="phone" readonly>
+                <input
+                  type="text"
+                  name="phone"
+                  [value]="address.phone"
+                  class="w-full p-2 border"
+                  placeholder="phone"
+                  readonly
+                />
               </div>
 
               <!-- address -->
@@ -70,11 +79,14 @@ import {CheckoutNavComponent} from "@/app/store-front/order/checkout-nav/checkou
                 <h5 class="cs-font md:text-xs uppercase">
                   address <span class="text-red-500">*</span>
                 </h5>
-                <input type="text"
-                       name="address"
-                       [value]="address.address"
-                       class="w-full p-2 border"
-                       placeholder="address" readonly>
+                <input
+                  type="text"
+                  name="address"
+                  [value]="address.address"
+                  class="w-full p-2 border"
+                  placeholder="address"
+                  readonly
+                />
               </div>
 
               <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
@@ -83,11 +95,14 @@ import {CheckoutNavComponent} from "@/app/store-front/order/checkout-nav/checkou
                   <h5 class="cs-font md:text-xs uppercase">
                     city <span class="text-red-500">*</span>
                   </h5>
-                  <input type="text"
-                         name="city"
-                         [value]="address.city"
-                         class="w-full p-2 border"
-                         placeholder="city" readonly>
+                  <input
+                    type="text"
+                    name="city"
+                    [value]="address.city"
+                    class="w-full p-2 border"
+                    placeholder="city"
+                    readonly
+                  />
                 </div>
 
                 <!-- state -->
@@ -95,23 +110,27 @@ import {CheckoutNavComponent} from "@/app/store-front/order/checkout-nav/checkou
                   <h5 class="cs-font md:text-xs uppercase">
                     state <span class="text-red-500">*</span>
                   </h5>
-                  <input type="text"
-                         name="state"
-                         [value]="address.state"
-                         class="w-full p-2 border"
-                         placeholder="state"
-                         readonly>
+                  <input
+                    type="text"
+                    name="state"
+                    [value]="address.state"
+                    class="w-full p-2 border"
+                    placeholder="state"
+                    readonly
+                  />
                 </div>
 
                 <!-- postcode -->
                 <div class="w-full">
                   <h5 class="cs-font md:text-xs uppercase">postcode/zipcode</h5>
-                  <input type="text"
-                         name="postcode"
-                         class="w-full p-2 border"
-                         [value]="address.postcode"
-                         placeholder="postcode/zipcode"
-                         readonly>
+                  <input
+                    type="text"
+                    name="postcode"
+                    class="w-full p-2 border"
+                    [value]="address.postcode"
+                    placeholder="postcode/zipcode"
+                    readonly
+                  />
                 </div>
               </div>
 
@@ -120,18 +139,27 @@ import {CheckoutNavComponent} from "@/app/store-front/order/checkout-nav/checkou
                 <h5 class="cs-font md:text-xs uppercase">
                   country <span class="text-red-500">*</span>
                 </h5>
-                <input type="text"
-                       name="postcode"
-                       [value]="address.country"
-                       class="w-full p-2 border"
-                       placeholder="country"
-                       readonly>
+                <input
+                  type="text"
+                  name="postcode"
+                  [value]="address.country"
+                  class="w-full p-2 border"
+                  placeholder="country"
+                  readonly
+                />
               </div>
 
               <!-- delivery information -->
               <div class="w-full">
-                <h5 class="cs-font md:text-xs uppercase">delivery information</h5>
-                <textarea [textContent]="address.deliveryInfo" name="deliveryInfo" class="w-full p-2 border" readonly></textarea>
+                <h5 class="cs-font md:text-xs uppercase">
+                  delivery information
+                </h5>
+                <textarea
+                  [textContent]="address.deliveryInfo"
+                  name="deliveryInfo"
+                  class="w-full p-2 border"
+                  readonly
+                ></textarea>
               </div>
             </div>
 
@@ -148,16 +176,19 @@ import {CheckoutNavComponent} from "@/app/store-front/order/checkout-nav/checkou
                   [class]="'btn btn-primary'"
                   (onClose)="paymentCancel()"
                   (callback)="paymentDone($event)"
-                >PAY {{ dto.currency }}{{ dto.total }}</angular4-paystack>
+                  >PAY {{ dto.currency }}{{ dto.total }}</angular4-paystack
+                >
               </div>
             </div>
-
           } @else {
             <div class="flex flex-col justify-center items-center">
-              <div role="status"
-                   class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-r-[var(--app-theme)] align-[-0.125em] ext-primary motion-reduce:animate-[spin_1.5s_linear_infinite]">
+              <div
+                role="status"
+                class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-r-[var(--app-theme)] align-[-0.125em] ext-primary motion-reduce:animate-[spin_1.5s_linear_infinite]"
+              >
                 <span
-                  class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
+                  class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]"
+                >
                   Loading...
                 </span>
               </div>
@@ -165,22 +196,24 @@ import {CheckoutNavComponent} from "@/app/store-front/order/checkout-nav/checkou
           }
         } @else {
           <div class="flex flex-col justify-center items-center">
-            <div role="status"
-                 class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-r-[var(--app-theme)] align-[-0.125em] ext-primary motion-reduce:animate-[spin_1.5s_linear_infinite]">
-                <span
-                  class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
-                  Loading...
-                </span>
+            <div
+              role="status"
+              class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-r-[var(--app-theme)] align-[-0.125em] ext-primary motion-reduce:animate-[spin_1.5s_linear_infinite]"
+            >
+              <span
+                class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]"
+              >
+                Loading...
+              </span>
             </div>
           </div>
         }
       </div>
     </div>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PaymentComponent {
-
   private readonly paymentService = inject(PaymentService);
   private readonly router = inject(Router);
 
@@ -195,5 +228,4 @@ export class PaymentComponent {
   paymentCancel(): void {
     this.router.navigate(['/order/cart']);
   }
-
 }

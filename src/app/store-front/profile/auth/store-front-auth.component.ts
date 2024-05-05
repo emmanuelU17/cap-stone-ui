@@ -1,7 +1,7 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {CommonModule} from "@angular/common";
-import {LoginComponent} from "./login/login.component";
-import {RegisterComponent} from "./register/register.component";
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { LoginComponent } from './login/login.component';
+import { RegisterComponent } from './register/register.component';
 
 @Component({
   selector: 'app-store-front-auth',
@@ -21,10 +21,9 @@ import {RegisterComponent} from "./register/register.component";
       }
     </div>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StoreFrontAuthComponent {
-
   template = 'login';
 
   /**
@@ -33,5 +32,4 @@ export class StoreFrontAuthComponent {
   templateToDisplay(event: string): void {
     this.template = event;
   }
-
 }

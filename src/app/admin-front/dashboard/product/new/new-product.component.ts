@@ -1,33 +1,40 @@
-import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {SizeInventory} from "@/app/admin-front/shared-util";
-import {catchError, Observable, of, switchMap} from "rxjs";
-import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
-import {CategoryService} from "@/app/admin-front/dashboard/category/category.service";
-import {NewProductService} from "./new-product.service";
-import {SizeInventoryComponent} from "../sizeinventory/size-inventory.component";
-import {MatButtonModule} from "@angular/material/button";
-import {MatIconModule} from "@angular/material/icon";
-import {MatRadioModule} from "@angular/material/radio";
-import {DirectiveModule} from "@/app/directive/directive.module";
-import {ProductService} from "../product.service";
-import {HttpErrorResponse} from "@angular/common/http";
-import {ToastService} from "@/app/shared-comp/toast/toast.service";
-import {SizeInventoryService} from "../sizeinventory/size-inventory.service";
-import {Router} from "@angular/router";
-import {SarreCurrency} from "@/app/global-utils";
-import {CKEditorModule} from "@ckeditor/ckeditor5-angular";
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { SizeInventory } from '@/app/admin-front/shared-util';
+import { catchError, Observable, of, switchMap } from 'rxjs';
+import {
+  FormBuilder,
+  FormControl,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { CategoryService } from '@/app/admin-front/dashboard/category/category.service';
+import { NewProductService } from './new-product.service';
+import { SizeInventoryComponent } from '../sizeinventory/size-inventory.component';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatRadioModule } from '@angular/material/radio';
+import { DirectiveModule } from '@/app/directive/directive.module';
+import { ProductService } from '../product.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ToastService } from '@/app/shared-comp/toast/toast.service';
+import { SizeInventoryService } from '../sizeinventory/size-inventory.service';
+import { Router } from '@angular/router';
+import { SarreCurrency } from '@/app/global-utils';
+import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import {CategoryHierarchyComponent} from "@/app/shared-comp/hierarchy/category-hierarchy.component";
+import { CategoryHierarchyComponent } from '@/app/shared-comp/hierarchy/category-hierarchy.component';
 
 @Component({
   selector: 'app-new-product',
   standalone: true,
-  styles: [`
-    :host ::ng-deep .ck-editor__editable_inline {
-      min-height: 100px;
-    }
-  `],
+  styles: [
+    `
+      :host ::ng-deep .ck-editor__editable_inline {
+        min-height: 100px;
+      }
+    `,
+  ],
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -38,13 +45,12 @@ import {CategoryHierarchyComponent} from "@/app/shared-comp/hierarchy/category-h
     MatRadioModule,
     ReactiveFormsModule,
     DirectiveModule,
-    CategoryHierarchyComponent
+    CategoryHierarchyComponent,
   ],
   templateUrl: './new-product.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NewProductComponent {
-
   private readonly newProductService = inject(NewProductService);
   private readonly categoryService = inject(CategoryService);
   private readonly productService = inject(ProductService);
@@ -77,7 +83,7 @@ export class NewProductComponent {
 
   routeToProductComponent = (): void => {
     this.router.navigate(['/admin/dashboard/product']);
-  }
+  };
 
   /**
    * Responsible for verifying file uploaded is in image and then updating file FormGroup.
@@ -89,8 +95,7 @@ export class NewProductComponent {
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
 
-    if (!input.files)
-      return;
+    if (!input.files) return;
 
     const files: File[] = Array.from(input.files);
     this.files.push(...files);
@@ -100,7 +105,7 @@ export class NewProductComponent {
    * Clears reactiveForm
    * */
   clear(): void {
-    Object.keys(this.form.controls).forEach(key => {
+    Object.keys(this.form.controls).forEach((key) => {
       if (key !== 'visible') {
         this.form.get(key)?.reset('');
       }
@@ -120,8 +125,9 @@ export class NewProductComponent {
    * @return void
    * */
   remove(file: File): void {
-    const index: number = this.files
-      .findIndex((value: File) => value.name === file.name);
+    const index: number = this.files.findIndex(
+      (value: File) => value.name === file.name,
+    );
     this.files.splice(index, 1);
   }
 
@@ -150,7 +156,15 @@ export class NewProductComponent {
     const visible = this.form.controls['visible'].value;
     const colour = this.form.controls['colour'].value;
 
-    if (!this.currentCategory || !name || !ngn || !usd || !weight || visible === null || !colour) {
+    if (
+      !this.currentCategory ||
+      !name ||
+      !ngn ||
+      !usd ||
+      !weight ||
+      visible === null ||
+      !colour
+    ) {
       return of(0);
     }
 
@@ -161,17 +175,19 @@ export class NewProductComponent {
       name: name.trim(),
       priceCurrency: [
         { currency: SarreCurrency.NGN, price: ngn },
-        { currency: SarreCurrency.USD , price: usd }
+        { currency: SarreCurrency.USD, price: usd },
       ],
       weight: weight,
       desc: !desc ? '' : desc.trim(),
       visible: visible,
       colour: colour.trim(),
       sizeInventory: this.rows,
-    }
+    };
 
-    formData
-      .append('dto', new Blob([JSON.stringify(dto)], { type: 'application/json' }));
+    formData.append(
+      'dto',
+      new Blob([JSON.stringify(dto)], { type: 'application/json' }),
+    );
 
     // append files
     this.files.forEach((file: File) => formData.append('files', file));
@@ -182,29 +198,30 @@ export class NewProductComponent {
   /**
    * Creates a new {@link Product} and fetches new products to updates product table
    * */
-  private create = (data: FormData): Observable<number> => this.newProductService.create(data)
-    .pipe(
+  private create = (data: FormData): Observable<number> =>
+    this.newProductService.create(data).pipe(
       switchMap((status: number) => {
         this.sizeInventoryService.setSubject(true);
         this.clear();
-        return this.productService.currency$
-          .pipe(
-            switchMap((currency) => this.productService
-              .allProducts(0, 20, currency)
-              .pipe(
-                switchMap(() => of(status)),
-                catchError((err: HttpErrorResponse) => {
-                  this.toastService.toastMessage(err.error ? err.error.message : err.message);
-                  return of(err.status);
-                })
-              )
-            )
-          );
+        return this.productService.currency$.pipe(
+          switchMap((currency) =>
+            this.productService.allProducts(0, 20, currency).pipe(
+              switchMap(() => of(status)),
+              catchError((err: HttpErrorResponse) => {
+                this.toastService.toastMessage(
+                  err.error ? err.error.message : err.message,
+                );
+                return of(err.status);
+              }),
+            ),
+          ),
+        );
       }),
       catchError((err: HttpErrorResponse) => {
-        this.toastService.toastMessage(err.error ? err.error.message : err.message);
+        this.toastService.toastMessage(
+          err.error ? err.error.message : err.message,
+        );
         return of(err.status);
-      })
+      }),
     );
-
 }

@@ -1,12 +1,24 @@
 @if (data) {
   <!-- Title-container -->
   <div class="w-full flex py-2.5 px-0 gap-2.5">
-    <button type="button" class="md:px-2.5 border-[var(--border-outline)] border"
-            (click)="returnToCategoryComponent()">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-           stroke="currentColor"
-           class="w-6 h-6">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18"/>
+    <button
+      type="button"
+      class="md:px-2.5 border-[var(--border-outline)] border"
+      (click)="returnToCategoryComponent()"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="1.5"
+        stroke="currentColor"
+        class="w-6 h-6"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18"
+        />
       </svg>
     </button>
     <h1 class="text-base capitalize">Updating {{ data.name }}</h1>
@@ -20,11 +32,13 @@
       </div>
 
       <form class="w-full flex flex-col gap-2.5" [formGroup]="form">
-
         <!-- Input box -->
         <div
-          class="p-6 flex flex-col gap-2.5 text-left rounded-md border border-[var(--active)] border-solid bg-[var(--white)]">
-          <h4 class="cx-font-size capitalize">name <span [style]="'color: red'">*</span></h4>
+          class="p-6 flex flex-col gap-2.5 text-left rounded-md border border-[var(--active)] border-solid bg-[var(--white)]"
+        >
+          <h4 class="cx-font-size capitalize">
+            name <span [style]="'color: red'">*</span>
+          </h4>
           <input
             formControlName="name"
             placeholder="category name"
@@ -33,19 +47,28 @@
           />
         </div>
 
-        <div class="p-6 flex flex-col gap-2.5 text-left rounded-md border border-[var(--active)] border-solid bg-[var(--white)]">
+        <div
+          class="p-6 flex flex-col gap-2.5 text-left rounded-md border border-[var(--active)] border-solid bg-[var(--white)]"
+        >
           <div class="flex flex-col gap-2.5">
             <div>
               <h4 class="flex text-xs capitalize">
                 parent category
-                <button (click)="parent.set(undefined)" type="button"
-                        [style]="{ 'display' : !parent() ? 'none' : 'block' }"
-                        class="ml-1 lowercase text-red-400">clear
+                <button
+                  (click)="parent.set(undefined)"
+                  type="button"
+                  [style]="{ display: !parent() ? 'none' : 'block' }"
+                  class="ml-1 lowercase text-red-400"
+                >
+                  clear
                 </button>
               </h4>
 
-              <button (click)="displayHierarchy = !displayHierarchy" type="button"
-                      class="text-xs capitalize text-[#2c6ecb]">
+              <button
+                (click)="displayHierarchy = !displayHierarchy"
+                type="button"
+                class="text-xs capitalize text-[#2c6ecb]"
+              >
                 @if (parent()) {
                   selected {{ parent()?.name }}
                 } @else {
@@ -57,7 +80,10 @@
             @if (displayHierarchy) {
               @if (hierarchy$ | async; as hierarchy) {
                 <div class="w-full p-2 flex gap-2 flex-col bg-[#eff2f5]">
-                  <app-hierarchy [categories]="hierarchy" (emitter)="parentClicked($event)"></app-hierarchy>
+                  <app-hierarchy
+                    [categories]="hierarchy"
+                    (emitter)="parentClicked($event)"
+                  ></app-hierarchy>
                 </div>
               }
             }
@@ -65,41 +91,65 @@
         </div>
 
         <!-- Radio -->
-        <div class="p-6 text-left rounded-md border border-[var(--active)] border-solid bg-[var(--white)]">
-          <h4 class="cx-font-size capitalize">visibility (include in store front) <span
-            [style]="'color: red'">*</span></h4>
-          <mat-radio-group aria-label="Select an option" formControlName="visible">
-            <mat-radio-button [value]="false" [checked]="!data.visible">false</mat-radio-button>
-            <mat-radio-button [value]="true" [checked]="data.visible">true</mat-radio-button>
+        <div
+          class="p-6 text-left rounded-md border border-[var(--active)] border-solid bg-[var(--white)]"
+        >
+          <h4 class="cx-font-size capitalize">
+            visibility (include in store front)
+            <span [style]="'color: red'">*</span>
+          </h4>
+          <mat-radio-group
+            aria-label="Select an option"
+            formControlName="visible"
+          >
+            <mat-radio-button [value]="false" [checked]="!data.visible"
+              >false</mat-radio-button
+            >
+            <mat-radio-button [value]="true" [checked]="data.visible"
+              >true</mat-radio-button
+            >
           </mat-radio-group>
         </div>
 
         <!-- Button container -->
         <div class="p-2.5 px-1.5 flex justify-between">
-          <button mat-stroked-button color="warn" [style.border-color]="'red'" type="button" (click)="clear()">
+          <button
+            mat-stroked-button
+            color="warn"
+            [style.border-color]="'red'"
+            type="button"
+            (click)="clear()"
+          >
             Cancel
           </button>
           <button
             type="submit"
             class="capitalize text-white font-bold py-2 px-4 rounded bg-[var(--app-theme)]"
             [disabled]="!form.valid"
-            [style]="{ 'background-color': form.valid ? 'var(--app-theme-hover)' : 'var(--app-theme)' }"
+            [style]="{
+              'background-color': form.valid
+                ? 'var(--app-theme-hover)'
+                : 'var(--app-theme)'
+            }"
             [asyncButton]="update()"
-          >update</button>
+          >
+            update
+          </button>
         </div>
-
       </form>
     </div>
 
     <!-- Product Table Column -->
-    <div class="max-h-3/5 overflow-auto flex-1 p-2 ">
-
+    <div class="max-h-3/5 overflow-auto flex-1 p-2">
       <div class="flex flex-col h-full w-full py-0">
         <div class="mb-2">
           <h1 class="capitalize">associated products</h1>
         </div>
 
-        <div *ngIf="data$ | async as data" class="max-h-96 overflow-y-auto rounded-md border border-[var(--active)] border-solid bg-[var(--white)]">
+        <div
+          *ngIf="data$ | async as data"
+          class="max-h-96 overflow-y-auto rounded-md border border-[var(--active)] border-solid bg-[var(--white)]"
+        >
           @switch (data.state) {
             @case ('LOADING') {
               <div class="h-full p-20 flex justify-center items-center">
@@ -127,19 +177,28 @@
           }
         </div>
       </div>
-
     </div>
-
   </div>
-
 } @else {
   <div class="lg-scr p-10 text-3xl text-red-500">
-    <button type="button" class="md:px-2.5 border-[var(--border-outline)] border"
-            (click)="returnToCategoryComponent()">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-           stroke="currentColor"
-           class="w-6 h-6">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18"/>
+    <button
+      type="button"
+      class="md:px-2.5 border-[var(--border-outline)] border"
+      (click)="returnToCategoryComponent()"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="1.5"
+        stroke="currentColor"
+        class="w-6 h-6"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18"
+        />
       </svg>
     </button>
     An error occurred

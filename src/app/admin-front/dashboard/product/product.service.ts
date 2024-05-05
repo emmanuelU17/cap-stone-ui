@@ -1,23 +1,38 @@
-import {inject, Injectable} from '@angular/core';
-import {BehaviorSubject, combineLatest, map, Observable, of, ReplaySubject, switchMap, tap} from "rxjs";
-import {Page, SarreCurrency} from "@/app/global-utils";
-import {CategoryResponse, ProductResponse, UpdateProduct} from "@/app/admin-front/shared-util";
-import {HttpClient, HttpResponse} from "@angular/common/http";
-import {environment} from "@/environments/environment";
+import { inject, Injectable } from '@angular/core';
+import {
+  BehaviorSubject,
+  combineLatest,
+  map,
+  Observable,
+  of,
+  ReplaySubject,
+  switchMap,
+  tap,
+} from 'rxjs';
+import { Page, SarreCurrency } from '@/app/global-utils';
+import {
+  CategoryResponse,
+  ProductResponse,
+  UpdateProduct,
+} from '@/app/admin-front/shared-util';
+import { HttpClient, HttpResponse } from '@angular/common/http';
+import { environment } from '@/environments/environment';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ProductService {
-
-  private readonly HOST: string | undefined = environment.domain + 'api/v1/worker/product';
+  private readonly HOST: string | undefined =
+    environment.domain + 'api/v1/worker/product';
   private readonly http = inject(HttpClient);
   private readonly productSubject = new ReplaySubject<Page<ProductResponse>>();
 
   readonly products$ = this.productSubject.asObservable();
   products: ProductResponse[] = [];
 
-  private readonly subject = new BehaviorSubject<SarreCurrency>(SarreCurrency.NGN);
+  private readonly subject = new BehaviorSubject<SarreCurrency>(
+    SarreCurrency.NGN,
+  );
   readonly currency$ = this.subject.asObservable();
 
   setCurrencySubject(currency: SarreCurrency): void {
@@ -30,11 +45,13 @@ export class ProductService {
    * @return Observable of type HttpStatus
    * */
   updateProduct(obj: UpdateProduct): Observable<number> {
-    return this.http.put<UpdateProduct>(`${this.HOST}`, obj, {
-      headers: { 'content-type': 'application/json' },
-      observe: 'response',
-      withCredentials: true
-    }).pipe(map((res: HttpResponse<UpdateProduct>) => res.status));
+    return this.http
+      .put<UpdateProduct>(`${this.HOST}`, obj, {
+        headers: { 'content-type': 'application/json' },
+        observe: 'response',
+        withCredentials: true,
+      })
+      .pipe(map((res: HttpResponse<UpdateProduct>) => res.status));
   }
 
   /**
@@ -44,11 +61,13 @@ export class ProductService {
    * @return Observable of type HttpStatus
    * */
   deleteProduct(id: string): Observable<number> {
-    return this.http.delete<HttpResponse<any>>(`${this.HOST}`, {
-      observe: 'response',
-      params: { id: id },
-      withCredentials: true
-    }).pipe(map((res: HttpResponse<any>) => res.status));
+    return this.http
+      .delete<HttpResponse<any>>(`${this.HOST}`, {
+        observe: 'response',
+        params: { id: id },
+        withCredentials: true,
+      })
+      .pipe(map((res: HttpResponse<any>) => res.status));
   }
 
   /**
@@ -57,19 +76,21 @@ export class ProductService {
   allProducts(
     page: number = 0,
     size: number = 20,
-    currency: SarreCurrency
+    currency: SarreCurrency,
   ): Observable<Page<ProductResponse>> {
-    return this.http.get<Page<ProductResponse>>(`${this.HOST}`, {
-      headers: { 'content-type': 'application/json' },
-      responseType: 'json',
-      params: { page: page, size: size, currency: currency },
-      withCredentials: true
-    }).pipe(
-      tap((res: Page<ProductResponse>) => {
-        this.productSubject.next(res);
-        this.products = res.content
+    return this.http
+      .get<Page<ProductResponse>>(`${this.HOST}`, {
+        headers: { 'content-type': 'application/json' },
+        responseType: 'json',
+        params: { page: page, size: size, currency: currency },
+        withCredentials: true,
       })
-    );
+      .pipe(
+        tap((res: Page<ProductResponse>) => {
+          this.productSubject.next(res);
+          this.products = res.content;
+        }),
+      );
   }
 
   /**
@@ -81,18 +102,19 @@ export class ProductService {
    * */
   action(
     status: number,
-    categories$: Observable<CategoryResponse[]>
-  ): Observable<{ status: number, message: string }> {
+    categories$: Observable<CategoryResponse[]>,
+  ): Observable<{ status: number; message: string }> {
     // refresh Category and Product Array
-    const products$ = this.currency$
-      .pipe(switchMap((currency) => this.allProducts(0, 20, currency)));
+    const products$ = this.currency$.pipe(
+      switchMap((currency) => this.allProducts(0, 20, currency)),
+    );
 
-    return of(status)
-      .pipe(
-        switchMap((num: number) => combineLatest([products$, categories$])
-          .pipe(map(() => ({ status: num, message: 'deleted!' })))
-        )
-      );
+    return of(status).pipe(
+      switchMap((num: number) =>
+        combineLatest([products$, categories$]).pipe(
+          map(() => ({ status: num, message: 'deleted!' })),
+        ),
+      ),
+    );
   }
-
 }

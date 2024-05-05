@@ -1,6 +1,6 @@
-import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
-import {catchError, map, of, startWith} from "rxjs";
-import {AuthService} from "./service/auth.service";
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { catchError, map, of, startWith } from 'rxjs';
+import { AuthService } from './service/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -9,9 +9,7 @@ import {AuthService} from "./service/auth.service";
       @switch (csrf.state) {
         @case ('LOADING') {
           <div class="lg-scr h-full p-20 flex justify-center items-center">
-            <h1 class="capitalize text-[var(--app-theme-hover)]">
-              loading...
-            </h1>
+            <h1 class="capitalize text-[var(--app-theme-hover)]">loading...</h1>
           </div>
         }
 
@@ -27,21 +25,17 @@ import {AuthService} from "./service/auth.service";
       }
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent {
-
   private readonly authService = inject(AuthService);
 
   /**
    * onload of application, retrieve CSRF token
    * */
-  readonly csrf$ = this.authService
-    .csrf()
-    .pipe(
-      map(() => ({ state: 'LOADED' })),
-      startWith({ state: 'LOADING' }),
-      catchError(() => of({ state: 'ERROR' }))
-    );
-
+  readonly csrf$ = this.authService.csrf().pipe(
+    map(() => ({ state: 'LOADED' })),
+    startWith({ state: 'LOADING' }),
+    catchError(() => of({ state: 'ERROR' })),
+  );
 }

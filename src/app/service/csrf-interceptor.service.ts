@@ -1,18 +1,26 @@
-import {inject, Injectable} from '@angular/core';
-import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpXsrfTokenExtractor} from "@angular/common/http";
-import {Observable} from "rxjs";
+import { inject, Injectable } from '@angular/core';
+import {
+  HttpEvent,
+  HttpHandler,
+  HttpInterceptor,
+  HttpRequest,
+  HttpXsrfTokenExtractor,
+} from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CsrfInterceptor implements HttpInterceptor {
-
   private readonly tokenExtractor = inject(HttpXsrfTokenExtractor);
 
   /**
    * Intercepts every request to add a CSRF token
    * */
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  intercept(
+    req: HttpRequest<any>,
+    next: HttpHandler,
+  ): Observable<HttpEvent<any>> {
     const headerName = 'X-XSRF-TOKEN';
     const token: string | null = this.tokenExtractor.getToken();
 
@@ -22,5 +30,4 @@ export class CsrfInterceptor implements HttpInterceptor {
 
     return next.handle(req);
   }
-
 }

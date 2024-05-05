@@ -1,12 +1,18 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Inject, Output} from '@angular/core';
-import {CommonModule, DOCUMENT} from '@angular/common';
-import {SizeInventory} from "@/app/admin-front/shared-util";
-import {MatButtonModule} from "@angular/material/button";
-import {CustomQueue} from "./custom-queue";
-import {SizeInventoryService} from "./size-inventory.service";
-import {tap} from "rxjs";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {IS_NUMERIC} from "@/app/global-utils";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Inject,
+  Output,
+} from '@angular/core';
+import { CommonModule, DOCUMENT } from '@angular/common';
+import { SizeInventory } from '@/app/admin-front/shared-util';
+import { MatButtonModule } from '@angular/material/button';
+import { CustomQueue } from './custom-queue';
+import { SizeInventoryService } from './size-inventory.service';
+import { tap } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { IS_NUMERIC } from '@/app/global-utils';
 
 @Component({
   selector: 'app-size-inventory',
@@ -14,8 +20,14 @@ import {IS_NUMERIC} from "@/app/global-utils";
   imports: [CommonModule, MatButtonModule],
   template: `
     <div class="flex gap-1.5 mb-2 justify-between">
-      <h4 class="cx-font-size capitalize"><span class="text-red-500">*</span> size & stock</h4>
-      <button type="button" [disabled]="invalidInputImpl()" (click)="addInputRow()">
+      <h4 class="cx-font-size capitalize">
+        <span class="text-red-500">*</span> size & stock
+      </h4>
+      <button
+        type="button"
+        [disabled]="invalidInputImpl()"
+        (click)="addInputRow()"
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -24,23 +36,31 @@ import {IS_NUMERIC} from "@/app/global-utils";
           stroke="currentColor"
           class="w-6 h-6 text-[var(--app-theme)]"
         >
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
         </svg>
       </button>
     </div>
 
     @if (queue.queue$ | async; as bool) {
-      <div [style]="{ 'display': bool ? 'block' : 'none' }">
-
+      <div [style]="{ display: bool ? 'block' : 'none' }">
         <div class="mb-1.5" *ngFor="let row of queue.toArray(); let i = index">
           <div class="dom block">
             <!-- Error message -->
-            <p class="m-0 hidden"
-               [ngStyle]="{
-                'display': invalidInputImpl() && i === indexOfError ? 'block' : 'none',
-                'color': 'red',
+            <p
+              class="m-0 hidden"
+              [ngStyle]="{
+                display:
+                  invalidInputImpl() && i === indexOfError ? 'block' : 'none',
+                color: 'red',
                 'font-size': '10px'
-           }">Please enter correctly</p>
+              }"
+            >
+              Please enter correctly
+            </p>
 
             <div class="w-full flex gap-1.5">
               <!-- Size -->
@@ -50,7 +70,7 @@ import {IS_NUMERIC} from "@/app/global-utils";
                 placeholder="size"
                 [value]="row.size"
                 (keyup)="onKeySize($event, i)"
-              >
+              />
 
               <!-- Size -->
               <input
@@ -59,14 +79,23 @@ import {IS_NUMERIC} from "@/app/global-utils";
                 placeholder="quantity"
                 [value]="row.qty"
                 (keyup)="onKeyQty($event, i)"
-              >
+              />
 
               <!-- Delete row -->
               <button type="button" (click)="deleteRow(i)">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                     stroke="currentColor"
-                     class="w-6 h-6">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="w-6 h-6"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
               </button>
             </div>
@@ -75,20 +104,26 @@ import {IS_NUMERIC} from "@/app/global-utils";
 
         <!-- Preview and final state -->
         <div class="pt-2.5 flex justify-end">
-          <button type="button" (click)="informParent()" [disabled]="invalidInputImpl()"
-                  [style]="{ 'background-color': invalidInputImpl() ? 'var(--app-theme)' : 'var(--app-theme-hover)' }"
-                  class="capitalize text-white font-bold py-2 px-4 rounded">
+          <button
+            type="button"
+            (click)="informParent()"
+            [disabled]="invalidInputImpl()"
+            [style]="{
+              'background-color': invalidInputImpl()
+                ? 'var(--app-theme)'
+                : 'var(--app-theme-hover)'
+            }"
+            class="capitalize text-white font-bold py-2 px-4 rounded"
+          >
             save
           </button>
         </div>
-
       </div>
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SizeInventoryComponent {
-
   readonly queue = new CustomQueue<SizeInventory>();
   indexOfError = -1;
 
@@ -96,9 +131,8 @@ export class SizeInventoryComponent {
 
   constructor(
     private readonly service: SizeInventoryService,
-    @Inject(DOCUMENT) private _document: Document
+    @Inject(DOCUMENT) private _document: Document,
   ) {
-
     // An observable that listen to clean queue when parent class passes true
     this.service.clearQueue$
       .pipe(
@@ -106,13 +140,13 @@ export class SizeInventoryComponent {
           if (bool) {
             // Remove elements from dom
             const elements = this._document.querySelectorAll('.dom');
-            elements.forEach(element => element.remove());
+            elements.forEach((element) => element.remove());
 
             // clear queue
             this.queue.clear();
           }
         }),
-        takeUntilDestroyed()
+        takeUntilDestroyed(),
       )
       .subscribe();
   }
@@ -131,7 +165,7 @@ export class SizeInventoryComponent {
     }
 
     for (let i = 0; i < this.queue.toArray().length; i++) {
-      const obj: SizeInventory = this.queue.toArray()[i]
+      const obj: SizeInventory = this.queue.toArray()[i];
       if (!this.isNumeric(obj.qty) || obj.size === '' || obj.qty < 0) {
         this.indexOfError = i;
         return true;
@@ -140,7 +174,7 @@ export class SizeInventoryComponent {
 
     const end = this.queue.endOfQueue();
     return !this.isNumeric(end.qty) || end.qty < 0 || end.size === '';
-  }
+  };
 
   addInputRow(): void {
     this.queue.addToQueue({ size: '', qty: -1 });
@@ -185,5 +219,4 @@ export class SizeInventoryComponent {
   informParent(): void {
     this.eventEmitter.emit(this.queue.toArray());
   }
-
 }

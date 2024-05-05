@@ -1,4 +1,4 @@
-import {Category, Variant} from "@/app/global-utils";
+import { Category, Variant } from '@/app/global-utils';
 
 export interface UpdateProduct {
   category_id: number;
@@ -27,7 +27,7 @@ export interface ProductDetailResponse {
   colour: string;
   is_visible: boolean;
   urls: string[];
-  variants: Variant[],
+  variants: Variant[];
 }
 
 export interface CategoryRequest {
@@ -76,8 +76,16 @@ export const CkEditorConfig = {
   toolbar: [
     ['Format', 'Font', 'FontSize'],
     ['Bold', 'Italic', 'Underline', 'StrikeThrough'],
-    ['NumberedList', 'BulletedList', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
-    ['Table', '-', 'Link']
+    [
+      'NumberedList',
+      'BulletedList',
+      '-',
+      'JustifyLeft',
+      'JustifyCenter',
+      'JustifyRight',
+      'JustifyBlock',
+    ],
+    ['Table', '-', 'Link'],
   ],
-  height: '100px'
+  height: '100px',
 };

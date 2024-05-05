@@ -1,4 +1,4 @@
-import {Observable} from "rxjs";
+import { Observable } from 'rxjs';
 
 export interface DeleteData<T> {
   name: string; // represents name of data user would like to delete

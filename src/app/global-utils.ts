@@ -1,9 +1,12 @@
 export const IS_NUMERIC = (num: any): boolean =>
-  (typeof (num) === 'number' || typeof (num) === 'string' && num.trim() !== '') && !isNaN(num as number);
+  (typeof num === 'number' || (typeof num === 'string' && num.trim() !== '')) &&
+  !isNaN(num as number);
 
 export enum SarreCurrency {
-  NGN = 'NGN', USD = 'USD',
-  NGN_SYMBOL = '₦', USD_SYMBOL = '$'
+  NGN = 'NGN',
+  USD = 'USD',
+  NGN_SYMBOL = '₦',
+  USD_SYMBOL = '$',
 }
 
 export interface Link {
@@ -47,30 +50,30 @@ export interface RegisterDTO {
 }
 
 export interface Page<T> {
-  content: T[],
+  content: T[];
   pageable: {
     sort: {
-      empty: boolean,
-      sorted: boolean,
-      unsorted: boolean
-    },
-    offset: number,
-    pageSize: number,
-    pageNumber: number,
-    unpaged: boolean,
-    paged: boolean
-  },
-  last: boolean,
-  totalPages: number,
-  totalElements: number,
-  size: number,
-  number: number,
+      empty: boolean;
+      sorted: boolean;
+      unsorted: boolean;
+    };
+    offset: number;
+    pageSize: number;
+    pageNumber: number;
+    unpaged: boolean;
+    paged: boolean;
+  };
+  last: boolean;
+  totalPages: number;
+  totalElements: number;
+  size: number;
+  number: number;
   sort: {
-    empty: boolean,
-    sorted: boolean,
-    unsorted: boolean
-  },
-  numberOfElements: number,
-  first: boolean,
-  empty: boolean
+    empty: boolean;
+    sorted: boolean;
+    unsorted: boolean;
+  };
+  numberOfElements: number;
+  first: boolean;
+  empty: boolean;
 }

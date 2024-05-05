@@ -7,9 +7,9 @@
   --active: #dddddd;
   --white: #fff;
   --border-outline: #ccc;
-  --app-theme: #A3C1AD;
+  --app-theme: #a3c1ad;
   --app-theme-hover: #75a284;
-  --form-input-background: #F3F3F3;
+  --form-input-background: #f3f3f3;
   --header-shadow: 0 0 5px grey;
   --cards-border: 1px solid #dddddd;
   --black: #050505;
@@ -17,20 +17,31 @@
   --nav-mobile: #f6f6f6;
 }
 
-*{
+* {
   padding: 0;
   margin: 0;
   box-sizing: border-box;
 }
 
-body, h1, h2, h3, h4, h5, h6, p {
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
   margin: 0 !important;
 }
 
-html, body, .mat-typography { height: 100%; }
+html,
+body,
+.mat-typography {
+  height: 100%;
+}
 
 body {
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
   overflow-x: hidden;
 }
 
@@ -82,5 +93,11 @@ body {
   }
 }
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+}

@@ -1,20 +1,37 @@
-import {ChangeDetectionStrategy, Component, Inject, inject} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
-import {MatButtonModule} from "@angular/material/button";
-import {MatIconModule} from "@angular/material/icon";
-import {MatRadioModule} from "@angular/material/radio";
-import {SizeInventoryComponent} from "@/app/admin-front/dashboard/product/sizeinventory/size-inventory.component";
-import {ProductDetailResponse, SizeInventory} from "@/app/admin-front//shared-util";
-import {DirectiveModule} from "@/app/directive/directive.module";
-import {catchError, Observable, of, switchMap, tap} from "rxjs";
-import {ToastService} from "@/app/shared-comp/toast/toast.service";
-import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from "@angular/material/dialog";
-import {HttpErrorResponse} from "@angular/common/http";
-import {UpdateProductService} from "@/app/admin-front/dashboard/product/update/update-product.service";
-import {SizeInventoryService} from "@/app/admin-front/dashboard/product/sizeinventory/size-inventory.service";
-import {VariantService} from "../variant.service";
-import {ProductVariant} from "../index";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Inject,
+  inject,
+} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import {
+  FormBuilder,
+  FormControl,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatRadioModule } from '@angular/material/radio';
+import { SizeInventoryComponent } from '@/app/admin-front/dashboard/product/sizeinventory/size-inventory.component';
+import {
+  ProductDetailResponse,
+  SizeInventory,
+} from '@/app/admin-front//shared-util';
+import { DirectiveModule } from '@/app/directive/directive.module';
+import { catchError, Observable, of, switchMap, tap } from 'rxjs';
+import { ToastService } from '@/app/shared-comp/toast/toast.service';
+import {
+  MAT_DIALOG_DATA,
+  MatDialogModule,
+  MatDialogRef,
+} from '@angular/material/dialog';
+import { HttpErrorResponse } from '@angular/common/http';
+import { UpdateProductService } from '@/app/admin-front/dashboard/product/update/update-product.service';
+import { SizeInventoryService } from '@/app/admin-front/dashboard/product/sizeinventory/size-inventory.service';
+import { VariantService } from '../variant.service';
+import { ProductVariant } from '../index';
 
 @Component({
   selector: 'app-create-variant',
@@ -27,13 +44,12 @@ import {ProductVariant} from "../index";
     MatRadioModule,
     ReactiveFormsModule,
     SizeInventoryComponent,
-    DirectiveModule
+    DirectiveModule,
   ],
   templateUrl: './create-variant.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CreateVariantComponent {
-
   private readonly variantService = inject(VariantService);
   private readonly fb = inject(FormBuilder);
   private readonly toastService = inject(ToastService);
@@ -54,7 +70,7 @@ export class CreateVariantComponent {
 
   constructor(
     private dialogRef: MatDialogRef<CreateVariantComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: ProductVariant
+    @Inject(MAT_DIALOG_DATA) public data: ProductVariant,
   ) {}
 
   /**
@@ -62,7 +78,7 @@ export class CreateVariantComponent {
    * */
   oninputChange(event: KeyboardEvent): void {
     const input: string = (event.target as HTMLInputElement).value;
-    const find = this.data.colours.find(c => c === input);
+    const find = this.data.colours.find((c) => c === input);
     if (find) {
       this.colourExists = false;
       this.files = [];
@@ -85,7 +101,9 @@ export class CreateVariantComponent {
    * @return void
    * */
   remove(file: File): void {
-    const index: number = this.files.findIndex((value: File) => value.name === file.name);
+    const index: number = this.files.findIndex(
+      (value: File) => value.name === file.name,
+    );
     this.files.splice(index, 1);
   }
 
@@ -118,36 +136,34 @@ export class CreateVariantComponent {
       product_id: this.data.id,
       visible: this.reactiveForm.controls['visible'].value,
       colour: this.reactiveForm.controls['colour'].value,
-      sizeInventory: this.rows
-    }
+      sizeInventory: this.rows,
+    };
 
     const blob = new Blob([JSON.stringify(payload)], {
-      type: 'application/json'
+      type: 'application/json',
     });
     formData.append('dto', blob);
 
     // append files
     this.files.forEach((file: File) => formData.append('files', file));
 
-    return this.variantService.create(formData)
-      .pipe(
-        switchMap((status: number) => {
-          return this.updateProductService
-            .productDetailsByProductUuid(this.data.id)
-            .pipe(
-              switchMap((arr: ProductDetailResponse[]) => {
-                this.dialogRef.close({ arr: arr });
-                this.sizeInventoryService.setSubject(true);
-                return of(status);
-              }),
-              tap(() => this.toastService.toastMessage('Created!'))
-            );
-        }),
-        catchError((err: HttpErrorResponse) => {
-          this.toastService.toastMessage(err.error.message);
-          return of(err.status);
-        })
-      );
+    return this.variantService.create(formData).pipe(
+      switchMap((status: number) => {
+        return this.updateProductService
+          .productDetailsByProductUuid(this.data.id)
+          .pipe(
+            switchMap((arr: ProductDetailResponse[]) => {
+              this.dialogRef.close({ arr: arr });
+              this.sizeInventoryService.setSubject(true);
+              return of(status);
+            }),
+            tap(() => this.toastService.toastMessage('Created!')),
+          );
+      }),
+      catchError((err: HttpErrorResponse) => {
+        this.toastService.toastMessage(err.error.message);
+        return of(err.status);
+      }),
+    );
   }
-
 }

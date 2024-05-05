@@ -1,27 +1,38 @@
-import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
-import {catchError, combineLatest, map, Observable, of, startWith, switchMap} from "rxjs";
-import {HttpErrorResponse} from "@angular/common/http";
-import {CommonModule} from "@angular/common";
-import {StoreFrontNavigationComponent} from "./utils/navigation/store-front-navigation.component";
-import {Router, RouterOutlet} from "@angular/router";
-import {HomeService} from "./home/home.service";
-import {FooterComponent} from "./utils/footer/footer.component";
-import {CartService} from "./order/cart/cart.service";
-import {FooterService} from "./utils/footer/footer.service";
-import {ShopService} from "./shop/shop.service";
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import {
+  catchError,
+  combineLatest,
+  map,
+  Observable,
+  of,
+  startWith,
+  switchMap,
+} from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
+import { CommonModule } from '@angular/common';
+import { StoreFrontNavigationComponent } from './utils/navigation/store-front-navigation.component';
+import { Router, RouterOutlet } from '@angular/router';
+import { HomeService } from './home/home.service';
+import { FooterComponent } from './utils/footer/footer.component';
+import { CartService } from './order/cart/cart.service';
+import { FooterService } from './utils/footer/footer.service';
+import { ShopService } from './shop/shop.service';
 
 @Component({
   selector: 'app-store',
   standalone: true,
-  imports: [CommonModule, StoreFrontNavigationComponent, RouterOutlet, FooterComponent],
+  imports: [
+    CommonModule,
+    StoreFrontNavigationComponent,
+    RouterOutlet,
+    FooterComponent,
+  ],
   template: `
     @if (combine$ | async; as combine) {
       @switch (combine.state) {
         @case ('LOADING') {
           <div class="lg-scr h-full p-20 flex justify-center items-center">
-            <h1 class="capitalize text-[var(--app-theme-hover)]">
-              loading...
-            </h1>
+            <h1 class="capitalize text-[var(--app-theme-hover)]">loading...</h1>
           </div>
         }
 
@@ -33,7 +44,9 @@ import {ShopService} from "./shop/shop.service";
 
         @case ('LOADED') {
           <div class="w-full h-full flex flex-col">
-            <div class="lg-scr z-10 border-b border-transparent fixed left-0 top-0 right-0">
+            <div
+              class="lg-scr z-10 border-b border-transparent fixed left-0 top-0 right-0"
+            >
               <app-store-front-navigation-navigation
                 [count]="(count$ | async) || 0"
                 [categories]="(hierarchy$ | async) || []"
@@ -47,45 +60,48 @@ import {ShopService} from "./shop/shop.service";
             </div>
 
             <div class="lg-scr">
-              <app-footer/>
+              <app-footer />
             </div>
           </div>
         }
       }
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StoreComponent {
-
   private readonly footerService = inject(FooterService);
   private readonly shopService = inject(ShopService);
   private readonly homeService = inject(HomeService);
   private readonly cartService = inject(CartService);
   private readonly router = inject(Router);
 
-  private readonly cartItems$ = this.footerService.currency$
-    .pipe(switchMap((currency) => this.cartService.cartItems(currency)));
-  private readonly homeProducts$ = this.footerService.currency$
-    .pipe(switchMap((currency) => this.homeService.homeProducts(currency)));
+  private readonly cartItems$ = this.footerService.currency$.pipe(
+    switchMap((currency) => this.cartService.cartItems(currency)),
+  );
+  private readonly homeProducts$ = this.footerService.currency$.pipe(
+    switchMap((currency) => this.homeService.homeProducts(currency)),
+  );
   private readonly categories$ = this.shopService.allCategories();
 
   readonly count$ = this.cartService.count$;
-  readonly hierarchy$ = this.shopService.categories$
+  readonly hierarchy$ = this.shopService.categories$;
 
   /**
    * On load of storefront make call to server to return categories, cart and
    * products from home front to improve UI/UX.
    * */
-  readonly combine$: Observable<{ state: string, error?: string }> =
-    combineLatest([this.cartItems$, this.homeProducts$, this.categories$])
-      .pipe(
-        map(() => ({ state: 'LOADED' })),
-        startWith({ state: 'LOADING' }),
-        catchError((err: HttpErrorResponse) =>
-          of({ state: 'ERROR', error: err.error ? err.error.message : err.message })
-        )
-      );
+  readonly combine$: Observable<{ state: string; error?: string }> =
+    combineLatest([this.cartItems$, this.homeProducts$, this.categories$]).pipe(
+      map(() => ({ state: 'LOADED' })),
+      startWith({ state: 'LOADING' }),
+      catchError((err: HttpErrorResponse) =>
+        of({
+          state: 'ERROR',
+          error: err.error ? err.error.message : err.message,
+        }),
+      ),
+    );
 
   /**
    * Update {@link RouterOutlet} based on routes clicked in navigation bar.
@@ -101,5 +117,4 @@ export class StoreComponent {
   onCategoryClicked(obj: { categoryId: number; name: string }): void {
     this.shopService.currentCategorySubject.next(obj.categoryId);
   }
-
 }
