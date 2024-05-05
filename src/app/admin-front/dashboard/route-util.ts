@@ -1,9 +1,9 @@
 export interface Display {
   title: string;
   array: {
-    icon: string,
-    name: string,
-    route: string
+    icon: string;
+    name: string;
+    route: string;
   }[];
 }
 
@@ -16,7 +16,7 @@ export const DASHBOARDLINKS: Display[] = [
         name: 'statistics',
         route: 'statistics',
       },
-    ]
+    ],
   },
   {
     title: 'catalog',
@@ -29,9 +29,9 @@ export const DASHBOARDLINKS: Display[] = [
       {
         icon: 'flare',
         name: 'category',
-        route: 'category'
-      }
-    ]
+        route: 'category',
+      },
+    ],
   },
   {
     title: 'customer',
@@ -40,8 +40,8 @@ export const DASHBOARDLINKS: Display[] = [
         icon: 'account_box',
         name: 'customer',
         route: 'customer',
-      }
-    ]
+      },
+    ],
   },
   {
     title: 'setting',
@@ -55,7 +55,7 @@ export const DASHBOARDLINKS: Display[] = [
         icon: 'attach_money',
         name: 'tax',
         route: 'setting/tax',
-      }
-    ]
+      },
+    ],
   },
 ];

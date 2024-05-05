@@ -1,16 +1,35 @@
-import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
-import {CartService} from "../cart/cart.service";
-import {FooterService} from "@/app/store-front/utils/footer/footer.service";
-import {BehaviorSubject, catchError, delay, map, of, switchMap, tap, throwError} from "rxjs";
-import {PaymentService} from "../payment/payment.service";
-import {Checkout, WebhookMetadata} from "../index";
-import {RouterLink} from "@angular/router";
-import {CheckoutService} from "@/app/store-front/order/checkout/checkout.service";
-import {SarreCurrency} from "@/app/global-utils";
-import {HttpErrorResponse} from "@angular/common/http";
-import {CheckoutNavComponent} from "@/app/store-front/order/checkout-nav/checkout-nav.component";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  signal,
+} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import {
+  FormBuilder,
+  FormControl,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { CartService } from '../cart/cart.service';
+import { FooterService } from '@/app/store-front/utils/footer/footer.service';
+import {
+  BehaviorSubject,
+  catchError,
+  delay,
+  map,
+  of,
+  switchMap,
+  tap,
+  throwError,
+} from 'rxjs';
+import { PaymentService } from '../payment/payment.service';
+import { Checkout, WebhookMetadata } from '../index';
+import { RouterLink } from '@angular/router';
+import { CheckoutService } from '@/app/store-front/order/checkout/checkout.service';
+import { SarreCurrency } from '@/app/global-utils';
+import { HttpErrorResponse } from '@angular/common/http';
+import { CheckoutNavComponent } from '@/app/store-front/order/checkout-nav/checkout-nav.component';
 
 interface CustomCheckout extends Checkout {
   currency: SarreCurrency;
@@ -19,13 +38,18 @@ interface CustomCheckout extends Checkout {
 @Component({
   selector: 'app-checkout',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, CheckoutNavComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterLink,
+    CheckoutNavComponent,
+  ],
   styleUrls: ['../order.component.css'],
   template: `
     <div class="lg-scr mg-top">
       <!-- banner -->
       <div>
-        <app-checkout-nav/>
+        <app-checkout-nav />
       </div>
 
       <!-- contents -->
@@ -44,21 +68,25 @@ interface CustomCheckout extends Checkout {
                 <h5 class="cs-font md:text-xs uppercase">
                   email <span class="text-red-500">*</span>
                 </h5>
-                <input type="email"
-                       name="email"
-                       formControlName="email"
-                       class="w-full p-2 border"
-                       placeholder="Email">
+                <input
+                  type="email"
+                  name="email"
+                  formControlName="email"
+                  class="w-full p-2 border"
+                  placeholder="Email"
+                />
               </div>
               <div class="w-full">
                 <h5 class="cs-font md:text-xs uppercase">
                   full name <span class="text-red-500">*</span>
                 </h5>
-                <input type="text"
-                       name="name"
-                       formControlName="name"
-                       class="w-full p-2 border"
-                       placeholder="Full Name">
+                <input
+                  type="text"
+                  name="name"
+                  formControlName="name"
+                  class="w-full p-2 border"
+                  placeholder="Full Name"
+                />
               </div>
             </div>
 
@@ -67,11 +95,13 @@ interface CustomCheckout extends Checkout {
               <h5 class="cs-font md:text-xs uppercase">
                 phone number <span class="text-red-500">*</span>
               </h5>
-              <input type="text"
-                     name="phone"
-                     formControlName="phone"
-                     class="w-full p-2 border"
-                     placeholder="phone">
+              <input
+                type="text"
+                name="phone"
+                formControlName="phone"
+                class="w-full p-2 border"
+                placeholder="phone"
+              />
             </div>
 
             <!-- address -->
@@ -79,11 +109,13 @@ interface CustomCheckout extends Checkout {
               <h5 class="cs-font md:text-xs uppercase">
                 address <span class="text-red-500">*</span>
               </h5>
-              <input type="text"
-                     name="address"
-                     formControlName="address"
-                     class="w-full p-2 border"
-                     placeholder="address">
+              <input
+                type="text"
+                name="address"
+                formControlName="address"
+                class="w-full p-2 border"
+                placeholder="address"
+              />
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
@@ -92,11 +124,13 @@ interface CustomCheckout extends Checkout {
                 <h5 class="cs-font md:text-xs uppercase">
                   city <span class="text-red-500">*</span>
                 </h5>
-                <input type="text"
-                       name="city"
-                       formControlName="city"
-                       class="w-full p-2 border"
-                       placeholder="city">
+                <input
+                  type="text"
+                  name="city"
+                  formControlName="city"
+                  class="w-full p-2 border"
+                  placeholder="city"
+                />
               </div>
 
               <!-- state -->
@@ -104,21 +138,25 @@ interface CustomCheckout extends Checkout {
                 <h5 class="cs-font md:text-xs uppercase">
                   state <span class="text-red-500">*</span>
                 </h5>
-                <input type="text"
-                       name="state"
-                       formControlName="state"
-                       class="w-full p-2 border"
-                       placeholder="state">
+                <input
+                  type="text"
+                  name="state"
+                  formControlName="state"
+                  class="w-full p-2 border"
+                  placeholder="state"
+                />
               </div>
 
               <!-- postcode -->
               <div class="w-full">
                 <h5 class="cs-font md:text-xs uppercase">postcode/zipcode</h5>
-                <input type="text"
-                       name="postcode"
-                       formControlName="postcode"
-                       class="w-full p-2 border"
-                       placeholder="postcode/zipcode">
+                <input
+                  type="text"
+                  name="postcode"
+                  formControlName="postcode"
+                  class="w-full p-2 border"
+                  placeholder="postcode/zipcode"
+                />
               </div>
             </div>
 
@@ -127,48 +165,73 @@ interface CustomCheckout extends Checkout {
               <h5 class="cs-font md:text-xs uppercase">
                 country <span class="text-red-500">*</span>
               </h5>
-              <input type="text"
-                     name="country"
-                     formControlName="country"
-                     class="w-full p-2 border"
-                     (keyup)="onInputCountry($event)"
-                     placeholder="country">
+              <input
+                type="text"
+                name="country"
+                formControlName="country"
+                class="w-full p-2 border"
+                (keyup)="onInputCountry($event)"
+                placeholder="country"
+              />
             </div>
 
             <!-- delivery information -->
             <div class="w-full">
               <h5 class="cs-font md:text-xs uppercase">delivery information</h5>
-              <textarea formControlName="deliveryInfo" name="deliveryInfo" class="w-full p-2 border"></textarea>
+              <textarea
+                formControlName="deliveryInfo"
+                name="deliveryInfo"
+                class="w-full p-2 border"
+              ></textarea>
             </div>
 
             <div class="w-full flex justify-end text-sm md:text-base">
-              <a routerLink="/order" (click)="onAddressEntered()"
-                 [style]="{ 'display': form.valid && loading() === 'loaded' ? 'block' : 'none' }"
-                 class="p-2 text-white hover:text-black bg-black hover:bg-[var(--app-theme-hover)]">
+              <a
+                routerLink="/order"
+                (click)="onAddressEntered()"
+                [style]="{
+                  display:
+                    form.valid && loading() === 'loaded' ? 'block' : 'none'
+                }"
+                class="p-2 text-white hover:text-black bg-black hover:bg-[var(--app-theme-hover)]"
+              >
                 Continue to payment
               </a>
             </div>
-
           </form>
         </div>
 
         <!-- products div -->
-        <div class="relative p-2 max-h-[500px] overflow-y-auto border-l bg-neutral-100">
-
+        <div
+          class="relative p-2 max-h-[500px] overflow-y-auto border-l bg-neutral-100"
+        >
           <div class="pb-4">
             <ul role="list" class="relative -my-6 divide-y divide-gray-200">
-              @for (detail of carts$ | async; track detail.product_name; let i = $index) {
+              @for (
+                detail of carts$ | async;
+                track detail.product_name;
+                let i = $index
+              ) {
                 <li class="flex pt-6 pb-3">
-                  <div class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-                    <img [src]="detail.url" alt="product image{{ i }}" class="h-full w-full object-cover object-center">
+                  <div
+                    class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200"
+                  >
+                    <img
+                      [src]="detail.url"
+                      alt="product image{{ i }}"
+                      class="h-full w-full object-cover object-center"
+                    />
                   </div>
                   <div class="ml-4 flex flex-1 flex-col">
                     <div
-                      class="md:mb-2 flex flex-col md:flex-row md:justify-between text-base font-medium text-gray-900">
+                      class="md:mb-2 flex flex-col md:flex-row md:justify-between text-base font-medium text-gray-900"
+                    >
                       <h3 class="cs-font">
                         {{ detail.product_name }}
                       </h3>
-                      <p class="cs-font ml-4">{{ currencySymbol(detail.currency) }}{{ detail.price }}</p>
+                      <p class="cs-font ml-4">
+                        {{ currencySymbol(detail.currency) }}{{ detail.price }}
+                      </p>
                     </div>
                     <!-- mobile -->
                     <div class="cs-font md:hidden">
@@ -187,14 +250,14 @@ interface CustomCheckout extends Checkout {
                         <h5 class="w-fit border-b font-bold">colour</h5>
                         <p class="mt-1 text-gray-500">{{ detail.colour }}</p>
                       </div>
-
                     </div>
                     <!-- none mobile -->
                     <div class="hidden md:grid grid-cols-3 text-xs">
-
                       <div class="border-r-2">
                         <h5 class="border-b font-bold">colour</h5>
-                        <p class="mt-1 text-sm text-gray-500">{{ detail.colour }}</p>
+                        <p class="mt-1 text-sm text-gray-500">
+                          {{ detail.colour }}
+                        </p>
                       </div>
 
                       <div class="border-r-2 text-center">
@@ -226,23 +289,35 @@ interface CustomCheckout extends Checkout {
               <!-- shipping -->
               <div class="cs-font py-1 flex justify-between md:text-xs">
                 <h3 class="capitalize">shipping</h3>
-                <h3 class="capitalize">{{ checkout.currency }}{{ checkout.ship_cost }}</h3>
+                <h3 class="capitalize">
+                  {{ checkout.currency }}{{ checkout.ship_cost }}
+                </h3>
               </div>
 
               <!-- taxes -->
               <div class="cs-font py-1 flex justify-between md:text-sm">
-                <p class="capitalize text-sm">{{ checkout.tax_name }} ({{ checkout.tax_rate }})</p>
-                <h3 class="capitalize">{{ checkout.currency }}{{ checkout.tax_total }}</h3>
+                <p class="capitalize text-sm">
+                  {{ checkout.tax_name }} ({{ checkout.tax_rate }})
+                </p>
+                <h3 class="capitalize">
+                  {{ checkout.currency }}{{ checkout.tax_total }}
+                </h3>
               </div>
 
               <!-- total -->
-              <div class="cs-font py-1 flex justify-between font-semibold md:text-sm">
+              <div
+                class="cs-font py-1 flex justify-between font-semibold md:text-sm"
+              >
                 <h3 class="capitalize">total</h3>
-                <h3 class="uppercase">{{ checkout.currency }}{{ checkout.total }}</h3>
+                <h3 class="uppercase">
+                  {{ checkout.currency }}{{ checkout.total }}
+                </h3>
               </div>
 
               <!-- weight -->
-              <div class="cs-font py-1 flex justify-between font-semibold md:text-sm">
+              <div
+                class="cs-font py-1 flex justify-between font-semibold md:text-sm"
+              >
                 <h3 class="capitalize">total weight</h3>
                 <h3 class="lowercase">{{ checkout.weight_detail }}</h3>
               </div>
@@ -250,9 +325,16 @@ interface CustomCheckout extends Checkout {
           }
 
           @if (loading() === 'loading') {
-            <div class="absolute top-0 right-0 bottom-0 left-0 flex justify-center items-center bg-black opacity-50 z-10">
-              <div role="status" class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-r-[var(--app-theme)] align-[-0.125em] text-primary motion-reduce:animate-[spin_1.5s_linear_infinite]">
-                <span class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
+            <div
+              class="absolute top-0 right-0 bottom-0 left-0 flex justify-center items-center bg-black opacity-50 z-10"
+            >
+              <div
+                role="status"
+                class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-r-[var(--app-theme)] align-[-0.125em] text-primary motion-reduce:animate-[spin_1.5s_linear_infinite]"
+              >
+                <span
+                  class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]"
+                >
                   Loading...
                 </span>
               </div>
@@ -262,10 +344,9 @@ interface CustomCheckout extends Checkout {
       </div>
     </div>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CheckoutComponent {
-
   private readonly paymentService = inject(PaymentService);
   private readonly cartService = inject(CartService);
   private readonly footService = inject(FooterService);
@@ -281,16 +362,27 @@ export class CheckoutComponent {
     email: new FormControl('', [Validators.required]),
     name: new FormControl('', [Validators.required]),
     phone: new FormControl('', [Validators.required]),
-    address: new FormControl('', [Validators.required, Validators.maxLength(255)]),
+    address: new FormControl('', [
+      Validators.required,
+      Validators.maxLength(255),
+    ]),
     city: new FormControl('', [Validators.required, Validators.maxLength(100)]),
-    state: new FormControl('', [Validators.required, Validators.maxLength(100)]),
-    postcode: new FormControl('',[Validators.maxLength(10)]),
-    country: new FormControl('nigeria', [Validators.required, Validators.maxLength(100)]),
+    state: new FormControl('', [
+      Validators.required,
+      Validators.maxLength(100),
+    ]),
+    postcode: new FormControl('', [Validators.maxLength(10)]),
+    country: new FormControl('nigeria', [
+      Validators.required,
+      Validators.maxLength(100),
+    ]),
     deliveryInfo: new FormControl('', [Validators.maxLength(1000)]),
   });
 
-  readonly currencySymbol = (str: SarreCurrency) => str === SarreCurrency.NGN
-    ? SarreCurrency.NGN_SYMBOL : SarreCurrency.USD_SYMBOL;
+  readonly currencySymbol = (str: SarreCurrency) =>
+    str === SarreCurrency.NGN
+      ? SarreCurrency.NGN_SYMBOL
+      : SarreCurrency.USD_SYMBOL;
 
   private readonly subject = new BehaviorSubject<string>('nigeria');
 
@@ -306,24 +398,23 @@ export class CheckoutComponent {
    * adjusted prices and currency based on value emitted from
    * {@link subject}.
    */
-  readonly checkout$ = this.subject
-    .pipe(
-      switchMap((str) => of(str)
-        .pipe(
-          delay(907),
-          tap(() => this.loading.set('loading'))
-        ),
+  readonly checkout$ = this.subject.pipe(
+    switchMap((str) =>
+      of(str).pipe(
+        delay(907),
+        tap(() => this.loading.set('loading')),
       ),
-      switchMap((country) => this.footService.currency$
-        .pipe(
-          switchMap((currency) => this.checkoutService
-            .checkout(country, currency)
-            .pipe(
-              tap((obj) => {
-                this.principal.set(obj.principal)
-                this.loading.set('loaded');
-              }),
-              map((obj: Checkout) =>
+    ),
+    switchMap((country) =>
+      this.footService.currency$.pipe(
+        switchMap((currency) =>
+          this.checkoutService.checkout(country, currency).pipe(
+            tap((obj) => {
+              this.principal.set(obj.principal);
+              this.loading.set('loaded');
+            }),
+            map(
+              (obj: Checkout) =>
                 ({
                   currency: this.currencySymbol(currency),
                   principal: obj.principal,
@@ -334,19 +425,19 @@ export class CheckoutComponent {
                   tax_total: obj.tax_total,
                   total: obj.total,
                   weight_detail: obj.weight_detail,
-                } as CustomCheckout)
-              ),
-              catchError((e: HttpErrorResponse) => {
-                this.loading.set('error');
-                const err = e.error ? e.error.message : e.message;
-                this.paymentService.toast(err);
-                return throwError(() => new Error(err));
-              })
-            )
-          )
-        )
-      )
-    );
+                }) as CustomCheckout,
+            ),
+            catchError((e: HttpErrorResponse) => {
+              this.loading.set('error');
+              const err = e.error ? e.error.message : e.message;
+              this.paymentService.toast(err);
+              return throwError(() => new Error(err));
+            }),
+          ),
+        ),
+      ),
+    ),
+  );
 
   /**
    * Updates {@link subject} when a user enters their country.
@@ -354,9 +445,8 @@ export class CheckoutComponent {
    * @param e The keyboard event triggered by the user input.
    */
   onInputCountry = (e: KeyboardEvent): void => {
-    this.subject
-      .next((e.target as HTMLInputElement).value);
-  }
+    this.subject.next((e.target as HTMLInputElement).value);
+  };
 
   /**
    * Sets the address details for a user to confirm before proceeding
@@ -396,10 +486,9 @@ export class CheckoutComponent {
       state: state,
       postcode: !postcode ? '' : postcode,
       country: country,
-      deliveryInfo: !deliveryInfo ? '' : deliveryInfo
+      deliveryInfo: !deliveryInfo ? '' : deliveryInfo,
     };
 
     this.paymentService.setAddress(dto);
   }
-
 }

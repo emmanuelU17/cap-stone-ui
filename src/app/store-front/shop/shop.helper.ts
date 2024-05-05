@@ -1,5 +1,5 @@
 // Used to display the options needed to filter a product
-import {SarreCurrency, Variant} from "@/app/global-utils";
+import { SarreCurrency, Variant } from '@/app/global-utils';
 
 export interface ProductDetail {
   name: string;

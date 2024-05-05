@@ -12,8 +12,8 @@ ARG PORT
 # copy source code into build directory
 COPY . /build
 
-# npm install legecy peer deps as we are having trouble with paystack version
-RUN npm install --legacy-peer-deps
+# npm install
+RUN npm install
 
 # compile source code in production mode
 RUN npm run build --configuration=production

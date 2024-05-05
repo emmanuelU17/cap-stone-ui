@@ -1,7 +1,6 @@
-import {BehaviorSubject} from "rxjs";
+import { BehaviorSubject } from 'rxjs';
 
 export class CustomQueue<T> {
-
   private readonly arr: T[];
   private readonly subject = new BehaviorSubject<boolean>(false);
   readonly queue$ = this.subject.asObservable();
@@ -43,5 +42,4 @@ export class CustomQueue<T> {
     this.arr.length = 0;
     this.subject.next(false);
   }
-
 }

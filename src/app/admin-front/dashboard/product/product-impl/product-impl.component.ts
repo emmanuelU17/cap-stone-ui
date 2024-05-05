@@ -1,16 +1,20 @@
-import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
-import {CommonModule} from "@angular/common";
-import {DynamicTableComponent} from "@/app/admin-front/dashboard/util/dynamictable/dynamic-table.component";
-import {MatDialog, MatDialogModule} from "@angular/material/dialog";
-import {ProductService} from "../product.service";
-import {CategoryService} from "@/app/admin-front/dashboard/category/category.service";
-import {Router, RouterLink} from "@angular/router";
-import {PageChange, ProductResponse, TableContent} from "../../../shared-util";
-import {catchError, map, Observable, of, startWith, switchMap} from "rxjs";
-import {Page} from "@/app/global-utils";
-import {HttpErrorResponse} from "@angular/common/http";
-import {DeleteComponent} from "@/app/admin-front/dashboard/util/delete/delete.component";
-import {mapper, ProductMapper} from "@/app/admin-front/dashboard/util/mapper";
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { DynamicTableComponent } from '@/app/admin-front/dashboard/util/dynamictable/dynamic-table.component';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { ProductService } from '../product.service';
+import { CategoryService } from '@/app/admin-front/dashboard/category/category.service';
+import { Router, RouterLink } from '@angular/router';
+import {
+  PageChange,
+  ProductResponse,
+  TableContent,
+} from '../../../shared-util';
+import { catchError, map, Observable, of, startWith, switchMap } from 'rxjs';
+import { Page } from '@/app/global-utils';
+import { HttpErrorResponse } from '@angular/common/http';
+import { DeleteComponent } from '@/app/admin-front/dashboard/util/delete/delete.component';
+import { mapper, ProductMapper } from '@/app/admin-front/dashboard/util/mapper';
 
 @Component({
   selector: 'app-product-impl',
@@ -19,7 +23,11 @@ import {mapper, ProductMapper} from "@/app/admin-front/dashboard/util/mapper";
   template: `
     <div class="flex flex-col h-full py-0">
       <div class="px-0 py-2.5 flex items-center">
-        <h1 class="cx-font-size w-fit capitalize border-b border-[var(--app-theme)]">products</h1>
+        <h1
+          class="cx-font-size w-fit capitalize border-b border-[var(--app-theme)]"
+        >
+          products
+        </h1>
         <a routerLink="new" class="ml-1">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -29,7 +37,11 @@ import {mapper, ProductMapper} from "@/app/admin-front/dashboard/util/mapper";
             stroke="currentColor"
             class="w-6 h-6 text-[var(--app-theme)]"
           >
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
         </a>
       </div>
@@ -39,7 +51,9 @@ import {mapper, ProductMapper} from "@/app/admin-front/dashboard/util/mapper";
           @switch (data.state) {
             @case ('LOADING') {
               <div class="lg-scr h-full p-20 flex justify-center items-center">
-                <h1 class="cx-font-size capitalize text-[var(--app-theme-hover)]">
+                <h1
+                  class="cx-font-size capitalize text-[var(--app-theme-hover)]"
+                >
                   loading...
                 </h1>
               </div>
@@ -53,58 +67,84 @@ import {mapper, ProductMapper} from "@/app/admin-front/dashboard/util/mapper";
 
             @case ('LOADED') {
               @if (data.data) {
-                <app-dynamic-table [pageData]="data.data"
-                                   [paginationTable]="true"
-                                   (pageEmitter)="pageChange($event)"
-                                   (eventEmitter)="infoFromTableComponent($event)"
-                                   [tHead]="thead"></app-dynamic-table>
+                <app-dynamic-table
+                  [pageData]="data.data"
+                  [paginationTable]="true"
+                  (pageEmitter)="pageChange($event)"
+                  (eventEmitter)="infoFromTableComponent($event)"
+                  [tHead]="thead"
+                ></app-dynamic-table>
               } @else {
                 no data to present
               }
             }
-
           }
         </div>
       }
-
     </div>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductImplComponent {
-
   private readonly productService = inject(ProductService);
   private readonly categoryService = inject(CategoryService);
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
 
   // Table details
-  thead: Array<keyof ProductMapper> = ['index', 'image', 'name', 'currency', 'price', 'weight', 'type', 'delete'];
-  data$: Observable<{ state: string, error?: string, data?: Page<ProductMapper> }> = this.productService
-    .currency$
-    .pipe(
-      switchMap(() => this.productService.products$
-        .pipe(
-          map((res: Page<ProductResponse>) => ({ state: 'LOADED', data: mapper(res) })),
-          startWith({ state: 'LOADING' }),
-          catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error ? err.error.message : err.message }))
-        )
-      )
-    );
+  thead: Array<keyof ProductMapper> = [
+    'index',
+    'image',
+    'name',
+    'currency',
+    'price',
+    'weight',
+    'type',
+    'delete',
+  ];
+  data$: Observable<{
+    state: string;
+    error?: string;
+    data?: Page<ProductMapper>;
+  }> = this.productService.currency$.pipe(
+    switchMap(() =>
+      this.productService.products$.pipe(
+        map((res: Page<ProductResponse>) => ({
+          state: 'LOADED',
+          data: mapper(res),
+        })),
+        startWith({ state: 'LOADING' }),
+        catchError((err: HttpErrorResponse) =>
+          of({
+            state: 'ERROR',
+            error: err.error ? err.error.message : err.message,
+          }),
+        ),
+      ),
+    ),
+  );
 
   /**
    * Makes call to server on change of page or page size
    * */
   pageChange(page: PageChange): void {
-    this.data$ = this.productService.currency$
-      .pipe(
-        switchMap((currency) => this.productService
-          .allProducts(page.page, page.size, currency)
-          .pipe(map((res: Page<ProductResponse>) => ({ state: 'LOADED', data: mapper(res) })))
+    this.data$ = this.productService.currency$.pipe(
+      switchMap((currency) =>
+        this.productService.allProducts(page.page, page.size, currency).pipe(
+          map((res: Page<ProductResponse>) => ({
+            state: 'LOADED',
+            data: mapper(res),
+          })),
         ),
-        startWith({ state: 'LOADING' }),
-        catchError((err: HttpErrorResponse) => of({ state: 'ERROR', error: err.error ? err.error.message : err.message }))
-      );
+      ),
+      startWith({ state: 'LOADING' }),
+      catchError((err: HttpErrorResponse) =>
+        of({
+          state: 'ERROR',
+          error: err.error ? err.error.message : err.message,
+        }),
+      ),
+    );
   }
 
   /**
@@ -115,8 +155,10 @@ export class ProductImplComponent {
    * */
   infoFromTableComponent(content: TableContent<ProductMapper>): void {
     switch (content.key) {
-      case 'edit':{
-        this.router.navigate([`/admin/dashboard/product/${content.data.productId}`]);
+      case 'edit': {
+        this.router.navigate([
+          `/admin/dashboard/product/${content.data.productId}`,
+        ]);
         break;
       }
 
@@ -125,9 +167,14 @@ export class ProductImplComponent {
           .deleteProduct(content.data.productId)
           .pipe(
             switchMap((status: number) =>
-              this.productService.action(status, this.categoryService.allCategories())
+              this.productService.action(
+                status,
+                this.categoryService.allCategories(),
+              ),
             ),
-            catchError((err: HttpErrorResponse) => of({ status: err.status, message: err.error.message }))
+            catchError((err: HttpErrorResponse) =>
+              of({ status: err.status, message: err.error.message }),
+            ),
           );
 
         this.dialog.open(DeleteComponent, {
@@ -136,16 +183,15 @@ export class ProductImplComponent {
           height: 'fit-content',
           data: {
             name: content.data.name,
-            asyncButton: obs
-          }
+            asyncButton: obs,
+          },
         });
 
         break;
       }
 
-      default :
+      default:
         console.error('invalid key chosen');
     }
   }
-
 }

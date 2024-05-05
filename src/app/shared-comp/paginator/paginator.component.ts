@@ -1,34 +1,44 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output, Renderer2} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {RouterLinkActive} from "@angular/router";
-import {UtilService} from "@/app/service/util.service";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  Output,
+  Renderer2,
+} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterLinkActive } from '@angular/router';
+import { UtilService } from '@/app/service/util.service';
 
 @Component({
   selector: 'app-paginator',
   standalone: true,
   imports: [CommonModule, RouterLinkActive],
-  styles: [`
-    /* width */
-    ::-webkit-scrollbar {
-      height: 5px;
-      width: 5px;
-      margin-top: 10px;
-    }
-    /* Track */
-    ::-webkit-scrollbar-track {
-      background: #f1f1f1;
-    }
+  styles: [
+    `
+      /* width */
+      ::-webkit-scrollbar {
+        height: 5px;
+        width: 5px;
+        margin-top: 10px;
+      }
+      /* Track */
+      ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+      }
 
-    /* Handle */
-    ::-webkit-scrollbar-thumb {
-      background: #bec4c4;
-    }
+      /* Handle */
+      ::-webkit-scrollbar-thumb {
+        background: #bec4c4;
+      }
 
-    /* Handle on hover */
-    ::-webkit-scrollbar-thumb:hover {
-      background: #555;
-    }
-  `],
+      /* Handle on hover */
+      ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+      }
+    `,
+  ],
   template: `
     <nav class="text-black" aria-label="pagination">
       @if (totalPages < 6) {
@@ -40,17 +50,24 @@ import {UtilService} from "@/app/service/util.service";
               (click)="onGoTo(num)"
               [attr.data-page-number]="num"
               aria-label="button number"
-              [style]="{ 'background-color': num === currentPage ? 'var(--app-theme)' : '' }"
+              [style]="{
+                'background-color':
+                  num === currentPage ? 'var(--app-theme)' : ''
+              }"
               class="relative block rounded-full bg-transparent px-3 py-1.5 text-sm text-neutral-600 transition-all duration-300 hover:bg-gray-200"
-            >{{ num + 1 }}</a>
+              >{{ num + 1 }}</a
+            >
           </li>
         </ul>
       } @else {
         <div class="flex gap-2.5 justify-center list-style-none">
           <!-- Previous -->
           <div>
-            <button (click)="onPrevious()" type="button" aria-label="Previous button"
-                    class="relative block rounded-full bg-transparent px-3 py-1.5 text-sm text-neutral-600 transition-all duration-300 hover:bg-gray-200"
+            <button
+              (click)="onPrevious()"
+              type="button"
+              aria-label="Previous button"
+              class="relative block rounded-full bg-transparent px-3 py-1.5 text-sm text-neutral-600 transition-all duration-300 hover:bg-gray-200"
             >
               <span aria-hidden="true">&laquo;</span>
             </button>
@@ -60,9 +77,16 @@ import {UtilService} from "@/app/service/util.service";
           <ul class="slider w-60 flex overflow-x-auto scroll-smooth">
             @for (num of range(); track num; let i = $index) {
               <li>
-                <a (click)="onGoTo(num)" aria-label="button number" [attr.data-page-number]="num"
-                   [style]="{ 'background-color': num === currentPage ? 'var(--app-theme)' : '' }"
-                   class="relative cursor-pointer block rounded-full bg-transparent px-3 py-1.5 text-sm text-neutral-600 transition-all duration-300 hover:bg-gray-200">
+                <a
+                  (click)="onGoTo(num)"
+                  aria-label="button number"
+                  [attr.data-page-number]="num"
+                  [style]="{
+                    'background-color':
+                      num === currentPage ? 'var(--app-theme)' : ''
+                  }"
+                  class="relative cursor-pointer block rounded-full bg-transparent px-3 py-1.5 text-sm text-neutral-600 transition-all duration-300 hover:bg-gray-200"
+                >
                   {{ num + 1 }}
                 </a>
               </li>
@@ -71,8 +95,11 @@ import {UtilService} from "@/app/service/util.service";
 
           <!-- Next -->
           <div>
-            <button (click)="onNext()" type="button" aria-label="Next button"
-                    class="relative block rounded bg-transparent px-3 py-1.5 text-sm text-neutral-600 transition-all duration-300 hover:bg-gray-200 hover:rounded-full"
+            <button
+              (click)="onNext()"
+              type="button"
+              aria-label="Next button"
+              class="relative block rounded bg-transparent px-3 py-1.5 text-sm text-neutral-600 transition-all duration-300 hover:bg-gray-200 hover:rounded-full"
             >
               <span aria-hidden="true">&raquo;</span>
             </button>
@@ -81,10 +108,9 @@ import {UtilService} from "@/app/service/util.service";
       }
     </nav>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PaginatorComponent {
-
   private readonly render = inject(Renderer2);
   private readonly utilService = inject(UtilService);
 
@@ -126,5 +152,4 @@ export class PaginatorComponent {
     let dimension = container.getBoundingClientRect();
     container.scrollLeft += dimension.width;
   }
-
 }

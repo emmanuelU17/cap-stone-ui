@@ -1,10 +1,10 @@
-import {NgModule} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {AsyncButtonDirective} from './async-button.directive';
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { AsyncButtonDirective } from './async-button.directive';
 
 @NgModule({
   declarations: [AsyncButtonDirective],
   imports: [CommonModule],
-  exports: [AsyncButtonDirective]
+  exports: [AsyncButtonDirective],
 })
-export class DirectiveModule { }
+export class DirectiveModule {}

@@ -1,12 +1,18 @@
-import {DestroyRef, Directive, ElementRef, HostListener, inject, Input} from '@angular/core';
-import {Observable, tap} from "rxjs";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {
+  DestroyRef,
+  Directive,
+  ElementRef,
+  HostListener,
+  inject,
+  Input,
+} from '@angular/core';
+import { Observable, tap } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Directive({
-  selector: '[asyncButton]'
+  selector: '[asyncButton]',
 })
 export class AsyncButtonDirective {
-
   private readonly destroyRef = inject(DestroyRef);
   private readonly el = inject(ElementRef);
 
@@ -28,29 +34,30 @@ export class AsyncButtonDirective {
          <span class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]"
          >Loading...</span>
         </div>
-    `
+    `;
 
     const prevElement = this.el.nativeElement.innerHTML;
     this.el.nativeElement.innerHTML = spinner;
     this.el.nativeElement.disabled = true;
 
-    this.clickFunc.pipe(
-      tap({
-        next: () => {
-          this.el.nativeElement.innerHTML = prevElement;
-          this.el.nativeElement.disabled = false;
-        },
-        error: () => {
-          this.el.nativeElement.innerHTML = prevElement;
-          this.el.nativeElement.disabled = false;
-        },
-        complete: () => {
-          this.el.nativeElement.innerHTML = prevElement;
-          this.el.nativeElement.disabled = false;
-        }
-      }),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe();
+    this.clickFunc
+      .pipe(
+        tap({
+          next: () => {
+            this.el.nativeElement.innerHTML = prevElement;
+            this.el.nativeElement.disabled = false;
+          },
+          error: () => {
+            this.el.nativeElement.innerHTML = prevElement;
+            this.el.nativeElement.disabled = false;
+          },
+          complete: () => {
+            this.el.nativeElement.innerHTML = prevElement;
+            this.el.nativeElement.disabled = false;
+          },
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe();
   }
-
 }

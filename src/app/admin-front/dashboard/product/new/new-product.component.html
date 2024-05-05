@@ -1,26 +1,50 @@
 <form class="h-full flex flex-col px-0" [formGroup]="form">
   <!-- Title-container -->
   <div class="flex py-2.5 px-0 mb-4">
-    <button type="button" (click)="routeToProductComponent()" class="mr-1.5 md:px-2.5 border-[var(--border-outline)] border">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-           class="w-6 h-6">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18"/>
+    <button
+      type="button"
+      (click)="routeToProductComponent()"
+      class="mr-1.5 md:px-2.5 border-[var(--border-outline)] border"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="1.5"
+        stroke="currentColor"
+        class="w-6 h-6"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18"
+        />
       </svg>
     </button>
-    <h1 class="cx-font-size w-fit capitalize border-b border-[var(--app-theme)]">create a new product</h1>
+    <h1
+      class="cx-font-size w-fit capitalize border-b border-[var(--app-theme)]"
+    >
+      create a new product
+    </h1>
   </div>
 
   <!-- Contents -->
   <div class="flex gap-2.5 max-[945px]:flex-col">
     <!-- Left column -->
     <div class="flex-1">
-      <div class="bg-[var(--white)] mb-2.5 p-2.5 rounded-md border border-solid border-[var(--active)]">
-        <div class="py-1.5"><h2 class="cx-font-size capitalize">general</h2></div>
+      <div
+        class="bg-[var(--white)] mb-2.5 p-2.5 rounded-md border border-solid border-[var(--active)]"
+      >
+        <div class="py-1.5">
+          <h2 class="cx-font-size capitalize">general</h2>
+        </div>
 
         <div class="w-full flex gap-1.5 max-[640px]:flex-col">
           <!-- Product Name -->
           <div class="mb-2 flex-1">
-            <h4 class="cx-font-size capitalize"><span class="text-red-500">*</span> name</h4>
+            <h4 class="cx-font-size capitalize">
+              <span class="text-red-500">*</span> name
+            </h4>
             <input
               formControlName="name"
               placeholder="product name"
@@ -31,7 +55,9 @@
 
           <!-- NGN Price -->
           <div class="mb-2">
-            <h4 class="cx-font-size capitalize"><span class="text-red-500">*</span> NGN price</h4>
+            <h4 class="cx-font-size capitalize">
+              <span class="text-red-500">*</span> NGN price
+            </h4>
             <input
               placeholder="NGN"
               formControlName="ngn"
@@ -42,7 +68,9 @@
 
           <!-- USD Price -->
           <div class="mb-2">
-            <h4 class="cx-font-size capitalize"><span class="text-red-500">*</span> USD price</h4>
+            <h4 class="cx-font-size capitalize">
+              <span class="text-red-500">*</span> USD price
+            </h4>
             <input
               placeholder="USD"
               formControlName="usd"
@@ -50,33 +78,58 @@
               class="p-2.5 flex-1 w-full rounded-sm border border-solid border-[var(--border-outline)]"
             />
           </div>
-
         </div>
 
         <!-- Description -->
         <div class="mb-2">
-          <h4 class="capitalize">description <span class="text-red-500">*</span></h4>
+          <h4 class="capitalize">
+            description <span class="text-red-500">*</span>
+          </h4>
           <ckeditor [editor]="config" formControlName="desc"></ckeditor>
         </div>
       </div>
 
-      <div class="bg-[var(--white)] mb-2.5 p-2.5 rounded-md border border-solid border-[var(--active)]">
-        <div class="py-1.5"><h2 class="cx-font-size capitalize"><span class="text-red-500">*</span> media</h2></div>
+      <div
+        class="bg-[var(--white)] mb-2.5 p-2.5 rounded-md border border-solid border-[var(--active)]"
+      >
+        <div class="py-1.5">
+          <h2 class="cx-font-size capitalize">
+            <span class="text-red-500">*</span> media
+          </h2>
+        </div>
 
         <div class="flex flex-wrap items-center">
-
           @for (image of files; track image) {
             <div class="relative">
-              <button type="button" (click)="remove(image)" class="x-btn m-0.5 outline-none border-0 text-center cursor-pointer bg-transparent">
-                <img [src]="toString(image)" alt="image" class="m-0 min-h-[9.375rem] min-w-[9.375rem] max-h-[12.5rem] max-w-[12.5rem] object-cover">
+              <button
+                type="button"
+                (click)="remove(image)"
+                class="x-btn m-0.5 outline-none border-0 text-center cursor-pointer bg-transparent"
+              >
+                <img
+                  [src]="toString(image)"
+                  alt="image"
+                  class="m-0 min-h-[9.375rem] min-w-[9.375rem] max-h-[12.5rem] max-w-[12.5rem] object-cover"
+                />
               </button>
             </div>
           }
 
           <div class="upload">
-            <input type="file" multiple class="hidden" (change)="onFileSelected($event)" accept="image/*" #fileUpload>
+            <input
+              type="file"
+              multiple
+              class="hidden"
+              (change)="onFileSelected($event)"
+              accept="image/*"
+              #fileUpload
+            />
 
-            <button (click)="fileUpload.click()" type="button" class="flex outline-none border-0 text-center cursor-pointer bg-transparent">
+            <button
+              (click)="fileUpload.click()"
+              type="button"
+              class="flex outline-none border-0 text-center cursor-pointer bg-transparent"
+            >
               <p *ngIf="files.length < 1">No file uploaded yet.</p>
               <mat-icon>attach_file</mat-icon>
             </button>
@@ -89,14 +142,26 @@
 
     <!-- Right column -->
     <div class="flex-1">
-      <div class="bg-[var(--white)] mb-2.5 p-2.5 rounded-md border border-solid border-[var(--active)]">
-        <div class="py-1.5"><h2 class="cx-font-size capitalize">status</h2></div>
+      <div
+        class="bg-[var(--white)] mb-2.5 p-2.5 rounded-md border border-solid border-[var(--active)]"
+      >
+        <div class="py-1.5">
+          <h2 class="cx-font-size capitalize">status</h2>
+        </div>
         <!-- End of attribute-title -->
 
         <div class="mb-2">
-          <h4 class="cx-font-size"><span class="text-red-500">*</span> Visibility (include in store front)</h4>
-          <mat-radio-group aria-label="Select an option" formControlName="visible">
-            <mat-radio-button [checked]='true' value="false">false</mat-radio-button>
+          <h4 class="cx-font-size">
+            <span class="text-red-500">*</span> Visibility (include in store
+            front)
+          </h4>
+          <mat-radio-group
+            aria-label="Select an option"
+            formControlName="visible"
+          >
+            <mat-radio-button [checked]="true" value="false"
+              >false</mat-radio-button
+            >
             <mat-radio-button value="true">true</mat-radio-button>
           </mat-radio-group>
         </div>
@@ -105,16 +170,33 @@
           <div class="flex gap-1">
             <h4 class="cx-font-size">
               <span class="text-red-500">*</span>
-              Category <span class="text-xs text-blue-300">{{ currentCategory?.name }}</span>
+              Category
+              <span class="text-xs text-blue-300">{{
+                currentCategory?.name
+              }}</span>
             </h4>
 
             <button type="button" (click)="toggle = !toggle">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                   stroke="currentColor" class="w-4 h-4">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-4 h-4"
+              >
                 @if (toggle) {
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M12 4.5v15m7.5-7.5h-15"
+                  />
                 } @else {
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14" />
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M5 12h14"
+                  />
                 }
               </svg>
             </button>
@@ -122,8 +204,10 @@
 
           @if (!toggle) {
             <div class="w-full p-2 flex gap-2 flex-col bg-[#eff2f5]">
-              <app-hierarchy [categories]="(hierarchy$ | async) || []"
-                             (emitter)="categoryClicked($event)"></app-hierarchy>
+              <app-hierarchy
+                [categories]="(hierarchy$ | async) || []"
+                (emitter)="categoryClicked($event)"
+              ></app-hierarchy>
             </div>
           }
         </div>
@@ -131,43 +215,79 @@
       <!-- End of mat-card right -->
 
       <!-- Colour, Size and Inventory -->
-      <div class="bg-[var(--white)] mb-2.5 p-2.5 rounded-md border border-solid border-[var(--active)]">
-        <div class="py-1.5"><h2 class="cx-font-size capitalize">Attributes</h2></div>
+      <div
+        class="bg-[var(--white)] mb-2.5 p-2.5 rounded-md border border-solid border-[var(--active)]"
+      >
+        <div class="py-1.5">
+          <h2 class="cx-font-size capitalize">Attributes</h2>
+        </div>
 
         <!-- weight -->
         <div class="mb-2">
-          <h4 class="cx-font-size"><span class="text-red-500">*</span> Weight <span class="text-xs text-blue-400">kg</span></h4>
-          <input formControlName="weight" placeholder="kg" type="number"
-                 class="p-2.5 w-full flex-1 inline rounded-sm border border-solid border-[var(--border-outline)]"/>
+          <h4 class="cx-font-size">
+            <span class="text-red-500">*</span> Weight
+            <span class="text-xs text-blue-400">kg</span>
+          </h4>
+          <input
+            formControlName="weight"
+            placeholder="kg"
+            type="number"
+            class="p-2.5 w-full flex-1 inline rounded-sm border border-solid border-[var(--border-outline)]"
+          />
         </div>
 
         <!-- Colour -->
         <div class="mb-2">
-          <h4 class="cx-font-size capitalize"><span class="text-red-500">*</span> colour</h4>
-          <input formControlName="colour" placeholder="colour" type="text"
-                 class="p-2.5 w-full flex-1 inline rounded-sm border border-solid border-[var(--border-outline)]"/>
+          <h4 class="cx-font-size capitalize">
+            <span class="text-red-500">*</span> colour
+          </h4>
+          <input
+            formControlName="colour"
+            placeholder="colour"
+            type="text"
+            class="p-2.5 w-full flex-1 inline rounded-sm border border-solid border-[var(--border-outline)]"
+          />
         </div>
 
         <!-- Size and Inventory -->
         <div class="pt-2.5">
-          <app-size-inventory (eventEmitter)="sizeInv($event)"></app-size-inventory>
+          <app-size-inventory
+            (eventEmitter)="sizeInv($event)"
+          ></app-size-inventory>
         </div>
       </div>
-
     </div>
   </div>
 
   <!-- Button ctn -->
   <div class="p-2.5 px-1.5 flex justify-between">
-    <button mat-stroked-button color="warn" [style.border-color]="'red'" type="button" (click)="clear()">
+    <button
+      mat-stroked-button
+      color="warn"
+      [style.border-color]="'red'"
+      type="button"
+      (click)="clear()"
+    >
       cancel
     </button>
-    <button type="submit" [asyncButton]="submit()"
-            [disabled]="!form.valid || files.length === 0 || rows.length === 0 || !currentCategory"
-            [style]="{ 'background-color': form.valid && files.length > 0 && rows.length > 0 && currentCategory ? 'var(--app-theme-hover)' : 'var(--app-theme)' }"
-            class="text-white font-bold py-2 px-4 rounded bg-[var(--app-theme)]">
+    <button
+      type="submit"
+      [asyncButton]="submit()"
+      [disabled]="
+        !form.valid ||
+        files.length === 0 ||
+        rows.length === 0 ||
+        !currentCategory
+      "
+      [style]="{
+        'background-color':
+          form.valid && files.length > 0 && rows.length > 0 && currentCategory
+            ? 'var(--app-theme-hover)'
+            : 'var(--app-theme)'
+      }"
+      class="text-white font-bold py-2 px-4 rounded bg-[var(--app-theme)]"
+    >
       create
     </button>
   </div>
-
 </form>

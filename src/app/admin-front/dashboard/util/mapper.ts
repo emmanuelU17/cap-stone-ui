@@ -1,5 +1,5 @@
-import {Page} from "@/app/global-utils";
-import {ProductResponse} from "@/app/admin-front/shared-util";
+import { Page } from '@/app/global-utils';
+import { ProductResponse } from '@/app/admin-front/shared-util';
 
 export interface ProductMapper {
   index: number;
@@ -16,20 +16,19 @@ export interface ProductMapper {
 }
 
 export const mapper = (page: Page<ProductResponse>): Page<ProductMapper> => ({
-  content: page.content
-    .map((obj, index) => ({
-      index: index + 1,
-      category: obj.category,
-      productId: obj.product_id,
-      name: obj.name,
-      desc: obj.desc,
-      price: obj.price,
-      currency: obj.currency,
-      image: obj.image,
-      weight: obj.weight,
-      type: obj.weight_type,
-      delete: ''
-    })),
+  content: page.content.map((obj, index) => ({
+    index: index + 1,
+    category: obj.category,
+    productId: obj.product_id,
+    name: obj.name,
+    desc: obj.desc,
+    price: obj.price,
+    currency: obj.currency,
+    image: obj.image,
+    weight: obj.weight,
+    type: obj.weight_type,
+    delete: '',
+  })),
   pageable: page.pageable,
   last: page.last,
   totalPages: page.totalPages,
@@ -39,6 +38,5 @@ export const mapper = (page: Page<ProductResponse>): Page<ProductMapper> => ({
   sort: page.sort,
   numberOfElements: page.numberOfElements,
   first: page.first,
-  empty: page.empty
+  empty: page.empty,
 });
-

@@ -1,26 +1,51 @@
-import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {catchError, combineLatest, map, Observable, of, ReplaySubject, startWith, switchMap, tap} from "rxjs";
-import {ProductDetailResponse, ProductResponse, TableContent, UpdateProduct,} from "@/app/admin-front/shared-util";
-import {HttpErrorResponse} from "@angular/common/http";
-import {ProductService} from "../product.service";
-import {FormBuilder, FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
-import {DirectiveModule} from "@/app/directive/directive.module";
-import {CategoryService} from "@/app/admin-front/dashboard/category/category.service";
-import {DynamicTableComponent} from "@/app/admin-front/dashboard/util/dynamictable/dynamic-table.component";
-import {Variant} from "@/app/global-utils";
-import {ActivatedRoute, Params, Router} from "@angular/router";
-import {MatDialog, MatDialogModule} from "@angular/material/dialog";
-import {UpdateVariantComponent} from "../product-variant/updatevariant/update-variant.component";
-import {ToastService} from "@/app/shared-comp/toast/toast.service";
-import {CreateVariantComponent} from "../product-variant/create-variant/create-variant.component";
-import {UpdateProductService} from "./update-product.service";
-import {toSignal} from "@angular/core/rxjs-interop";
-import {DeleteComponent} from "@/app/admin-front/dashboard/util/delete/delete.component";
-import {CustomUpdateVariant} from "../product-variant";
-import {CKEditorModule} from "@ckeditor/ckeditor5-angular";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-import {CategoryHierarchyComponent} from "@/app/shared-comp/hierarchy/category-hierarchy.component";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  OnInit,
+} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import {
+  catchError,
+  combineLatest,
+  map,
+  Observable,
+  of,
+  ReplaySubject,
+  startWith,
+  switchMap,
+  tap,
+} from 'rxjs';
+import {
+  ProductDetailResponse,
+  ProductResponse,
+  TableContent,
+  UpdateProduct,
+} from '@/app/admin-front/shared-util';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ProductService } from '../product.service';
+import {
+  FormBuilder,
+  FormControl,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { DirectiveModule } from '@/app/directive/directive.module';
+import { CategoryService } from '@/app/admin-front/dashboard/category/category.service';
+import { DynamicTableComponent } from '@/app/admin-front/dashboard/util/dynamictable/dynamic-table.component';
+import { Variant } from '@/app/global-utils';
+import { ActivatedRoute, Params, Router } from '@angular/router';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { UpdateVariantComponent } from '../product-variant/updatevariant/update-variant.component';
+import { ToastService } from '@/app/shared-comp/toast/toast.service';
+import { CreateVariantComponent } from '../product-variant/create-variant/create-variant.component';
+import { UpdateProductService } from './update-product.service';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { DeleteComponent } from '@/app/admin-front/dashboard/util/delete/delete.component';
+import { CustomUpdateVariant } from '../product-variant';
+import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import { CategoryHierarchyComponent } from '@/app/shared-comp/hierarchy/category-hierarchy.component';
 
 interface CustomRowMapper {
   index: number;
@@ -31,17 +56,19 @@ interface CustomRowMapper {
   sku: string;
   inventory: number;
   size: string;
-  action: string
+  action: string;
 }
 
 @Component({
   selector: 'app-update-product',
   standalone: true,
-  styles: [`
-    :host ::ng-deep .ck-editor__editable_inline {
-      min-height: 100px;
-    }
-  `],
+  styles: [
+    `
+      :host ::ng-deep .ck-editor__editable_inline {
+        min-height: 100px;
+      }
+    `,
+  ],
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -49,13 +76,12 @@ interface CustomRowMapper {
     DirectiveModule,
     DynamicTableComponent,
     MatDialogModule,
-    CategoryHierarchyComponent
+    CategoryHierarchyComponent,
   ],
   templateUrl: './update-product.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UpdateProductComponent implements OnInit {
-
   private readonly router = inject(Router);
   private readonly activeRoute = inject(ActivatedRoute);
   private readonly fb = inject(FormBuilder);
@@ -66,41 +92,58 @@ export class UpdateProductComponent implements OnInit {
   private readonly toastService = inject(ToastService);
   private readonly productUuid = toSignal(
     this.activeRoute.params.pipe(map((p: Params) => p as { id: string })),
-    { initialValue: { id: '' } }
+    { initialValue: { id: '' } },
   );
 
   // custom object
-  private readonly product: ProductResponse | undefined = this.productService.products
-    .find((value: ProductResponse) => value.product_id === this.productUuid().id)
+  private readonly product: ProductResponse | undefined =
+    this.productService.products.find(
+      (value: ProductResponse) => value.product_id === this.productUuid().id,
+    );
 
-  categoryName = this.categoryService.categories
-    .find(c => c.name === this.product?.category)?.name;
+  categoryName = this.categoryService.categories.find(
+    (c) => c.name === this.product?.category,
+  )?.name;
 
-  readonly data: { categoryId?: number, product?: ProductResponse } = {
-    categoryId: this.categoryService.categories
-      .find(c => c.name === this.product?.category)?.category_id,
-    product: this.product
-  }
+  readonly data: { categoryId?: number; product?: ProductResponse } = {
+    categoryId: this.categoryService.categories.find(
+      (c) => c.name === this.product?.category,
+    )?.category_id,
+    product: this.product,
+  };
 
   toggle = true;
   readonly hierarchy$ = this.categoryService.hierarchy$;
 
   // table
-  readonly thead: Array<keyof CustomRowMapper> = ['index', 'image', 'colour', 'visible', 'sku', 'inventory', 'size', 'action'];
+  readonly thead: Array<keyof CustomRowMapper> = [
+    'index',
+    'image',
+    'colour',
+    'visible',
+    'sku',
+    'inventory',
+    'size',
+    'action',
+  ];
   productVariants$: Observable<{
-    state: string,
-    error?: string,
-    data?: CustomRowMapper[]
+    state: string;
+    error?: string;
+    data?: CustomRowMapper[];
   }> = this.updateProductService
     .productDetailsByProductUuid(this.productUuid().id)
     .pipe(
-      map((arr: ProductDetailResponse[]) =>
-        ({ state: 'LOADED', data: this.toCustomRowMapperArray(arr) })
-      ),
+      map((arr: ProductDetailResponse[]) => ({
+        state: 'LOADED',
+        data: this.toCustomRowMapperArray(arr),
+      })),
       startWith({ state: 'LOADING' }),
       catchError((err: HttpErrorResponse) =>
-        of({ state: 'ERROR', error: err.error ? err.error.message : err.message })
-      )
+        of({
+          state: 'ERROR',
+          error: err.error ? err.error.message : err.message,
+        }),
+      ),
     );
 
   // Initially the product variant displayed and when user clicks on variant table
@@ -115,7 +158,7 @@ export class UpdateProductComponent implements OnInit {
 
   readonly form = this.fb.group({
     name: new FormControl('', [Validators.required, Validators.max(50)]),
-    sku: new FormControl({value: '', disabled: true}, [Validators.required]),
+    sku: new FormControl({ value: '', disabled: true }, [Validators.required]),
     price: new FormControl(0, Validators.required),
     weight: new FormControl(0, [Validators.required]),
     desc: new FormControl('', [Validators.required, Validators.max(1000)]),
@@ -133,8 +176,10 @@ export class UpdateProductComponent implements OnInit {
   /**
    * Convert from ProductDetailResponse[] to CustomRowMapper[]
    * */
-  private toCustomRowMapperArray = (arr: ProductDetailResponse[]): CustomRowMapper[] => arr
-    .flatMap((res: ProductDetailResponse) => {
+  private toCustomRowMapperArray = (
+    arr: ProductDetailResponse[],
+  ): CustomRowMapper[] =>
+    arr.flatMap((res: ProductDetailResponse) => {
       const data: CustomRowMapper[] = [];
 
       // add all colours
@@ -151,8 +196,8 @@ export class UpdateProductComponent implements OnInit {
           sku: variant.sku,
           inventory: Number(variant.inventory),
           size: variant.size,
-          action: ''
-        }
+          action: '',
+        };
         data.push(obj);
 
         if (index === 0) {
@@ -163,13 +208,18 @@ export class UpdateProductComponent implements OnInit {
       return data;
     });
 
-  private afterComponentClose = <T extends { arr: ProductDetailResponse[] }> (obj: Observable<T>) =>
+  private afterComponentClose = <T extends { arr: ProductDetailResponse[] }>(
+    obj: Observable<T>,
+  ) =>
     obj.pipe(
       tap((arr: { arr: ProductDetailResponse[] }) => {
         if (!arr || !(arr.arr && arr.arr.length > 0)) {
-          return
+          return;
         }
-        this.productVariants$ = of({ state: 'LOADED', data: this.toCustomRowMapperArray(arr.arr) });
+        this.productVariants$ = of({
+          state: 'LOADED',
+          data: this.toCustomRowMapperArray(arr.arr),
+        });
       }),
     );
 
@@ -182,7 +232,7 @@ export class UpdateProductComponent implements OnInit {
       width: '900px',
       maxWidth: '100%',
       maxHeight: '100%',
-      data: { id: this.productUuid().id, colours: this.colours }
+      data: { id: this.productUuid().id, colours: this.colours },
     });
     return this.afterComponentClose(open.afterClosed()).pipe(map(() => 0));
   }
@@ -213,52 +263,57 @@ export class UpdateProductComponent implements OnInit {
       return of();
     }
 
-    return this.productService.currency$
-      .pipe(
-        switchMap((currency) => {
-          const payload: UpdateProduct = {
-            category_id: this.currentCategory !== undefined && this.currentCategory.categoryId !== cat
-              ? this.currentCategory.categoryId : cat,
-            product_id: this.productUuid().id,
-            name: name,
-            currency: currency,
-            price: price,
-            desc: desc.trim(),
-            category: product.category,
-            weight: weight
-          };
+    return this.productService.currency$.pipe(
+      switchMap((currency) => {
+        const payload: UpdateProduct = {
+          category_id:
+            this.currentCategory !== undefined &&
+            this.currentCategory.categoryId !== cat
+              ? this.currentCategory.categoryId
+              : cat,
+          product_id: this.productUuid().id,
+          name: name,
+          currency: currency,
+          price: price,
+          desc: desc.trim(),
+          category: product.category,
+          weight: weight,
+        };
 
-          return this.updateProduct(
-            payload,
-            this.currentCategory !== undefined && this.currentCategory.categoryId !== cat
-          );
-        })
-      );
+        return this.updateProduct(
+          payload,
+          this.currentCategory !== undefined &&
+            this.currentCategory.categoryId !== cat,
+        );
+      }),
+    );
   }
 
   /**
    * Make a call to our server to update a Product.
    * */
   private updateProduct(obj: UpdateProduct, bool: boolean): Observable<number> {
-    return this.productService.updateProduct(obj)
-      .pipe(
-        switchMap((status: number) => {
-          const res = of(status);
-          const products$ = this.productService.currency$
-            .pipe(switchMap((currency) =>
-              this.productService.allProducts(0, 20, currency))
-            );
-          const categories$ = this.categoryService.allCategories();
-          // If user changes category or collection, refresh the arrays else only refresh products
-          return bool
-            ? combineLatest([products$, categories$]).pipe(switchMap(() => res))
-            : products$.pipe(switchMap(() => res));
-        }),
-        catchError((err: HttpErrorResponse) => {
-          this.toastService.toastMessage(err.error ? err.error.message : err.message);
-          return of(err.status);
-        })
-      );
+    return this.productService.updateProduct(obj).pipe(
+      switchMap((status: number) => {
+        const res = of(status);
+        const products$ = this.productService.currency$.pipe(
+          switchMap((currency) =>
+            this.productService.allProducts(0, 20, currency),
+          ),
+        );
+        const categories$ = this.categoryService.allCategories();
+        // If user changes category or collection, refresh the arrays else only refresh products
+        return bool
+          ? combineLatest([products$, categories$]).pipe(switchMap(() => res))
+          : products$.pipe(switchMap(() => res));
+      }),
+      catchError((err: HttpErrorResponse) => {
+        this.toastService.toastMessage(
+          err.error ? err.error.message : err.message,
+        );
+        return of(err.status);
+      }),
+    );
   }
 
   /**
@@ -288,18 +343,17 @@ export class UpdateProductComponent implements OnInit {
             colour: content.data.colour,
             is_visible: content.data.visible,
             qty: content.data.inventory,
-            size: content.data.size
-          }
-        }
+            size: content.data.size,
+          },
+        };
 
         // Open Component
-        const open = this.dialog
-          .open(UpdateVariantComponent, {
-            height: '400px',
-            width: '600px',
-            maxWidth: '100%',
-            data: v,
-          });
+        const open = this.dialog.open(UpdateVariantComponent, {
+          height: '400px',
+          width: '600px',
+          maxWidth: '100%',
+          data: v,
+        });
 
         this.afterComponentClose(open.afterClosed());
         break;
@@ -317,11 +371,14 @@ export class UpdateProductComponent implements OnInit {
                   tap((arr: ProductDetailResponse[]) => {
                     // On successful deletion, update productVariants$
                     const mapper = this.toCustomRowMapperArray(arr);
-                    this.productVariants$ = of({ state: 'LOADED', data: mapper });
+                    this.productVariants$ = of({
+                      state: 'LOADED',
+                      data: mapper,
+                    });
                   }),
-                  switchMap(() => of(status))
+                  switchMap(() => of(status)),
                 );
-            })
+            }),
           );
 
         this.dialog.open(DeleteComponent, {
@@ -330,8 +387,8 @@ export class UpdateProductComponent implements OnInit {
           height: 'fit-content',
           data: {
             name: 'Product Variant ' + content.data.colour,
-            asyncButton: obs
-          }
+            asyncButton: obs,
+          },
         });
 
         break;
@@ -341,5 +398,4 @@ export class UpdateProductComponent implements OnInit {
         console.error('invalid key');
     }
   }
-
 }
