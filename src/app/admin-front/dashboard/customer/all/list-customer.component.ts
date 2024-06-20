@@ -96,7 +96,5 @@ export class ListCustomerComponent {
     catchError((err) => of({ state: 'ERROR', error: err.error.message })),
   );
 
-  infoFromTableComponent(user: TableContent<SarreUser>): void {
-    console.log('User ', user);
-  }
+  infoFromTableComponent(user: TableContent<SarreUser>): void {}
 }

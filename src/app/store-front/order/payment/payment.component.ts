@@ -221,7 +221,6 @@ export class PaymentComponent {
   readonly raceCondition$ = this.paymentService.validate();
 
   paymentDone(ref: any): void {
-    console.log('Payment done ', ref);
     this.router.navigate([`/order/${ref}`]);
   }
 

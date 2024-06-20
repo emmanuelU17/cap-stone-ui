@@ -24,6 +24,7 @@ import { environment } from '@/environments/environment';
 export class ProductService {
   private readonly HOST: string | undefined =
     environment.domain + 'api/v1/worker/product';
+
   private readonly http = inject(HttpClient);
   private readonly productSubject = new ReplaySubject<Page<ProductResponse>>();
 

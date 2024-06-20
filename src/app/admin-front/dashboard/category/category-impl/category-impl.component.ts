@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { AsyncPipe, CommonModule } from '@angular/common';
 import { DynamicTableComponent } from '@/app/admin-front/dashboard/util/dynamictable/dynamic-table.component';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { CategoryService } from '../category.service';
@@ -9,6 +9,7 @@ import { TableContent } from '@/app/admin-front//shared-util';
 import { catchError, map, of, switchMap } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { DeleteComponent } from '@/app/admin-front/dashboard/util/delete/delete.component';
+import { ToastService } from '@/app/shared-comp/toast/toast.service';
 
 interface CategoryResponseMapper {
   index: number;
@@ -21,7 +22,7 @@ interface CategoryResponseMapper {
 @Component({
   selector: 'app-category-impl',
   standalone: true,
-  imports: [CommonModule, DynamicTableComponent, MatDialogModule, RouterLink],
+  imports: [DynamicTableComponent, MatDialogModule, RouterLink, AsyncPipe],
   template: `
     <div class="h-full py-0 px-2.5">
       <div class="py-2.5 px-0 flex">
@@ -48,13 +49,15 @@ interface CategoryResponseMapper {
         </a>
       </div>
 
-      <div class="px-0" *ngIf="data$ | async as data">
-        <app-dynamic-table
-          [tHead]="tHead"
-          [data]="data"
-          (eventEmitter)="infoFromTableComponent($event)"
-        ></app-dynamic-table>
-      </div>
+      @if (data$ | async; as data) {
+        <div class="px-0">
+          <app-dynamic-table
+            [tHead]="tHead"
+            [data]="data"
+            (eventEmitter)="infoFromTableComponent($event)"
+          ></app-dynamic-table>
+        </div>
+      }
     </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -62,6 +65,7 @@ interface CategoryResponseMapper {
 export class CategoryImplComponent {
   private readonly categoryService = inject(CategoryService);
   private readonly productService = inject(ProductService);
+  private readonly toastService = inject(ToastService);
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
 
@@ -121,7 +125,7 @@ export class CategoryImplComponent {
 
         break;
       default:
-        console.error('Invalid key chosen');
+        this.toastService.toastMessage('invalid key chosen');
     }
   }
 }

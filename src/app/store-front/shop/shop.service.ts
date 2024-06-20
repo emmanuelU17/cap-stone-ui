@@ -25,14 +25,18 @@ export class ShopService {
       switchMap((num) =>
         num
           ? of(num)
-          : this.categories$.pipe(switchMap((arr) => of(arr[0].category_id))),
+          : this.categories$.pipe(
+              switchMap((arr) =>
+                arr.length > 0 ? of(arr[0].category_id) : of(-1),
+              ),
+            ),
       ),
     );
 
   /**
    * Returns a {@code ProductDetail} array based on {@code Product} uuid.
    * */
-  productDetailsByProductUUID = (
+  readonly productDetailsByProductUUID = (
     uuid: string,
     c: SarreCurrency,
   ): Observable<ProductDetail[]> =>
@@ -46,7 +50,7 @@ export class ShopService {
    *
    * @return Observable of Category array
    * */
-  allCategories = (): Observable<Category[]> =>
+  readonly allCategories = (): Observable<Category[]> =>
     this.http
       .get<
         Category[]
@@ -62,7 +66,7 @@ export class ShopService {
    * @param c
    * @return Observable of Page<Product>
    * */
-  productsBasedOnCategoryId = (
+  readonly productsBasedOnCategoryId = (
     categoryId: number,
     c: SarreCurrency,
     page: number = 0,

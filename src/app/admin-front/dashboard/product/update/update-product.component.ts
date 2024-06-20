@@ -42,10 +42,10 @@ import { CreateVariantComponent } from '../product-variant/create-variant/create
 import { UpdateProductService } from './update-product.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DeleteComponent } from '@/app/admin-front/dashboard/util/delete/delete.component';
-import { CustomUpdateVariant } from '../product-variant';
 import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { CategoryHierarchyComponent } from '@/app/shared-comp/hierarchy/category-hierarchy.component';
+import { CustomUpdateVariant } from '@/app/admin-front/dashboard/product/product-variant';
 
 interface CustomRowMapper {
   index: number;
@@ -56,7 +56,7 @@ interface CustomRowMapper {
   sku: string;
   inventory: number;
   size: string;
-  action: string;
+  delete: string;
 }
 
 @Component({
@@ -124,7 +124,7 @@ export class UpdateProductComponent implements OnInit {
     'sku',
     'inventory',
     'size',
-    'action',
+    'delete',
   ];
   productVariants$: Observable<{
     state: string;
@@ -196,7 +196,7 @@ export class UpdateProductComponent implements OnInit {
           sku: variant.sku,
           inventory: Number(variant.inventory),
           size: variant.size,
-          action: '',
+          delete: '',
         };
         data.push(obj);
 
@@ -395,7 +395,7 @@ export class UpdateProductComponent implements OnInit {
       }
 
       default:
-        console.error('invalid key');
+        this.toastService.toastMessage('invalid key chosen');
     }
   }
 }

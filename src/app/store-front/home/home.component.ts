@@ -83,7 +83,7 @@ import { FooterService } from '../utils/footer/footer.service';
             ></app-card>
           </button>
         } @empty {
-          no product available.
+          no product(s) available.
         }
       </div>
     </div>
