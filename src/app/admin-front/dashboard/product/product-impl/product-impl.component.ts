@@ -5,16 +5,17 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ProductService } from '../product.service';
 import { CategoryService } from '@/app/admin-front/dashboard/category/category.service';
 import { Router, RouterLink } from '@angular/router';
-import {
-  PageChange,
-  ProductResponse,
-  TableContent,
-} from '../../../shared-util';
 import { catchError, map, Observable, of, startWith, switchMap } from 'rxjs';
 import { Page } from '@/app/global-utils';
 import { HttpErrorResponse } from '@angular/common/http';
 import { DeleteComponent } from '@/app/admin-front/dashboard/util/delete/delete.component';
 import { mapper, ProductMapper } from '@/app/admin-front/dashboard/util/mapper';
+import {
+  PageChange,
+  ProductResponse,
+  TableContent,
+} from '@/app/admin-front/shared-util';
+import { ToastService } from '@/app/shared-comp/toast/toast.service';
 
 @Component({
   selector: 'app-product-impl',
@@ -90,6 +91,7 @@ export class ProductImplComponent {
   private readonly categoryService = inject(CategoryService);
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
+  private readonly toastService = inject(ToastService);
 
   // Table details
   thead: Array<keyof ProductMapper> = [
@@ -191,7 +193,7 @@ export class ProductImplComponent {
       }
 
       default:
-        console.error('invalid key chosen');
+        this.toastService.toastMessage('invalid key chosen');
     }
   }
 }

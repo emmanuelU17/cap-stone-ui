@@ -1,20 +1,34 @@
 # Cap-stone UI
 
-An ecommerce application still in development.
+An e-commerce application I developed for my capstone project powered by Angular 17 (Note this isn't production ready).
 
-## Technologies
+## Getting Started
 
-- Angular 17.x.x
-- Tailwind CSS
-- Material UI
-- CKEditor5
-- Paystack
+You'll need the backend up and running (if it is not public, I have not decided to open-source it).
 
-## To convert to a docker image using Dockerfile
+## Architecture
+
+Project is split into two different fronts.
+
+1. [Store Front](https://capstone.emmanueluluabuike.com/): This is where customers visit to purchase products.
+2. [Admin Front](https://capstone.emmanueluluabuike.com/admin) This is where employees or staff manage products.
+
+## 3rd Party Technologies
+
+The project utilizes several third-party technologies:
+
+- Tailwind CSS.
+- Angular Material UI.
+- CKEditor5.
+- Paystack: A payment gateway for processing online payments.
+
+## Building Docker Image
+
+### Using Dockerfile
 
 - `docker build --tag <chose-a-name>:latest . --progress=plain --build-arg="PORT=<choose-a-port-number>"`
 
-## To convert source code to docker image using buildpacks
+### Using Buildpacks
 
 - [Install pack](https://buildpacks.io/docs/tools/pack/)
 - Set default `pack config default-builder paketobuildpacks/builder:base`
@@ -25,8 +39,12 @@ An ecommerce application still in development.
 --env "BP_WEB_SERVER_ENABLE_PUSH_STATE=true"
 --env "NODE_ENV=development"`
 
-## Development links
+# License
 
-[Storefront](https://server.emmanueluluabuike.com/)
-&
-[Admin front](https://server.emmanueluluabuike.com/admin)
+You are free to use this code as you wish, just not any of the images (including the logo). If you do use this code,
+please give credit to this repo.
+
+## Contributors
+
+As my degree has been completed, I do not plan on contributing to this anytime too but feel free to reach out if you
+have any questions or need further assistance!
