@@ -115,36 +115,40 @@
       }
 
       @case ('LOADED') {
-        <div class="max-h-full mt-3" *ngIf="products.data">
-          <div
-            class="grid gap-x-2 gap-y-10 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:gap-x-8"
-          >
-            @for (
-              product of ascendingOrDescending(products.data.content);
-              track product.product_id
-            ) {
-              <div class="group relative cursor-pointer">
-                <a routerLink="product/{{ product.product_id }}">
-                  <app-card
-                    [url]="product.image"
-                    [name]="product.name"
-                    [currency]="currency(product.currency)"
-                    [price]="product.price"
-                  />
-                </a>
-              </div>
-            }
-          </div>
+        @if (products.data && products.data.content.length === 0) {
+          <p class="w-full text-xl text-center">Out of stock</p>
+        } @else if (products.data && products.data.content.length > 0) {
+          <div class="max-h-full mt-3">
+            <div
+              class="grid gap-x-2 gap-y-10 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:gap-x-8"
+            >
+              @for (
+                product of ascendingOrDescending(products.data.content);
+                track product.product_id
+              ) {
+                <div class="group relative cursor-pointer">
+                  <a routerLink="product/{{ product.product_id }}">
+                    <app-card
+                      [url]="product.image"
+                      [name]="product.name"
+                      [currency]="currency(product.currency)"
+                      [price]="product.price"
+                    />
+                  </a>
+                </div>
+              }
+            </div>
 
-          <div class="w-full mt-6 p-1.5">
-            <app-paginator
-              [currentPage]="products.data.number"
-              [totalPages]="products.data.totalPages"
-              [totalElements]="products.data.totalElements"
-              (goTo)="pageNumberClick($event)"
-            />
+            <div class="w-full mt-6 p-1.5">
+              <app-paginator
+                [currentPage]="products.data.number"
+                [totalPages]="products.data.totalPages"
+                [totalElements]="products.data.totalElements"
+                (goTo)="pageNumberClick($event)"
+              />
+            </div>
           </div>
-        </div>
+        }
       }
     }
   }

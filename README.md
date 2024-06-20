@@ -1,7 +1,5 @@
 # Cap-stone UI
 
-## About
-
 An ecommerce application still in development.
 
 ## Technologies
