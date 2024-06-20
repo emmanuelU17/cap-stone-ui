@@ -10,8 +10,8 @@ You'll need the backend up and running (if it is not public, I have not decided 
 
 Project is split into two different fronts.
 
-1. [Store Front](https://capstone.emmanueluluabuike.com/): This is where customers visit to purchase products.
-2. [Admin Front](https://capstone.emmanueluluabuike.com/admin) This is where employees or staff manage products.
+1. [Store Front](https://capstone.emmanueluluabuike.com/) : This is where customers visit to purchase products.
+2. [Admin Front](https://capstone.emmanueluluabuike.com/admin) : This is where employees or staff manage products.
 
 ## 3rd Party Technologies
 
