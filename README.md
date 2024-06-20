@@ -46,5 +46,5 @@ please give credit to this repo.
 
 ## Contributors
 
-As my degree has been completed, I do not plan on contributing to this anytime too but feel free to reach out if you
-have any questions or need further assistance!
+As I have completed my degree, I do not plan on contributing to this anytime too but feel free to reach out if you
+have any questions or need assistance!
