@@ -47,8 +47,9 @@ export class PaymentService {
     this.footerService.currency$.pipe(
       switchMap((currency) =>
         this.http
-          .get<PaymentDetail>(
+          .post<PaymentDetail>(
             `${this.HOST}api/v1/payment?currency=${currency}&country=${this.country()}`,
+            {},
             {
               headers: { 'content-type': 'application/json' },
               observe: 'response',
