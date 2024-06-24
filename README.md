@@ -1,6 +1,6 @@
 # Cap-stone UI
 
-An e-commerce application I developed for my capstone project powered by Angular 17 (Note this isn't production ready).
+An e-commerce application I developed for my capstone project powered by Angular 17.
 
 ## Getting Started
 
